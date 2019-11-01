@@ -1,0 +1,7 @@
+[requires]
+boost/1.71.0@conan/stable
+pegtl/2.8.1@taocpp/stable
+fmt/6.0.0@bincrafters/stable
+
+[generators]
+cmake
