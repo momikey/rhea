@@ -6,6 +6,20 @@
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
 
+    struct spacing : star <space> {};
+
+    struct line_comment : seq <
+        one < '#' >,
+        until<eolf>
+    > {};
+
+    struct block_comment : must <
+        string < '#', '{' >,
+        until <
+            string < '#', '}' >
+        >
+    > {};
+
     struct unsigned_integer : rep_min_max <1, 20, digit> {};
 
     struct signed_integer : seq <

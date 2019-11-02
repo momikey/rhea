@@ -105,3 +105,40 @@ BOOST_AUTO_TEST_CASE(bad_identifier)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(Comment)
+
+BOOST_AUTO_TEST_CASE(eol_comment)
+{
+    std::string valid { "# some comment\n" };
+
+    BOOST_TEST_MESSAGE("Parsing line comment");
+    string_input<> in (valid, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::line_comment>
+    >(in) == true);
+}
+
+BOOST_AUTO_TEST_CASE(eof_comment)
+{
+    std::string valid { "# some comment" };
+
+    BOOST_TEST_MESSAGE("Parsing line comment to EOF");
+    string_input<> in (valid, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::line_comment>
+    >(in) == true);
+}
+
+BOOST_AUTO_TEST_CASE(block_comment)
+{
+    std::string valid { "#{some comment\n\tpossibly with blank lines\n#}" };
+
+    BOOST_TEST_MESSAGE("Parsing block comment");
+    string_input<> in (valid, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::block_comment>
+    >(in) == true);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
