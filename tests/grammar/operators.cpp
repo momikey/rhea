@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(boolean_expression_multiple)
 
 BOOST_AUTO_TEST_CASE(bitwise_expression)
 {
-    std::string valid { "1 & -2" };
+    std::string valid { "a & 0x0000ffff" };
 
     BOOST_TEST_MESSAGE("Parsing input " << valid);
     string_input<> in(valid, "test");

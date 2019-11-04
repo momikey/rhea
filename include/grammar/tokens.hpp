@@ -31,6 +31,11 @@ namespace rhea { namespace grammar {
         rep_min_max <1, 20, digit>
     > {};
 
+    struct hex_literal : seq <
+        string < '0', 'x' >,
+        must < rep_min_max <1, 16, xdigit> >
+    > {};
+
     struct identifier : seq <
         identifier_first,
         star <identifier_other>
