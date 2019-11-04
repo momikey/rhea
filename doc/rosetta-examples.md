@@ -557,3 +557,283 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 	}
 ```
 
+### Hello world (text)
+
+```
+	# Display the string "Hello world!" on a text console.
+	def main = {
+		print("Hello world!");
+	}
+```
+
+### Increment a numerical string
+
+```
+	# Increment a numerical string.
+	def main = {
+		var s = "12345";
+		s = (1 + s as integer) as string;
+	}
+```
+
+### Input loop
+
+```
+	# Read from a text stream until it runs out of data.
+	use std:fs;
+
+	def main = {
+		var f = std:fs:File("file.txt");
+
+		with s as string while (not f.eof)
+		{
+			s = f.read_line();
+			print(s);
+		}
+	}
+```
+
+### Integer comparison
+
+```
+	# Get two integers from the user, then display a message if the
+	# first is less than/equal to/greater than the second.
+	def main = {
+		var a = input("First integer:");
+		var b = input("Second integer:");
+
+		if (a < b)
+		{
+			print("a is less than b");
+		}
+		if (a == b)
+		{
+			print("a is equal to b");
+		}
+		if (a > b)
+		{
+			print("a is greater than b");
+		}
+	}
+```
+
+### Jump anywhere
+
+{TBD: Do we want continuations, named breaks, or something like that?}
+
+### Keyboard input
+
+{TBD}
+
+### Literals (integer)
+
+```
+	# Show as many ways to express integer literals as available.
+	def main = {
+		print(42);				# decimal (signed)
+		print(0xaa55);			# hex
+
+		# type literals
+		print(-127_b);			# signed byte
+		print(255_ub);			# unsigned byte
+		print(420_l);			# signed long
+		print(100000000_ul);	# unsigned long
+	}
+```
+
+### Logical operations
+
+```
+	# Write a function that takes two boolean values and outputs
+	# the result of "and" and "or" on both, "not" on the first.
+	def logical { a: boolean, b: boolean } =
+	{
+		print("a and b = ", a and b);
+		print("a or b = ", a or b);
+		print("not a = ", not a);
+	}
+```
+
+### Loops
+
+#### Break
+
+```
+	# Write a loop that prints random numbers from 0 to 19 inclusive.
+	# If the number is 10, stop after printing it,
+	# otherwise, print a second random number and restart the loop.
+
+	use std:random;
+
+	def main = {
+		var rng = std:random:Random();
+
+		while (true)
+		{
+			var n = rng.random_integer(20);
+			print(n);
+
+			if n == 10 { break; }
+
+			n = rng.random_integer(20);
+			print(n);
+		}
+	}
+```
+
+#### Do-while
+
+```
+	# Start with a value of 0, and loop while (value mod 6) != 0,
+	# but the loop must execute at least once.
+	def main = {
+		var n = 0;
+		
+		# Rhea doesn't have a do-while loop
+		while (true)
+		{
+			n = n + 1;
+			if n % 6 == 0 { break; }
+		}
+	}
+```
+
+#### Downward for
+
+```
+	# For loop which writes a countdown from 10 to 0.
+	def main = {
+		for i in range(10, 0, -1)
+		{
+			print(i);
+		}
+	}
+```
+
+#### For
+
+```
+	# Show how two loops may be nested within each other.
+	def main = {
+		for i in range(5)
+		{
+			for j in range(i)
+			{
+				print('*');
+			}
+
+			print('\n');
+		}
+	}
+
+```
+
+#### For with a specified step
+
+```
+	# For loop where the step value is greater than 1.
+	def main = {
+		for i in range(1, 100, 2)
+		{
+			print(i);
+		}
+	}
+```
+
+#### Increment loop index within loop body
+
+```
+	# Write a loop that:
+	# * starts the index variable at 42,
+	# * increments the index by 1 each loop,
+	# * prints a prime index and total number of primes found,
+	# * increments the index to the old index plus the found prime,
+	# until 42 primes are shown.
+
+	def is_prime { n: ulong }
+	with { n.greater_than(1)? } =
+	{
+		if (n % 2_l == 0_l) { return (n == 2_l); }
+		if (n % 3_l == 0_l) { return (n == 3_l); }
+
+		var d = 5_l;
+
+		while (d * d <= n)
+		{
+			if (n % d == 0_l) { return false; }
+			d = d + 2;
+
+			if (n % d == 0_l) { return false; }
+			d = d + 4;
+		}
+
+		return true;
+	}
+
+	def main = {
+		# Rhea doesn't allow modification of the index variable,
+		# so we'll rewrite this a bit.
+
+		var index = 42_l;
+
+		for i in range(1, 43)
+		{
+			while (is_prime(index) == false)
+			{
+				index = index + 1;
+			}
+
+			print("n = ", i, ", ", index);
+			index = (index * 2) - 1;
+		}
+	}
+```
+
+#### Infinite
+
+```
+	# Print "SPAM" in an infinite loop
+	def main = {
+		while (true)
+		{
+			print("SPAM\n");
+		}
+	}
+```
+
+#### N plus one half
+
+```
+	# Write a loop which prints a comma-separated list of integers
+	# from 1 to 10 using separate output statements.
+	def main = {
+		for i in range(1, 11)
+		{
+			print(i);
+			
+			unless i == 10 { print(', '); }
+		}
+	}
+```
+
+#### While
+
+```
+	# Loop from 1024 to 0, printing the value plus newline, then
+	# dividing by two each time.
+	def main = {
+		var n = 1024;
+
+		while (n > 0)
+		{
+			print(n, '\n');
+			n = n / 2;
+		}
+	}
+```
+
+#### With multiple ranges
+
+{TBD: I need to wrap my head around what this is asking.}
+
+

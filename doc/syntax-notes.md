@@ -99,7 +99,7 @@ Rhea has the following simple types for variables:
 
 The types `uinteger`, `ubyte`, and `ulong` can be used for unsigned integers of the given precision, but you can't mix signed and unsigned. {TBD: Casting between signed/unsigned.}
 
-Simple types can be initialized with literals; `integer` and `double` are the default types. Others can be specified by type-casts.
+Simple types can be initialized with literals; `integer` and `double` are the default types. Others can be specified by type-casts or literal suffixes: `_u` for unsigned integer, `_f` for float, `_b` or `_ub` for signed/unsigned byte, `_l` or `_ul` for signed/unsigned long.
 
 Symbols are prefixed with an `@`, and can be used as dictionary keys or enumeration members. {TBD: More about symbols.}
 
@@ -962,3 +962,7 @@ The modules `std:basic` and `std:exception` are automatically imported into all 
 ## Exception
 
 {TBD: `std:exception`}
+
+## Random
+
+{TBD: `std:random`}
