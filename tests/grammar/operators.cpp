@@ -30,6 +30,25 @@ template<typename T>
 struct simple_parser : tao::pegtl::seq<
     T, tao::pegtl::eolf> {};
 
+// Samples
+std::string relation_samples[] = {
+    "1 < 2",
+    "a > b",
+    "n_1 >= 42",
+    "ABC != -999",
+    "0 == 0"
+};
+
+std::string shift_samples[] = {
+    "1 << 8",
+    "n << n",
+    "a >> b & c"
+};
+
+////////////////////
+//// Test cases
+////////////////////
+
 BOOST_AUTO_TEST_SUITE (Operators)
 
 BOOST_AUTO_TEST_CASE(no_infinite_recursion)
@@ -82,6 +101,24 @@ BOOST_AUTO_TEST_CASE(bitwise_expression_multiple)
     string_input<> in(valid, "test");
     BOOST_TEST(parse<
         simple_parser<rg::bitwise_binop>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(relation_expression, data::make(relation_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::relation_binop>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(shift_expression, data::make(shift_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::shift_binop>
     >(in) == true);
 }
 

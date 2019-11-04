@@ -64,8 +64,31 @@ namespace rhea { namespace grammar {
         >
     > {};
 
+    struct relation_binop : left_associative <
+        bitwise_binop,
+        sor <
+            TAO_PEGTL_STRING("=="),
+            TAO_PEGTL_STRING("!="),
+            TAO_PEGTL_STRING("<="),
+            TAO_PEGTL_STRING(">="),
+
+            // We have to use lookahead here so that these won't
+            // get picked up ahead of the shift operators below.
+            seq < one <'<'>, not_at < one <'<'> > >,
+            seq < one <'>'>, not_at < one <'>'> > >
+        >
+    > {};
+
+    struct shift_binop : left_associative <
+        relation_binop,
+        sor <
+            TAO_PEGTL_STRING("<<"),
+            TAO_PEGTL_STRING(">>")
+        >
+    > {};
+
     // Update this as we add more precedence steps
-    struct expression : bitwise_binop {};
+    struct expression : shift_binop {};
 }}
 
 #endif /* RHEA_GRAMMAR_OPERATORS_HPP */
