@@ -32,6 +32,7 @@ namespace rhea { namespace grammar {
 
     struct literal : sor <
         hex_literal,
+        float_literal,
         signed_integer,
         seq <unsigned_integer, one <'u'> >
     > {};

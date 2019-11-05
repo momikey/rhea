@@ -34,6 +34,7 @@ struct simple_parser : tao::pegtl::seq<
 std::string unsigned_integer_samples[] = {"0", "1", "42", "999", "1234567890"};
 std::string signed_integer_samples[] = {"0", "+1", "-2", "-1234", "0000004"};
 std::string hex_literal_samples[] = {"0x0", "0x1", "0xa", "0xff", "0x0000aaaa00005555"};
+std::string float_literal_samples[] {"0.01", "123.456", "-1e6", "+999E-999"};
 std::string identifier_samples[] = {"a", "Abc", "_foo", "bar_42"};
 
 BOOST_AUTO_TEST_SUITE(Integer)
@@ -110,6 +111,27 @@ BOOST_AUTO_TEST_CASE(incomplete_hex_literal)
     BOOST_CHECK_THROW(parse<
         simple_parser<rg::hex_literal>
     >(in), tao::pegtl::parse_error);
+}
+
+BOOST_DATA_TEST_CASE_F(fixture, float_literals, data::make(float_literal_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::float_literal>
+    >(in) == true);
+}
+
+BOOST_AUTO_TEST_CASE(bad_float_literal)
+{
+    std::string invalid { "0.55a" };
+
+    BOOST_TEST_MESSAGE("Parsing invalid input " << invalid);
+    string_input<> in(invalid, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::float_literal>
+    >(in) == false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

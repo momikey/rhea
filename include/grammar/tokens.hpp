@@ -36,6 +36,19 @@ namespace rhea { namespace grammar {
         must < rep_min_max <1, 16, xdigit> >
     > {};
 
+    struct float_literal : seq <
+        opt < one<'+', '-'> >,
+        plus <digit>,
+        opt <
+            one <'.'>,
+            star <digit>
+        >,
+        opt_must <
+            one <'e','E'>,
+            signed_integer
+        >
+    >{};
+
     struct identifier : seq <
         identifier_first,
         star <identifier_other>
