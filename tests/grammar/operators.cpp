@@ -45,6 +45,27 @@ std::string shift_samples[] = {
     "a >> b & c"
 };
 
+std::string addsub_samples[] = {
+    "2 + 2",
+    "5 --7",
+    "42 + a - 0x3"
+};
+
+std::string muldiv_samples[] = {
+    "2 * 2",
+    "32 / 4",
+    "-12345 * -1234",
+    "n % 123",
+    "x / y * z % w"
+};
+
+std::string exp_samples[] = {
+    "2 ** 3",
+    "-2 ** -3",
+    "a ** b ** c",
+    "2 * 3 ** 4"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -119,6 +140,24 @@ BOOST_DATA_TEST_CASE(shift_expression, data::make(shift_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::shift_binop>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(additive_expression, data::make(addsub_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::additive_binop>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(multiplicative_expression, data::make(muldiv_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::multiplicative_binop>
     >(in) == true);
 }
 

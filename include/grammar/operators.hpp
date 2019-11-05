@@ -88,8 +88,30 @@ namespace rhea { namespace grammar {
         >
     > {};
 
+    struct additive_binop : left_associative <
+        shift_binop,
+        sor <
+            one <'+'>,
+            one <'-'>
+        >        
+    > {};
+
+    struct multiplicative_binop : left_associative <
+        additive_binop,
+        sor <
+            seq< one <'*'>, not_at <one <'*'>>>,
+            one <'/'>,
+            one <'%'>
+        >        
+    > {};
+
+    struct exponential_binoop : right_associative <
+        multiplicative_binop,
+        TAO_PEGTL_STRING("**")
+    > {};
+
     // Update this as we add more precedence steps
-    struct expression : shift_binop {};
+    struct expression : multiplicative_binop {};
 }}
 
 #endif /* RHEA_GRAMMAR_OPERATORS_HPP */
