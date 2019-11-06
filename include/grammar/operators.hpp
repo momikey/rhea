@@ -43,31 +43,64 @@ namespace rhea { namespace grammar {
         one <')'>
     > {};
 
-    struct top_level_exp : sor <
+    struct base_exp : sor <
         parenthesized,
         literal,
         identifier
     > {};
 
-    struct boolean_binop : left_associative <
-        top_level_exp,
-        sor <
-            TAO_PEGTL_KEYWORD("and"),
-            TAO_PEGTL_KEYWORD("or")
-        >
+    ////
+    /// New precedence levels go here
+    ////
+
+    // struct cast_op : seq <
+    //     sor <base_exp, exponential_binop>,
+    //     pad <TAO_PEGTL_KEYWORD("as"), ignored>,
+    //     type_name
+    // > {};
+
+    // struct unary_prefix_op : seq <
+    //     sor <
+    //         one <'^'>,
+    //         one <'~'>,
+    //         seq < one <'+', '-'>, not_at <digit> >,
+    //         TAO_PEGTL_KEYWORD("not")
+    //     >,
+    //     cast_op
+    // > {};
+
+    struct exponential_binop : right_associative <
+        base_exp,
+        TAO_PEGTL_STRING("**")
     > {};
 
-    struct bitwise_binop : left_associative <
-        boolean_binop,
+    struct multiplicative_binop : left_associative <
+        exponential_binop,
         sor <
-            one <'&'>,
-            one <'|'>,
-            one <'^'>
+            seq< one <'*'>, not_at <one <'*'>>>,
+            one <'/'>,
+            one <'%'>
+        >        
+    > {};
+
+    struct additive_binop : left_associative <
+        multiplicative_binop,
+        sor <
+            one <'+'>,
+            one <'-'>
+        >        
+    > {};
+
+    struct shift_binop : left_associative <
+        additive_binop,
+        sor <
+            TAO_PEGTL_STRING("<<"),
+            TAO_PEGTL_STRING(">>")
         >
     > {};
 
     struct relation_binop : left_associative <
-        bitwise_binop,
+        shift_binop,
         sor <
             TAO_PEGTL_STRING("=="),
             TAO_PEGTL_STRING("!="),
@@ -81,38 +114,27 @@ namespace rhea { namespace grammar {
         >
     > {};
 
-    struct shift_binop : left_associative <
+    struct bitwise_binop : left_associative <
         relation_binop,
         sor <
-            TAO_PEGTL_STRING("<<"),
-            TAO_PEGTL_STRING(">>")
+            one <'&'>,
+            one <'|'>,
+            one <'^'>
         >
     > {};
 
-    struct additive_binop : left_associative <
-        shift_binop,
+    struct boolean_binop : left_associative <
+        bitwise_binop,
         sor <
-            one <'+'>,
-            one <'-'>
-        >        
+            TAO_PEGTL_KEYWORD("and"),
+            TAO_PEGTL_KEYWORD("or")
+        >
     > {};
 
-    struct multiplicative_binop : left_associative <
-        additive_binop,
-        sor <
-            seq< one <'*'>, not_at <one <'*'>>>,
-            one <'/'>,
-            one <'%'>
-        >        
+    struct expression : sor <
+        boolean_binop,
+        base_exp
     > {};
-
-    struct exponential_binoop : right_associative <
-        multiplicative_binop,
-        TAO_PEGTL_STRING("**")
-    > {};
-
-    // Update this as we add more precedence steps
-    struct expression : multiplicative_binop {};
 }}
 
 #endif /* RHEA_GRAMMAR_OPERATORS_HPP */

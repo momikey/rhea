@@ -53,6 +53,9 @@ namespace rhea { namespace grammar {
         identifier_first,
         star <identifier_other>
     > {};
+
+    // TODO: Add in other type qualifiers
+    struct type_name : identifier {};
 }}
 
 #endif /* RHEA_GRAMMAR_TOKENS_HPP */

@@ -42,7 +42,7 @@ std::string relation_samples[] = {
 std::string shift_samples[] = {
     "1 << 8",
     "n << n",
-    "a >> b & c"
+    "a >> b + c"
 };
 
 std::string addsub_samples[] = {
@@ -62,9 +62,7 @@ std::string muldiv_samples[] = {
 std::string exp_samples[] = {
     "2 ** 3",
     "-2 ** -3",
-    "a ** b ** c",
-    "2 * 3 ** 4",
-    "1.2 + 3.4e5 ** -6"
+    "a ** b ** c"
 };
 
 ////////////////////
@@ -89,7 +87,7 @@ BOOST_AUTO_TEST_CASE(boolean_expression)
     BOOST_TEST_MESSAGE("Parsing input " << valid);
     string_input<> in(valid, "test");
     BOOST_TEST(parse<
-        simple_parser<rg::expression>
+        simple_parser<rg::boolean_binop>
     >(in) == true);
 }
 
@@ -159,6 +157,15 @@ BOOST_DATA_TEST_CASE(multiplicative_expression, data::make(muldiv_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::multiplicative_binop>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(exponential_expression, data::make(exp_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::exponential_binop>
     >(in) == true);
 }
 
