@@ -53,24 +53,24 @@ namespace rhea { namespace grammar {
     /// New precedence levels go here
     ////
 
-    // struct cast_op : seq <
-    //     sor <base_exp, exponential_binop>,
-    //     pad <TAO_PEGTL_KEYWORD("as"), ignored>,
-    //     type_name
-    // > {};
-
-    // struct unary_prefix_op : seq <
-    //     sor <
-    //         one <'^'>,
-    //         one <'~'>,
-    //         seq < one <'+', '-'>, not_at <digit> >,
-    //         TAO_PEGTL_KEYWORD("not")
-    //     >,
-    //     cast_op
-    // > {};
+    // Question: Should we split unary ops?
+    // `not` probably should be at a precedence level similar to
+    // the other Boolean operations.
+    struct unary_prefix_op : sor <
+        seq <
+            sor <
+                one <'^'>,
+                one <'~'>,
+                seq < one <'+', '-'>, not_at <digit> >,
+                TAO_PEGTL_KEYWORD("not")
+            >,
+            unary_prefix_op
+        >,
+        base_exp
+    > {};
 
     struct exponential_binop : right_associative <
-        base_exp,
+        unary_prefix_op,
         TAO_PEGTL_STRING("**")
     > {};
 
@@ -131,8 +131,17 @@ namespace rhea { namespace grammar {
         >
     > {};
 
+    struct cast_op : sor <
+        seq <
+            boolean_binop,
+            pad <TAO_PEGTL_KEYWORD("as"), ignored>,
+            type_name
+        >,
+        boolean_binop
+    > {};
+
     struct expression : sor <
-        boolean_binop,
+        cast_op,
         base_exp
     > {};
 }}

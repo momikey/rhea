@@ -65,6 +65,20 @@ std::string exp_samples[] = {
     "a ** b ** c"
 };
 
+std::string unary_samples[] = {
+    "~123",
+    "-abc",
+    "^7",
+    "not asdf",
+    "not not x"
+};
+
+std::string cast_samples[] = {
+    "a as integer",
+    "123 as byte",
+    "0xff as long"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -166,6 +180,15 @@ BOOST_DATA_TEST_CASE(exponential_expression, data::make(exp_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::exponential_binop>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(cast_expression, data::make(cast_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::cast_op>
     >(in) == true);
 }
 
