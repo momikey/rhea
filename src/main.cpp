@@ -1,9 +1,17 @@
 #include <iostream>
+#include <string>
 
-#include <fmt/core.h>
+#include "grammar/operators.hpp"
+#include "debug/parse_tree.hpp"
 
 int main()
 {
-    fmt::print("Testing!\n");
+    std::string input;
+
+    while (std::getline(std::cin, input))
+    {
+        rhea::debug::print_parse_tree(std::cout, input);
+    }
+
     return 0;
 }
