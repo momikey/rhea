@@ -34,8 +34,6 @@ Arithmetic operations are only valid on numerical types and those for which the 
 
 Hex integers are defined with leading `0x`.
 
-{TBD: Hex floats?}
-
 ```
 	0x55 & 0xf	# = 0x5
 	0x20 | 1	# = 0x21
@@ -852,6 +850,8 @@ Individual functions, types, and constants can be exported from a module using t
 To import these definitions and use them in a program, there are two methods. First, the `import...from` syntax (similar to e.g., Typescript) brings individual definitions into the current module's scope, allowing them to be used without qualification.
 
 The alternative `use` statement allows for the use of a module without bringing its identifiers into scope. Instead, they must be written in the form `module:identifier`.
+
+A bare colon identifies a relative import, which is searched for starting in the directory of the importing module.
 
 ## Submodules
 

@@ -34,8 +34,9 @@ struct simple_parser : tao::pegtl::seq<
 std::string unsigned_integer_samples[] = {"0", "1", "42", "999", "1234567890"};
 std::string signed_integer_samples[] = {"0", "+1", "-2", "-1234", "0000004"};
 std::string hex_literal_samples[] = {"0x0", "0x1", "0xa", "0xff", "0x0000aaaa00005555"};
-std::string float_literal_samples[] {"0.01", "123.456", "-1e6", "+999E-999"};
+std::string float_literal_samples[] {"0.01", "123.456", "-1e6", "+999E-999", "46.29_f"};
 std::string identifier_samples[] = {"a", "Abc", "_foo", "bar_42"};
+std::string integer_literal_samples[] = {"+7", "3_b", "42_u", "-98765_l", "1000000000_ul"};
 
 BOOST_AUTO_TEST_SUITE(Integer)
 
@@ -132,6 +133,33 @@ BOOST_AUTO_TEST_CASE(bad_float_literal)
     BOOST_TEST(parse<
         simple_parser<rg::float_literal>
     >(in) == false);
+}
+
+BOOST_AUTO_TEST_CASE(boolean_literal)
+{
+    std::string valid[] { "true", "false" };
+
+    BOOST_TEST_MESSAGE("Parsing valid input " << valid[0]);
+    string_input<> in_true(valid[0], "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::boolean_literal>
+    >(in_true) == true); 
+
+    BOOST_TEST_MESSAGE("Parsing valid input " << valid[1]);
+    string_input<> in_false(valid[1], "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::boolean_literal>
+    >(in_false) == true); 
+}
+
+BOOST_DATA_TEST_CASE_F(fixture, integer_literals, data::make(integer_literal_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::integer_literal>
+    >(in) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -4,6 +4,7 @@
 #include <tao/pegtl.hpp>
 
 #include "tokens.hpp"
+#include "keywords.hpp"
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
@@ -28,13 +29,6 @@ namespace rhea { namespace grammar {
             separator,
             right_associative<S,Op>
         >
-    > {};
-
-    struct literal : sor <
-        hex_literal,
-        float_literal,
-        signed_integer,
-        seq <unsigned_integer, one <'u'> >
     > {};
 
     struct parenthesized : if_must <

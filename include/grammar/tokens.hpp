@@ -3,6 +3,8 @@
 
 #include <tao/pegtl.hpp>
 
+#include "keywords.hpp"
+
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
 
@@ -36,6 +38,31 @@ namespace rhea { namespace grammar {
         rep_min_max <1, 20, digit>
     > {};
 
+    struct integer_literal_suffix : seq <
+        one <'_'>,
+        sor <
+            istring <'u', 'b'>,
+            istring <'u', 'l'>,
+            istring <'u'>,
+            istring <'b'>,
+            istring <'l'>
+        >
+    > {};
+
+    struct integer_literal : seq <
+        signed_integer,
+        opt <integer_literal_suffix>
+    > {};
+
+    // Note: We only have one possible float suffix at the moment,
+    // but we still make it a separate token. We might want to add
+    // more later on (e.g., hex floats or arbitrary-precision), and
+    // it's easier to manipulate the AST if we have named rules.
+    struct float_literal_suffix : seq <
+        one <'_'>,
+        istring <'f'>
+    > {};
+
     struct hex_literal : seq <
         string < '0', 'x' >,
         must < rep_min_max <1, 16, xdigit> >
@@ -51,19 +78,18 @@ namespace rhea { namespace grammar {
         opt_must <
             one <'e','E'>,
             signed_integer
-        >
-    >{};
+        >,
+        opt <float_literal_suffix>
+    > {};
 
-    // Language keywords
-    struct kw_if : TAO_PEGTL_KEYWORD("if") {};
-    struct kw_then : TAO_PEGTL_KEYWORD("then") {};
-    struct kw_else : TAO_PEGTL_KEYWORD("else") {};
+    struct boolean_literal : sor <kw_true, kw_false> {};
 
-    struct kw_and : TAO_PEGTL_KEYWORD("and") {};
-    struct kw_or : TAO_PEGTL_KEYWORD("or") {};
-    struct kw_not : TAO_PEGTL_KEYWORD("not") {};
-
-    struct kw_as : TAO_PEGTL_KEYWORD("as") {};
+    struct literal : sor <
+        boolean_literal,
+        hex_literal,
+        float_literal,
+        integer_literal
+    > {};
 
     // TODO: Detect reserved words and raise errors
     struct identifier : seq <
