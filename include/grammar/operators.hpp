@@ -62,7 +62,7 @@ namespace rhea { namespace grammar {
                 one <'^'>,
                 one <'~'>,
                 seq < one <'+', '-'>, not_at <digit> >,
-                TAO_PEGTL_KEYWORD("not")
+                kw_not
             >,
             unary_prefix_op
         >,
@@ -126,21 +126,38 @@ namespace rhea { namespace grammar {
     struct boolean_binop : left_associative <
         bitwise_binop,
         sor <
-            TAO_PEGTL_KEYWORD("and"),
-            TAO_PEGTL_KEYWORD("or")
+            kw_and,
+            kw_or
         >
     > {};
 
     struct cast_op : sor <
         seq <
             boolean_binop,
-            pad <TAO_PEGTL_KEYWORD("as"), ignored>,
+            pad <kw_as, ignored>,
             type_name
         >,
         boolean_binop
     > {};
 
+    struct ternary_op : sor <
+        if_must <
+            kw_if,
+            spacer,
+            cast_op,
+            separator,
+            kw_then,
+            spacer,
+            cast_op,
+            separator,
+            kw_else,
+            spacer,
+            cast_op            
+        >
+    > {};
+
     struct expression : sor <
+        ternary_op,
         cast_op,
         base_exp
     > {};

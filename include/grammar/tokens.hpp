@@ -22,7 +22,12 @@ namespace rhea { namespace grammar {
 
     // A single ignored token can be useful if we use pad functions
     struct ignored : sor <space, line_comment, block_comment> {};
+
+    // A separator is for tokens that don't require space (such as operators)
     struct separator : star<ignored> {};
+
+    // A spacer is for tokens that *do* need space, like keywords
+    struct spacer : plus<ignored> {};
 
     struct unsigned_integer : rep_min_max <1, 20, digit> {};
 
@@ -49,6 +54,18 @@ namespace rhea { namespace grammar {
         >
     >{};
 
+    // Language keywords
+    struct kw_if : TAO_PEGTL_KEYWORD("if") {};
+    struct kw_then : TAO_PEGTL_KEYWORD("then") {};
+    struct kw_else : TAO_PEGTL_KEYWORD("else") {};
+
+    struct kw_and : TAO_PEGTL_KEYWORD("and") {};
+    struct kw_or : TAO_PEGTL_KEYWORD("or") {};
+    struct kw_not : TAO_PEGTL_KEYWORD("not") {};
+
+    struct kw_as : TAO_PEGTL_KEYWORD("as") {};
+
+    // TODO: Detect reserved words and raise errors
     struct identifier : seq <
         identifier_first,
         star <identifier_other>

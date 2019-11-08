@@ -192,4 +192,15 @@ BOOST_DATA_TEST_CASE(cast_expression, data::make(cast_samples))
     >(in) == true);
 }
 
+BOOST_AUTO_TEST_CASE(ternary_expression)
+{
+    std::string valid { "if x > 0 then y else z" };
+
+    BOOST_TEST_MESSAGE("Parsing input " << valid);
+    string_input<> in(valid, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::ternary_op>
+    >(in) == true);
+}
+
 BOOST_AUTO_TEST_SUITE_END ()
