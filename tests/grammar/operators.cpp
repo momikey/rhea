@@ -203,4 +203,15 @@ BOOST_AUTO_TEST_CASE(ternary_expression)
     >(in) == true);
 }
 
+BOOST_AUTO_TEST_CASE(expression_list)
+{
+    std::string valid { "1, 2, 3 + 4, x and y" };
+
+    BOOST_TEST_MESSAGE("Parsing input " << valid);
+    string_input<> in(valid, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::expression_list>
+    >(in) == true);
+}
+
 BOOST_AUTO_TEST_SUITE_END ()

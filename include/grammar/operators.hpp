@@ -37,6 +37,12 @@ namespace rhea { namespace grammar {
         one <')'>
     > {};
 
+    struct expression_list : list_must <
+        expression,
+        one <','>,
+        ignored
+    > {};
+
     struct base_exp : sor <
         parenthesized,
         literal,

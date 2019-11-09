@@ -99,6 +99,11 @@ namespace rhea { namespace grammar {
 
     // TODO: Add in other type qualifiers
     struct type_name : identifier {};
+
+    struct symbol_name : if_must <
+        one <'@'>,
+        identifier
+    > {};
 }}
 
 #endif /* RHEA_GRAMMAR_TOKENS_HPP */
