@@ -692,7 +692,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 		# Rhea doesn't have a do-while loop
 		while (true)
 		{
-			n = n + 1;
+			n += 1;
 			if n % 6 == 0 { break; }
 		}
 	}
@@ -780,7 +780,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 		{
 			while (is_prime(index) == false)
 			{
-				index = index + 1;
+				index += 1;
 			}
 
 			print("n = ", i, ", ", index);
@@ -835,5 +835,90 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 #### With multiple ranges
 
 {TBD: I need to wrap my head around what this is asking.}
+
+### Multiplication tables
+
+```
+	# Produce a formatted 12x12 multiplication table, only printing
+	# the top half of products.
+	def main = {
+	
+		# First print the header
+		# (range_in is an inclusive range)
+		print(" X|");
+
+		for header in range_in(1,12)
+		{
+			print(pad_left(header as string, 4, ' '));
+		}
+
+		# Now the row line
+		print(pad_right("\n--+", 4*12, '-'), '\n');
+
+		# Now the table
+		for i in range_in(1, 12)
+		{
+			print(pad_left(i as string, 2, ' '), '|');
+
+			for j in range_in(1, 12)
+			{
+				if j < i
+					print("    ");
+				else
+					print(pad_left(i*j as string, 4, ' '));
+			}
+
+			print('\n');
+		}
+	}
+```
+
+### Naming conventions
+
+{TBD: We don't have a style guide just yet. These are working guidelines:
+
+	* All keywords are lowercase
+	* Variables start with a lowercase letter
+	* Constants start with a capital letter
+	* Built-in types are lowercase, while user-defined types usually begin with a capital
+	* Predicates always end with `?` (this is required)
+	* Unchecked functions must end with `!`
+	* Operator overloads are named functions ending in `$`
+	* Standard built-in functions use underscores to separate words
+	* Concepts start with a capital letter and are usually adjectives
+	* Generic typenames are usually short and capitalized
+}
+
+### Nth root
+
+```
+	# Implement the algorithm to compute the nth root of a positive real number.
+	def nth_root { a : double, n : integer }
+	with { a.greater_than(0.0)?, n.greater_than(2) } =
+	{
+		var x0 = a;
+		var x1 = a / ^n;
+
+		# A better method would have the precision as a parameter
+		while (math:abs(x1 - x0) > 0.0001)
+		{
+			x1 = x0;
+			x0 = (1.0 / ^n) * (((n - 1) * x1) + (a / math:pow(x1, n-1)));
+		}
+
+		return x0;
+	}
+```
+
+### Null object
+
+{TBD: Tagged union as an optional-like structure.}
+
+```
+	# Show how to access a null object or tell if an object is null.
+	def is_null { o: any } = {
+		return o is nothing;
+	}
+```
 
 

@@ -79,7 +79,7 @@ All Rhea variables have a type, and they must be declared before they are used.
 
 ## Identifiers
 
-Identifiers are strings of alphanumeric characters, with the special characters `_` and `$` also allowed. The characters `?` and `!` have special meaning, as discussed below.
+Identifiers are strings containing alphanumeric characters and the special character `_`. The characters `?`, `$`, and `!` have special meaning, as discussed below.
 
 An identifier can't be any reserved word, such as `true`, `not`, `def`, or `if`
 
@@ -151,6 +151,12 @@ Obviously, constants can't be assigned after they're declared.
 	Con = 4321;			# error: reassignment to constant
 ```
 
+Rhea also allows compound assignment, with operators such as `+=`.
+
+```
+	foo += 1;
+```
+
 # Control flow
 
 ## If-else
@@ -211,6 +217,24 @@ Instead of chaining `if` statements, Rhea provides a pattern-matching construct 
 Every `on` case must be of the same type, which must match that of the tested variable. There is no fall-through, so break statements are not necessary.
 
 {TBD: Multiple cases per `on`, destructuring, and possibly `match type` for switching on the type of a value.}
+
+## Match-when (boolean match)
+
+An alternative to `match-on` is `match-when`, which allows a different style of matching.
+
+```
+	match foo
+	{
+		when nonzero?: { print("Not zero"); }
+		when zero?: { print("Zero"); }
+	}
+```
+
+`When` clauses use predicates (see below). Each predicate is tested in order, passing the match value. Thus, the example above calls `nonzero(foo)?`, then `zero(foo)?`.
+
+The first predicate to evaluate to true has its statement or block executed. As with `match-on`, there is no fallthrough. If a `default` case is present, it will be executed if all `when` cases fail.
+
+You can't mix `on` and `when` in the same `match` statement.
 
 ## For loop (iteration)
 
@@ -532,7 +556,7 @@ Rhea does no type coercion or casting, and the number of arguments must match.
 
 ### Preconditions
 
-One of Rhea's key functionalities is in its contract system. This is a set of compile-time and run-time checks of function arguments intended to increase security and prevent common mistakes.
+One of Rhea's key functionalities is its contract system. This is a set of compile-time and run-time checks of function arguments intended to increase security and prevent common mistakes.
 
 Let's use preconditions to better control the `power` function above.
 
@@ -550,7 +574,7 @@ Let's use preconditions to better control the `power` function above.
 
 ## Return value
 
-Return values can be inferred in most cases. Where they can't, however, you can explicitly specify them.
+Return types can be inferred in most cases. Where they can't, however, you can explicitly specify them.
 
 ```
 	def lpower [long] { x: integer, y: integer } =
@@ -612,16 +636,19 @@ Every type definition creates a constructor function with the same name as the t
 ```
 	# Define a constructor that creates a complex number
 	# from polar coordinates.
+
+	use std:math;
+
 	def new$ [Complex] { r: double, phi: double }
 	with {
 		r.at_least?(0.0),
 		phi.between?(0.0, 2.0*math.PI)
 	} = {
-		return Complex(r * math.cos(phi), r * math.sin(phi));
+		return Complex(r * math:cos(phi), r * math:sin(phi));
 	}
 
 	# Now we can use it.
-	var c = new [Complex] (1.0, math.PI);
+	var c = new [Complex] (1.0, math:PI);
 	# ...
 ```
 
@@ -745,6 +772,57 @@ Type functions are functions that operate on *types* instead of *values*. In gen
 Every specific overload of a function in Rhea has a unique name of the format `identifier [return type] <argument types>`, where `identifier` is the exact name of the function (including suffixes such as `?`), `return type` is the exact type returned (even if inferred), and `argument types` describes a comma-separated list of types.
 
 For example, the conversion function above has the type `to$ [string] <Complex>`
+
+## Generic functions (templates)
+
+Function overloads apply at run-time. Generic functions, on the other hand, are a compile-time mechanism to generate overloads based on a template.
+
+```
+	# A template that squares any kind of number it's given,
+	# no matter the type.
+	def square <Ty ~> Numeric>
+	{ n: Ty } = {
+		return n**2;
+	}
+```
+
+There's a lot of expressive power packed into this small space, so it bears some examination.
+
+First, note the definition, in particular the part in angle brackets: `Ty ~> Numeric`. This says that the `square` function is a template, with one varying type parameter. Throughout the rest of this function, `Ty` will refer to that type, which must match the `Numeric` concept (see below).
+
+Next, the argument list of the function itself. The function takes a single argument, `n`, which will be of the `Ty` type.
+
+When the function is called, the compiler will know which type is intended, and it will insert a call to the appropriate overload, creating it if necessary using the body of this function as a blueprint. As long as the power operator `**` is defined for the type of the argument, all is well. If not, the compiler will issue an error.
+
+```
+	# Calling our generic function
+
+	var n1 = 4;			# an integer
+	print(square(n1));	# prints the integer 16
+
+	var n2 = 20_b		# a byte
+	print(square(n2));	# prints -112 (lowest signed byte of 400)
+
+	var n3 = "42";		# a string, which has no ** operator
+	print(square(n3));	# error: no valid type
+```
+
+{TBD: Lots more about this core feature.}
+
+### Specialization
+
+In the case where a specific type must be treated specially, you can define a specialization of a generic function.
+
+```
+	# Maybe you'd like to "square" strings that are integers.
+	def square <Ty : string>
+	{ n: Ty } =
+	{
+		return (n as integer)**2 as string;
+	}
+```
+
+{TBD: Do we like this syntax?}
 
 ## Concepts (interfaces, protocols)
 
@@ -939,6 +1017,25 @@ Similarly, although `main` itself isn't defined with a return value (and thus th
 	}
 ```
 
+# Foreign function interface
+
+The `extern` keyword indicates that a function is foreign, i.e., not defined in Rhea source, but in a linked library.
+
+```
+	import { File } from std:fs;
+
+	def raw_open! { filename: string } =
+	{
+		extern fopen;
+
+		var fp = fopen(filename, "r+");
+
+		return File(fp);
+	}
+```
+
+Foreign functions can only be linked and called inside unchecked Rhea functions. Their argument lists are not specified. {TBD: More on this, and see if we can find a way to check arguments.}
+
 # Standard library functions
 
 The modules `std:basic` and `std:exception` are automatically imported into all programs, allowing their definitions to be used without qualification at any time.
@@ -950,6 +1047,10 @@ The modules `std:basic` and `std:exception` are automatically imported into all 
 ## Program
 
 {TBD: `std:program`}
+
+## Math
+
+{TBD: `std:math`}
 
 ## I/O
 

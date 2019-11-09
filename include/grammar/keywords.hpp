@@ -17,6 +17,9 @@ namespace rhea { namespace grammar {
 
     struct kw_true : TAO_PEGTL_KEYWORD("true") {};
     struct kw_false : TAO_PEGTL_KEYWORD("false") {};
+
+    struct kw_const : TAO_PEGTL_KEYWORD("const") {};
+    struct kw_var : TAO_PEGTL_KEYWORD("var") {};
 }}
 
 #endif /* RHEA_GRAMMAR_KEYWORDS_HPP */
