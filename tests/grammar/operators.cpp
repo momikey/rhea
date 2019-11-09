@@ -25,7 +25,7 @@ struct fixture
     void teardown() {}
 };
 
-// Wrapper for parser + EOR
+// Wrapper for parser + EOF
 template<typename T>
 struct simple_parser : tao::pegtl::seq<
     T, tao::pegtl::eolf> {};
