@@ -32,8 +32,10 @@ namespace rhea { namespace grammar {
     > {};
 
     struct parenthesized : if_must <
-        one <'('>,
-        pad < expression, ignored >,
+        seq <
+            one <'('>,
+            pad < expression, ignored >
+        >,
         one <')'>
     > {};
 
@@ -43,7 +45,60 @@ namespace rhea { namespace grammar {
         ignored
     > {};
 
-    struct base_exp : sor <
+    struct array_expression : if_must <
+        one <'['>,
+        pad <
+            expression_list,
+            ignored
+        >,
+        one <']'>
+    > {};
+
+    struct list_expression : if_must <
+        seq <
+            one <'('>,
+            separator,
+            // Lists can start out empty, because they're dynamic.
+            // But they otherwise have to have at least one comma to tell them
+            // apart from regular parentheses. (Like in Python.)
+            sor <
+                seq <
+                    seq <expression, separator, one <','> >,
+                    separator,
+                    opt <expression_list>,
+                    separator
+                >,
+                at < one <')'> >
+            >
+        >,
+        one <')'>
+    > {};
+
+    struct tuple_expression : if_must <
+        one <'{'>,
+        sor <
+            pad <
+                expression_list,
+                ignored
+            >,
+            separator
+        >,
+        one <'}'>
+    > {};
+
+    struct symbol_list_expression : if_must <
+        string <'@', '{'>,
+        pad <
+            list <identifier, one <','>, ignored>,
+            ignored
+        >,
+        one <'}'>
+    > {};
+
+    struct operand : sor <
+        array_expression,
+        list_expression,
+        tuple_expression,
         parenthesized,
         literal,
         identifier
@@ -66,7 +121,7 @@ namespace rhea { namespace grammar {
             >,
             unary_prefix_op
         >,
-        base_exp
+        operand
     > {};
 
     struct exponential_binop : right_associative <
@@ -159,7 +214,9 @@ namespace rhea { namespace grammar {
     struct expression : sor <
         ternary_op,
         cast_op,
-        base_exp
+        operand,
+        symbol_list_expression,
+        symbol_name
     > {};
 }}
 

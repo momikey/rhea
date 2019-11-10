@@ -79,6 +79,31 @@ std::string cast_samples[] = {
     "0xff as long"
 };
 
+std::string array_samples[] = {
+    "[1, 2, 3]",
+    "[a, b, c]",
+    "[4 + 2, 6 * 9]"
+};
+
+std::string list_samples[] = {
+    "(1, 2, 3)",
+    "(a, b, c)",
+    "(4 + 2, 6 * 9)",
+    "()"
+};
+
+std::string tuple_samples[] = {
+    "{1, 2, 3}",
+    "{a, b, c}",
+    "{[1,2,3], ((4.0 / 20.0) + (6 * 9))}",
+    "{}"
+};
+
+std::string symbol_list_samples[] = {
+    "@{foo, bar, baz}",
+    "@{A, B, C}"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -211,6 +236,42 @@ BOOST_AUTO_TEST_CASE(expression_list)
     string_input<> in(valid, "test");
     BOOST_TEST(parse<
         simple_parser<rg::expression_list>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(array_expression, data::make(array_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::array_expression>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(list_expression, data::make(list_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::list_expression>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(tuple_expression, data::make(tuple_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::tuple_expression>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(symbol_list_expression, data::make(symbol_list_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::symbol_list_expression>
     >(in) == true);
 }
 

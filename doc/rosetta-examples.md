@@ -893,6 +893,9 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 
 ```
 	# Implement the algorithm to compute the nth root of a positive real number.
+
+	use math;
+
 	def nth_root { a : double, n : integer }
 	with { a.greater_than(0.0)?, n.greater_than(2) } =
 	{
@@ -921,4 +924,85 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 	}
 ```
 
+### Operator precedence
 
+{TBD: Full operator precedence table.}
+
+### Program termination
+
+```
+	# Show how to completely stop a program inside a conditional.
+
+	use std:program;
+
+	def main = {
+		var problem as boolean;
+
+		if (problem)
+		{
+			# Any nonzero exit code is considered an error
+			std:program:exit(1);
+		}
+	}
+```
+
+### Read a file line by line
+
+```
+	# Read the contents of a file one line at a time.
+	use std:fs;
+
+	def main = {
+		var input = std:fs:File("input.txt");
+
+		do input.open;
+
+		with s as string while (not input.eof)
+		{
+			s = input.read_line();
+			print(s);
+		}
+
+		do input.close;
+	}
+	
+```
+
+### Real constants and functions
+
+```
+	# Show how to use various mathematical constants and functions.
+	use math;
+
+	def main = {
+		print(math:E);			# 2.71828...
+		print(math.Pi);			# 3.14159...
+
+		print(math:sqrt(4.0));	# 2.0
+		print(math:ln(std:math:E));	# 1.0
+		print(math:exp(1.0));	# 2.71828...
+
+		print(math:abs(-2));	# 2
+		print(math:abs(-2.0));	# 2.0
+		print(math:floor(3.6));	# 3.0
+		print(math:ceil(3.6));	# 4.0
+		print(math:pow(3.0, 2.0));	# 9.0
+	}
+```
+
+### RPG attributes generator
+
+{TBD: Finish this.}
+
+```
+	# Write a program that generates RPG stats using the 4d6-1 method.
+	# Order must be preserved, total must be at least 75, and 2 stats
+	# must be at least 15.
+	
+	def main = {
+		var attributes_total = 0;
+		var count = 0;
+
+
+	}
+```

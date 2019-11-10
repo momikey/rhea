@@ -1048,10 +1048,6 @@ The modules `std:basic` and `std:exception` are automatically imported into all 
 
 {TBD: `std:program`}
 
-## Math
-
-{TBD: `std:math`}
-
 ## I/O
 
 {TBD: `std:io`}
@@ -1067,3 +1063,8 @@ The modules `std:basic` and `std:exception` are automatically imported into all 
 ## Random
 
 {TBD: `std:random`}
+
+## Math
+
+{TBD: `math`}
+
