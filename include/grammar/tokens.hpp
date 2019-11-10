@@ -71,8 +71,11 @@ namespace rhea { namespace grammar {
     struct float_literal : seq <
         opt < one<'+', '-'> >,
         plus <digit>,
-        one <'.'>,
-        opt < star <digit> >,
+        at < until < one <'.', 'e', 'E' > > >,
+        opt <
+            one <'.'>,
+            star <digit>
+        >,
         opt_must <
             one <'e','E'>,
             signed_integer
