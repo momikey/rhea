@@ -104,6 +104,14 @@ std::string symbol_list_samples[] = {
     "@{A, B, C}"
 };
 
+std::string subscript_samples[] = {
+    "a[1]",
+    "x[y]",
+    "n[i+3]",
+    "(a[b])[c]",
+    "a[b][c]"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -272,6 +280,15 @@ BOOST_DATA_TEST_CASE(symbol_list_expression, data::make(symbol_list_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::symbol_list_expression>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(subscript_expression, data::make(subscript_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::postfix_op>
     >(in) == true);
 }
 

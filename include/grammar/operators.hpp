@@ -108,6 +108,24 @@ namespace rhea { namespace grammar {
     /// New precedence levels go here
     ////
 
+    struct subscript_expr : seq <
+        one <'['>,
+        pad < expression, ignored >,
+        one <']'>
+    > {};
+
+    struct postfix_op : seq <
+        operand,
+        star <
+            pad <
+                sor <
+                    subscript_expr
+                >,
+                ignored
+            >
+        >
+    > {};
+
     // Question: Should we split unary ops?
     // `not` probably should be at a precedence level similar to
     // the other Boolean operations.
@@ -119,9 +137,9 @@ namespace rhea { namespace grammar {
                 seq < one <'+', '-'>, not_at <digit> >,
                 kw_not
             >,
-            unary_prefix_op
+            postfix_op
         >,
-        operand
+        postfix_op
     > {};
 
     struct exponential_binop : right_associative <
@@ -196,7 +214,7 @@ namespace rhea { namespace grammar {
     > {};
 
     struct ternary_op : sor <
-        if_must <
+        seq <
             kw_if,
             spacer,
             cast_op,
@@ -207,13 +225,13 @@ namespace rhea { namespace grammar {
             separator,
             kw_else,
             spacer,
-            cast_op            
-        >
+            cast_op
+        >,
+        cast_op
     > {};
 
     struct expression : sor <
         ternary_op,
-        cast_op,
         operand,
         symbol_list_expression,
         symbol_name
