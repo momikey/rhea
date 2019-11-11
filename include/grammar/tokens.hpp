@@ -98,8 +98,18 @@ namespace rhea { namespace grammar {
         star <identifier_other>
     > {};
 
+    // A fully-qualified identifier contains a list of modules
+    // separated by colons.
+    struct fully_qualified : seq <
+        opt < one <':'> >,
+        list <
+            identifier,
+            one <':'>
+        >
+    > {};
+
     // TODO: Add in other type qualifiers
-    struct type_name : identifier {};
+    struct type_name : fully_qualified {};
 
     struct symbol_name : if_must <
         one <'@'>,

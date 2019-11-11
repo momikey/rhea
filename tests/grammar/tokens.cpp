@@ -38,6 +38,7 @@ std::string float_literal_samples[] {"0.01", "123.456", "-1e6", "+999E-999", "46
 std::string identifier_samples[] = {"a", "Abc", "_foo", "bar_42"};
 std::string integer_literal_samples[] = {"+7", "3_b", "42_u", "-98765_l", "1000000000_ul"};
 std::string symbol_samples[] = {"@foo", "@A", "@a_long_name", "@a1b2"};
+std::string fully_qualified_samples[] = { "id", "main:_id", "std:math:sin", ":relative", "a_module:n123:CONSTANT"};
 
 BOOST_AUTO_TEST_SUITE(Integer)
 
@@ -207,6 +208,16 @@ BOOST_AUTO_TEST_CASE(bad_symbol)
     BOOST_CHECK_THROW(parse<
         simple_parser<rg::symbol_name>
     >(in), tao::pegtl::parse_error);
+}
+
+BOOST_DATA_TEST_CASE_F(fixture, fully_qualified_identifier, data::make(fully_qualified_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::fully_qualified>
+    >(in) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

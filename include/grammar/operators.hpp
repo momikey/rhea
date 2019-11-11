@@ -101,7 +101,7 @@ namespace rhea { namespace grammar {
         tuple_expression,
         parenthesized,
         literal,
-        identifier
+        fully_qualified
     > {};
 
     ////
