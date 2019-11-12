@@ -8,6 +8,8 @@
 #include <tao/pegtl/analyze.hpp>
 #include <tao/pegtl/contrib/tracer.hpp>
 
+#include "test_setup.hpp"
+
 #include "../../include/grammar/operators.hpp"
 
 namespace data = boost::unit_test::data;
@@ -15,20 +17,6 @@ namespace data = boost::unit_test::data;
 using tao::pegtl::parse;
 using tao::pegtl::string_input;
 namespace rg = rhea::grammar;
-
-struct fixture
-{
-    fixture() = default;
-    ~fixture() = default;
-
-    void setup() {}
-    void teardown() {}
-};
-
-// Wrapper for parser + EOF
-template<typename T>
-struct simple_parser : tao::pegtl::seq<
-    T, tao::pegtl::eolf> {};
 
 // Samples
 std::string relation_samples[] = {
