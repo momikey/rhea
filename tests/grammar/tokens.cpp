@@ -40,6 +40,12 @@ std::string integer_literal_samples[] = {"+7", "3_b", "42_u", "-98765_l", "10000
 std::string symbol_samples[] = {"@foo", "@A", "@a_long_name", "@a1b2"};
 std::string fully_qualified_samples[] = { "id", "main:_id", "std:math:sin", ":relative", "a_module:n123:CONSTANT"};
 
+std::string type_pair_samples[] = {
+    "s : string",
+    "int : integer",
+    "f : std:fs:File"
+};
+
 BOOST_AUTO_TEST_SUITE(Integer)
 
 BOOST_DATA_TEST_CASE_F(fixture, unsigned_integer, data::make(unsigned_integer_samples))
@@ -219,6 +225,17 @@ BOOST_DATA_TEST_CASE_F(fixture, fully_qualified_identifier, data::make(fully_qua
         simple_parser<rg::fully_qualified>
     >(in) == true);
 }
+
+BOOST_DATA_TEST_CASE_F(fixture, type_pair, data::make(type_pair_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::type_pair>
+    >(in) == true);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

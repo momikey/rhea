@@ -4,6 +4,7 @@
 #include <tao/pegtl.hpp>
 
 #include "keywords.hpp"
+#include "strings.hpp"
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
@@ -110,6 +111,16 @@ namespace rhea { namespace grammar {
 
     // TODO: Add in other type qualifiers
     struct type_name : fully_qualified {};
+
+    // A type pair is a key-value pair where the value is a type name.
+    // This is used in structure and concept definitions.
+    struct type_pair : seq <
+        identifier,
+        separator,
+        one <':'>,
+        separator,
+        type_name
+    > {};
 
     struct symbol_name : if_must <
         one <'@'>,

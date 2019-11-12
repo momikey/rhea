@@ -3,8 +3,9 @@
 
 #include <tao/pegtl.hpp>
 
-#include "tokens.hpp"
 #include "keywords.hpp"
+#include "strings.hpp"
+#include "tokens.hpp"
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
@@ -93,6 +94,16 @@ namespace rhea { namespace grammar {
             ignored
         >,
         one <'}'>
+    > {};
+
+    // A key-value pair is used in dictionaries and calling functions
+    // with named arguements.
+    struct kv_pair : seq <
+        identifier,
+        separator,
+        one <':'>,
+        separator,
+        expression
     > {};
 
     struct operand : sor <

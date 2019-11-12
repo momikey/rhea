@@ -112,6 +112,14 @@ std::string subscript_samples[] = {
     "a[b][c]"
 };
 
+std::string kv_pair_samples[] = {
+    "n: 10",
+    "i: j*2",
+    "abc: (def**2)+ -10 or false",
+    "long_argument: if x > 0 then true else false",
+    "Printable : x as string"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -289,6 +297,15 @@ BOOST_DATA_TEST_CASE(subscript_expression, data::make(subscript_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::postfix_op>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(key_value_pair, data::make(kv_pair_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::kv_pair>
     >(in) == true);
 }
 
