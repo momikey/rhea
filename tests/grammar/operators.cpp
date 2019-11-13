@@ -108,6 +108,10 @@ std::string kv_pair_samples[] = {
     "Printable : x as string"
 };
 
+std::string dictionary_samples[] = {
+    "{ @foo: 42, @bar: 's' }"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -293,7 +297,16 @@ BOOST_DATA_TEST_CASE(key_value_pair, data::make(kv_pair_samples))
     BOOST_TEST_MESSAGE("Parsing " << sample);
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
-        simple_parser<rg::kv_pair>
+        simple_parser<rg::kv_pair<rg::identifier>>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(dictionary_expression, data::make(dictionary_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::dictionary_expression>
     >(in) == true);
 }
 

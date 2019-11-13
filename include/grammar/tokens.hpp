@@ -72,7 +72,7 @@ namespace rhea { namespace grammar {
     struct float_literal : seq <
         opt < one<'+', '-'> >,
         plus <digit>,
-        at < until < one <'.', 'e', 'E' > > >,
+        at < one <'.', 'e', 'E' > >,
         opt <
             one <'.'>,
             star <digit>
@@ -86,7 +86,7 @@ namespace rhea { namespace grammar {
 
     struct boolean_literal : sor <kw_true, kw_false> {};
 
-    struct literal : sor <
+    struct numeric_literal : sor <
         boolean_literal,
         hex_literal,
         float_literal,

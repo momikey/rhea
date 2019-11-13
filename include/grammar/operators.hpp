@@ -76,13 +76,15 @@ namespace rhea { namespace grammar {
     > {};
 
     struct tuple_expression : if_must <
-        one <'{'>,
-        sor <
-            pad <
-                expression_list,
-                ignored
-            >,
-            separator
+        seq <
+            one <'{'>,
+            sor <
+                pad <
+                    expression_list,
+                    ignored
+                >,
+                separator
+            >
         >,
         one <'}'>
     > {};
@@ -98,20 +100,39 @@ namespace rhea { namespace grammar {
 
     // A key-value pair is used in dictionaries and calling functions
     // with named arguements.
+    template <typename Key>
     struct kv_pair : seq <
-        identifier,
+        Key,
         separator,
         one <':'>,
         separator,
         expression
     > {};
 
+    struct dictionary_expression : if_must <
+        seq <
+            one <'{'>,
+            separator,
+            list_must <
+                kv_pair <
+                    sor <symbol_name, numeric_literal, string_literal>
+                >,
+                one <','>,
+                ignored
+            >,
+            separator
+        >,
+        one <'}'>
+    > {};
+
     struct operand : sor <
         array_expression,
         list_expression,
+        dictionary_expression,
         tuple_expression,
         parenthesized,
-        literal,
+        numeric_literal,
+        string_literal,
         fully_qualified
     > {};
 
