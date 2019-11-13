@@ -146,12 +146,28 @@ namespace rhea { namespace grammar {
         one <']'>
     > {};
 
+    struct member_expr : seq <
+        one <'.'>,
+        separator,
+        identifier
+    > {};
+
+    struct function_call_expr : seq <
+        one <'('>,
+        opt <
+            pad <expression_list, ignored>
+        >,
+        one <')'>
+    > {};
+
     struct postfix_op : seq <
         operand,
         star <
             pad <
                 sor <
-                    subscript_expr
+                    subscript_expr,
+                    member_expr,
+                    function_call_expr
                 >,
                 ignored
             >
@@ -160,12 +176,14 @@ namespace rhea { namespace grammar {
 
     // Question: Should we split unary ops?
     // `not` probably should be at a precedence level similar to
-    // the other Boolean operations.
+    // the other Boolean operations. OTOH, `!` is at the same level
+    // as other unary operators in C++.
     struct unary_prefix_op : sor <
         seq <
             sor <
                 one <'^'>,
                 one <'~'>,
+                one <'*'>,
                 seq < one <'+', '-'>, not_at <digit> >,
                 kw_not
             >,

@@ -112,6 +112,19 @@ std::string dictionary_samples[] = {
     "{ @foo: 42, @bar: 's' }"
 };
 
+std::string member_access_samples[] = {
+    "a.b",
+    "x.y.z",
+    "array[i].foo"
+};
+
+std::string function_call_samples[] = {
+    "f()",
+    "foo(42)",
+    "my_function(x, y, z*2)",
+    "a.method_like().call()"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -307,6 +320,24 @@ BOOST_DATA_TEST_CASE(dictionary_expression, data::make(dictionary_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::dictionary_expression>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(member_access_expression, data::make(member_access_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::postfix_op>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(function_call_expression, data::make(function_call_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::postfix_op>
     >(in) == true);
 }
 
