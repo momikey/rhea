@@ -75,27 +75,54 @@ namespace rhea { namespace grammar {
         >
     > {};
 
+    // Forward declaration
+    struct statement;
+
+    struct statement_block : if_must <
+        seq <
+            one <'{'>,
+            separator,
+            star <
+                pad <statement, ignored>
+            >,
+            separator
+        >,
+        one <'}'>
+    > {};
+
+    // Most control-flow constrcuts can accept either a single statement
+    // or a block of them.
+    struct stmt_or_block : sor < statement_block, statement > {};
+
+    struct else_block : opt <
+        kw_else,
+        spacer,
+        stmt_or_block
+    > {};
+
+    struct if_statement : seq <
+        kw_if,
+        spacer,
+        expression,
+        separator,
+        stmt_or_block,
+        separator,
+        else_block
+    > {};
+
     struct statement : seq <
         // Add all possible statements here
         sor <
             constant_declaration,
             variable_declaration,
             assignment,
-            compound_assignment
+            compound_assignment,
+            if_statement
         >,
         separator,
         one <';'>
     > {};
 
-    struct statement_block : if_must <
-        one <'{'>,
-        separator,
-        star <
-            pad <statement, ignored>
-        >,
-        separator,
-        one <'}'>
-    > {};
 }}
 
 #endif /* RHEA_GRAMMAR_STATEMENT_HPP */

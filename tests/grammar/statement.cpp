@@ -48,9 +48,27 @@ std::string variable_decl_samples[] = {
     "var is_working = false"
 };
 
+std::string if_statement_samples[] = {
+    "if (x < 10) { result = print(x); }",
+    "if my_function() { result = do_this(); } else { result = do_that(); }"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
+
+BOOST_AUTO_TEST_SUITE (Analysis)
+
+BOOST_AUTO_TEST_CASE(no_infinite_recursion)
+{
+    auto issues { tao::pegtl::analyze<
+        simple_parser<rg::statement>
+    >() };
+
+    BOOST_TEST(issues == 0u);
+}
+
+BOOST_AUTO_TEST_SUITE_END ()
 
 BOOST_AUTO_TEST_SUITE (Assignments)
 
@@ -101,6 +119,15 @@ BOOST_AUTO_TEST_CASE(statement_block)
     BOOST_TEST(parse<
         simple_parser<rg::statement_block>
     >(in) == true); 
+}
+
+BOOST_DATA_TEST_CASE(if_statement, data::make(if_statement_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::if_statement>
+    >(in) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END ()
