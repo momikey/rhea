@@ -185,7 +185,7 @@ namespace rhea { namespace grammar {
                 one <'~'>,
                 one <'*'>,
                 seq < one <'+', '-'>, not_at <digit> >,
-                kw_not
+                seq <kw_not, spacer>
             >,
             postfix_op
         >,

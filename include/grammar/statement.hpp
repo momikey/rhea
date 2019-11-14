@@ -118,11 +118,20 @@ namespace rhea { namespace grammar {
         stmt_or_block
     > {};
 
+    struct while_statement : seq <
+        kw_while,
+        separator,
+        expression,
+        separator,
+        stmt_or_block
+    > {};
+
     // Match any kind of statement
     struct statement : sor <
         // These are "block" statements
         if_statement,
         unless_statement,
+        while_statement,
 
         // These all end in a semicolon
         seq <

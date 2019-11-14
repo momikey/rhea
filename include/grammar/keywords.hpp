@@ -9,6 +9,7 @@ namespace rhea { namespace grammar {
     struct kw_then : TAO_PEGTL_KEYWORD("then") {};
     struct kw_else : TAO_PEGTL_KEYWORD("else") {};
     struct kw_unless : TAO_PEGTL_KEYWORD("unless") {};
+    struct kw_while : TAO_PEGTL_KEYWORD("while") {};
 
     struct kw_and : TAO_PEGTL_KEYWORD("and") {};
     struct kw_or : TAO_PEGTL_KEYWORD("or") {};

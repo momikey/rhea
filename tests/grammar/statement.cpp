@@ -57,6 +57,10 @@ std::string unless_statement_samples[] = {
     "unless (x < 10) { print('test'); }"
 };
 
+std::string while_statement_samples[] = {
+    "while (not s) { s.doIt(); }"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -140,6 +144,15 @@ BOOST_DATA_TEST_CASE(unless_statement, data::make(unless_statement_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::unless_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(while_statement, data::make(while_statement_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::while_statement>
     >(in) == true);
 }
 
