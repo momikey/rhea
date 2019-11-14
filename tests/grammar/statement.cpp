@@ -53,6 +53,10 @@ std::string if_statement_samples[] = {
     "if my_function() { result = do_this(); } else { result = do_that(); }"
 };
 
+std::string unless_statement_samples[] = {
+    "unless (x < 10) { print('test'); }"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -127,6 +131,15 @@ BOOST_DATA_TEST_CASE(if_statement, data::make(if_statement_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::if_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(unless_statement, data::make(unless_statement_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::unless_statement>
     >(in) == true);
 }
 

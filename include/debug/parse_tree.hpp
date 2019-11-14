@@ -10,10 +10,13 @@
 
 #include "../grammar/tokens.hpp"
 #include "../grammar/operators.hpp"
+#include "../grammar/statement.hpp"
 
 namespace rhea { namespace debug {
     namespace pt = tao::pegtl::parse_tree;
 
+    // TODO: Make selectors for all the right nodes
+    // (This will be in a separate AST namespace.)
     template <typename Rule>
     struct selector : std::true_type {};
 
@@ -40,9 +43,18 @@ namespace rhea { namespace debug {
     void print_parse_tree(std::ostream& os, std::string& input)
     {
         tao::pegtl::string_input<> in(input, "debug");
-        auto root = pt::parse< rhea::grammar::expression, selector > (in);
+        auto root = pt::parse< 
+            tao::pegtl::sor<rhea::grammar::stmt_or_block>,
+            selector > (in);
 
-        internal::print_node(os, root, 0u);
+        if (root)
+        {
+            internal::print_node(os, root, 0u);
+        }
+        else
+        {
+            std::cout << "Parse error\n";
+        }
     }
 
 

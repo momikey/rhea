@@ -102,7 +102,7 @@ namespace rhea { namespace grammar {
 
     struct if_statement : seq <
         kw_if,
-        spacer,
+        separator,
         expression,
         separator,
         stmt_or_block,
@@ -110,17 +110,34 @@ namespace rhea { namespace grammar {
         else_block
     > {};
 
-    struct statement : seq <
-        // Add all possible statements here
-        sor <
-            constant_declaration,
-            variable_declaration,
-            assignment,
-            compound_assignment,
-            if_statement
-        >,
+    struct unless_statement : seq <
+        kw_unless,
         separator,
-        one <';'>
+        expression,
+        separator,
+        stmt_or_block
+    > {};
+
+    // Match any kind of statement
+    struct statement : sor <
+        // These are "block" statements
+        if_statement,
+        unless_statement,
+
+        // These all end in a semicolon
+        seq <
+            sor <
+                constant_declaration,
+                variable_declaration,
+                assignment,
+                compound_assignment,
+
+                // If all else fails, try a bare expression
+                expression
+            >,
+            separator,
+            one <';'>
+        >
     > {};
 
 }}
