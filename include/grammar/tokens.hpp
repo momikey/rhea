@@ -93,6 +93,12 @@ namespace rhea { namespace grammar {
         integer_literal
     > {};
 
+    struct function_suffix : sor <
+        one <'?'>,
+        one <'!'>,
+        one <'$'>
+    > {};
+
     // TODO: Detect reserved words and raise errors
     struct identifier : seq <
         identifier_first,

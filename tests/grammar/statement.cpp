@@ -61,6 +61,17 @@ std::string while_statement_samples[] = {
     "while (not s) { s.doIt(); }"
 };
 
+std::string for_statement_samples[] = {
+    "for i in range(10) {}",
+    "for a in b print(a);"
+};
+
+std::string do_statement_samples[] = {
+    "do some_function()",
+    "do (f(), g(), h())",
+    "do some_function # without parens"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -153,6 +164,24 @@ BOOST_DATA_TEST_CASE(while_statement, data::make(while_statement_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::while_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(for_statement, data::make(for_statement_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::for_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(do_statement, data::make(do_statement_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::do_statement>
     >(in) == true);
 }
 

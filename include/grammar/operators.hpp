@@ -157,7 +157,8 @@ namespace rhea { namespace grammar {
         opt <
             pad <expression_list, ignored>
         >,
-        one <')'>
+        one <')'>,
+        opt <function_suffix>
     > {};
 
     struct postfix_op : seq <

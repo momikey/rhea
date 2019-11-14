@@ -122,7 +122,11 @@ std::string function_call_samples[] = {
     "f()",
     "foo(42)",
     "my_function(x, y, z*2)",
-    "a.method_like().call()"
+    "a.method_like().call()",
+    "predicate()?",
+    "pred_with_args(true)?",
+    "unchecked(1, 2, 3)!",
+    "add(a, b)$"
 };
 
 ////////////////////

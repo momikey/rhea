@@ -126,18 +126,40 @@ namespace rhea { namespace grammar {
         stmt_or_block
     > {};
 
+    struct index_expression : seq <
+        identifier,
+        pad <kw_in, ignored>,
+        expression
+    > {};
+
+    struct for_statement : seq <
+        kw_for,
+        separator,
+        index_expression,
+        separator,
+        stmt_or_block
+    > {};
+
+    struct do_statement : seq <
+        kw_do,
+        separator,
+        expression
+    > {};
+
     // Match any kind of statement
     struct statement : sor <
         // These are "block" statements
         if_statement,
         unless_statement,
         while_statement,
+        for_statement,
 
         // These all end in a semicolon
         seq <
             sor <
                 constant_declaration,
                 variable_declaration,
+                do_statement,
                 assignment,
                 compound_assignment,
 
