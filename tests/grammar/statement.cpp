@@ -72,6 +72,11 @@ std::string do_statement_samples[] = {
     "do some_function # without parens"
 };
 
+std::string with_statement_samples[] = {
+    "with (s as string) {}",
+    "with n as integer n = 42;"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -182,6 +187,15 @@ BOOST_DATA_TEST_CASE(do_statement, data::make(do_statement_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::do_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(with_statement, data::make(with_statement_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::with_statement>
     >(in) == true);
 }
 

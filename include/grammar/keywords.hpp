@@ -13,6 +13,7 @@ namespace rhea { namespace grammar {
     struct kw_for : TAO_PEGTL_KEYWORD("for") {};
     struct kw_in : TAO_PEGTL_KEYWORD("in") {};
     struct kw_do : TAO_PEGTL_KEYWORD("do") {};
+    struct kw_with : TAO_PEGTL_KEYWORD("with") {};
 
     struct kw_and : TAO_PEGTL_KEYWORD("and") {};
     struct kw_or : TAO_PEGTL_KEYWORD("or") {};

@@ -48,30 +48,31 @@ namespace rhea { namespace grammar {
         assignment_rhs
     > {};
 
+    struct variable_initialization : seq <
+        assignment_lhs,
+        pad < one<'='>, ignored >,
+        assignment_rhs
+    > {};
+
+    struct declaration_as_type : seq <
+        assignment_lhs,
+        pad < kw_as, ignored >,
+        type_name
+    > {};
+
     struct constant_declaration : seq <
         kw_const,
         spacer,
-        identifier,
-        pad < one <'='>, ignored >,
-        expression
+        variable_initialization
     > {};
 
     struct variable_declaration : seq <
         kw_var,
         spacer,
-        identifier,
         // Variable declarations can have either an "as type" or an "= expr"
         sor <
-            seq <
-                pad < one <'='>, ignored >,
-                expression
-            >,
-            seq <
-                spacer,
-                kw_as,
-                spacer,
-                type_name
-            >
+            variable_initialization,
+            declaration_as_type
         >
     > {};
 
@@ -146,6 +147,21 @@ namespace rhea { namespace grammar {
         expression
     > {};
 
+    struct with_statement : seq <
+        kw_with,
+        separator,
+        if_must_else <
+            one <'('>,
+            seq <
+                pad <declaration_as_type, ignored>,
+                one <')'>
+            >,
+            declaration_as_type
+        >,
+        separator,
+        stmt_or_block
+    > {};
+
     // Match any kind of statement
     struct statement : sor <
         // These are "block" statements
@@ -153,6 +169,7 @@ namespace rhea { namespace grammar {
         unless_statement,
         while_statement,
         for_statement,
+        with_statement,
 
         // These all end in a semicolon
         seq <
