@@ -3,6 +3,7 @@
 
 #include "keywords.hpp"
 #include "tokens.hpp"
+#include "typenames.hpp"
 #include "operators.hpp"
 
 namespace rhea { namespace grammar {
@@ -13,6 +14,7 @@ namespace rhea { namespace grammar {
     {};
 
     struct assignment_rhs : sor <
+        constructor_expression,
         expression
         // Other possibilities, like tuples, lists, etc.
     >
@@ -175,17 +177,16 @@ namespace rhea { namespace grammar {
     struct predicate_call : seq <
         fully_qualified,
         separator,
-        opt <
-            if_must <
-                seq <
-                    one <'('>,
-                    opt <
-                        pad <expression_list, ignored>
-                    >
-                >,
-                one <')'>
-            >
+        opt_must <
+            seq <
+                one <'('>,
+                opt <
+                    pad <expression_list, ignored>
+                >
+            >,
+            one <')'>
         >,
+        separator,
         one <'?'>
     > {};
 

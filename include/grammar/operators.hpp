@@ -7,11 +7,10 @@
 #include "keywords.hpp"
 #include "strings.hpp"
 #include "typenames.hpp"
+#include "expression_fwd.hpp"
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
-
-    struct expression;
 
     // Left and right associativity helpers
     // (Taken from the PEGTL Lua example)

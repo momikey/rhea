@@ -369,7 +369,7 @@ Single quotes are an acceptable alternative, with no different in function.
 Dictionaries map numbers or symbols to values of a specific type. Rhea has special syntax for handling them.
 
 ```
-	var d1 as dict [string];		# declare with value type
+	var d1 as dict <string>;		# declare with value type
 
 	# declare and initialize using literal notation
 	var d2 = {
@@ -762,7 +762,7 @@ Type functions are functions that operate on *types* instead of *values*. In gen
 	def foo { x: string } = { return (x == "Hello"); }
 
 	# Is the function "foo" defined for this type?
-	string => foo [boolean] <string>;
+	string => foo <string> -> boolean;
 ```
 
 {TBD: Lots more about this important feature.}
@@ -839,7 +839,7 @@ Concepts have their own syntax, which relies heavily on that of type functions.
 	concept Stringable <Ty> =
 	{
 		# Check that the "to$" function is defined for type Ty
-		Ty => to$ [string] <Ty>
+		Ty => to$ <Ty> -> string
 	}
 ```
 

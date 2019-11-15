@@ -43,6 +43,12 @@ std::string complex_type_samples[] = {
     "dict <integer>[n*2]"
 };
 
+std::string constructor_expression_samples[] = {
+    "list <string> ()",
+    "list <string> (n)",
+    "dict <integer, File> (a, b, c)"
+};
+
 BOOST_AUTO_TEST_SUITE (Typenames)
 
 BOOST_DATA_TEST_CASE(type_pair, data::make(type_pair_samples))
@@ -82,6 +88,16 @@ BOOST_DATA_TEST_CASE(complex_type, data::make(complex_type_samples))
 
     BOOST_TEST(parse<
         simple_parser<rg::type_name>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(constructor_expression, data::make(constructor_expression_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::constructor_expression>
     >(in) == true);
 }
 
