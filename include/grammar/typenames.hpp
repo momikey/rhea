@@ -41,10 +41,10 @@ namespace rhea { namespace grammar {
         fully_qualified,
         at <
             separator,
-            sor <generic_type, return_type_spec, array_type>
+            sor <generic_type, /*return_type_spec,*/ array_type>
         >,
         pad <opt <generic_type>, ignored>,
-        pad <opt <return_type_spec>, ignored>,
+        // pad <opt <return_type_spec>, ignored>,
         pad <opt <array_type>, ignored>
     > {};
 
@@ -68,6 +68,17 @@ namespace rhea { namespace grammar {
         complex_type_name,
         separator,
         function_call_expr
+    > {};
+
+    // Type definitions come in two forms: structures and enums. Enums
+    // are simpler, in that they're just a symbol list. Structures take
+    // a list of type pairs. Both start the same way.
+    struct type_definition_lhs : seq <
+        kw_type,
+        separator,
+        identifier,
+        separator,
+        one <'='>
     > {};
 }}
 

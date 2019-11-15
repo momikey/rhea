@@ -236,6 +236,28 @@ namespace rhea { namespace grammar {
         match_block <when_case>
     > {};
 
+    struct enum_declaration : seq <
+        type_definition_lhs,
+        separator,
+        symbol_list_expression
+    > {};
+
+    struct structure_declaration : seq <
+        type_definition_lhs,
+        separator,
+        if_must <
+            seq <
+                one <'{'>,
+                separator,
+                opt <
+                    list <type_pair, one <','>, ignored>
+                >,
+                separator
+            >,
+            one <'}'>
+        >
+    > {};
+
     // Match any kind of statement
     struct statement : sor <
         // These are "block" statements
@@ -250,6 +272,7 @@ namespace rhea { namespace grammar {
         // These all end in a semicolon
         seq <
             sor <
+                enum_declaration,
                 constant_declaration,
                 variable_declaration,
                 do_statement,

@@ -108,6 +108,17 @@ std::string match_when_samples[] = {
     "}"
 };
 
+std::string enum_declaration_samples[] = {
+    "type En = @{foo, bar, baz}"
+};
+
+std::string structure_declaration_samples[] = {
+    "type Person = {\n"
+    "   name: string,\n"
+    "   age: integer\n"
+    "}"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -273,6 +284,24 @@ BOOST_DATA_TEST_CASE(match_when_statement, data::make(match_when_samples))
     BOOST_TEST(parse<
         simple_parser<rg::match_when_statement>
     >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(enum_declaration, data::make(enum_declaration_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::enum_declaration>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(structure_declaration, data::make(structure_declaration_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST((parse<
+        simple_parser<rg::structure_declaration>, tao::pegtl::nothing, tao::pegtl::tracer
+    >(in)) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

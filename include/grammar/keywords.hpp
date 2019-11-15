@@ -34,6 +34,7 @@ namespace rhea { namespace grammar {
 
     // Types
     struct kw_as : TAO_PEGTL_KEYWORD("as") {};
+    struct kw_type : TAO_PEGTL_KEYWORD("type") {};
 
     // Variable declaration
     struct kw_const : TAO_PEGTL_KEYWORD("const") {};
