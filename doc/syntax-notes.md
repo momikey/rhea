@@ -331,7 +331,7 @@ Arrays are accessed with the index operator `[]`; the index is zero-based.
 Lists are dynamic in size, though still homogeneous in type. They are created with the `list()` function.
 
 ```
-	var l = list [string] (10);		# reserve 10 elements
+	var l = list <string> (10);		# reserve 10 elements
 	l[3] = "Hi.";					# set an element
 	l.append("end");				# add a new element
 ```
@@ -346,7 +346,7 @@ A list can also be initialized with the `()` literal:
 All values must have the same type, which will be inferred unless explicitly declared:
 
 ```
-	var p2 = (1, 2, 4, 8) as list [byte];	# explicit type: each element will be converted to a byte
+	var p2 = (1, 2, 4, 8) as list <byte>;	# explicit type: each element will be converted to a byte
 ```
 
 ## Strings
@@ -672,7 +672,7 @@ If the object is of a type imported from a module (see "Modules" below), then us
 The simplest way to define a function that accepts a variable number of arguments (a variadic function) is to define it with a single list parameter.
 
 ```
-	def my_func { args: list [string] } =
+	def my_func { args: list <string> } =
 	{
 		for arg in args
 		{

@@ -100,7 +100,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 		# Declare a list without initialization
 		# The constructor function can take an optional "reserve" argument.
 		# In its absence, it will use a small, sensible default.
-		var buffer = list [integer] ();
+		var buffer = list <integer> ();
 	}
 ```
 
@@ -538,7 +538,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 ```
 	# Create a function that returns the maximum value in a list of arbitrary length.
 	
-	def maximum { l: list [integer] }
+	def maximum { l: list <integer> }
 	with { l.not_empty? } =
 	{
 		# The standard library will have a function for this,

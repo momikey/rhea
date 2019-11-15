@@ -3,9 +3,10 @@
 
 #include <tao/pegtl.hpp>
 
+#include "tokens.hpp"
 #include "keywords.hpp"
 #include "strings.hpp"
-#include "tokens.hpp"
+#include "typenames.hpp"
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
@@ -299,6 +300,7 @@ namespace rhea { namespace grammar {
         fully_qualified,
         symbol_name
     > {};
+
 }}
 
 #endif /* RHEA_GRAMMAR_OPERATORS_HPP */

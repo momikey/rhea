@@ -3,6 +3,7 @@ set(TESTS_GRAMMAR_SOURCES
     operators.cpp
     statement.cpp
     strings.cpp
+    typenames.cpp
 )
 
 add_library(tests_grammar OBJECT ${TESTS_GRAMMAR_SOURCES})
