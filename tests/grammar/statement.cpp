@@ -299,9 +299,9 @@ BOOST_DATA_TEST_CASE(structure_declaration, data::make(structure_declaration_sam
 {
     BOOST_TEST_MESSAGE("Parsing " << sample);
     string_input<> in(sample, "test");
-    BOOST_TEST((parse<
-        simple_parser<rg::structure_declaration>, tao::pegtl::nothing, tao::pegtl::tracer
-    >(in)) == true);
+    BOOST_TEST(parse<
+        simple_parser<rg::structure_declaration>
+    >(in) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

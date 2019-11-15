@@ -129,6 +129,13 @@ std::string function_call_samples[] = {
     "add(a, b)$"
 };
 
+std::string type_check_samples [] = {
+    "x is integer",
+    "f(s) is string",
+    "foo.bar is list <integer>",
+    "no is nothing"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -342,6 +349,16 @@ BOOST_DATA_TEST_CASE(function_call_expression, data::make(function_call_samples)
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::postfix_op>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(type_check_expression, data::make(type_check_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::type_check_op>
     >(in) == true);
 }
 

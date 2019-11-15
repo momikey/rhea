@@ -264,21 +264,30 @@ namespace rhea { namespace grammar {
         boolean_binop
     > {};
 
+    struct type_check_op : sor <
+        seq <
+            cast_op,
+            pad <kw_is, ignored>,
+            type_name
+        >,
+        cast_op
+    > {};
+
     struct ternary_op : sor <
         seq <
             kw_if,
             spacer,
-            cast_op,
+            type_check_op,
             separator,
             kw_then,
             spacer,
-            cast_op,
+            type_check_op,
             separator,
             kw_else,
             spacer,
-            cast_op
+            type_check_op
         >,
-        cast_op
+        type_check_op
     > {};
 
     struct expression : sor <
