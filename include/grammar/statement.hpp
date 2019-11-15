@@ -162,6 +162,79 @@ namespace rhea { namespace grammar {
         stmt_or_block
     > {};
 
+    // A single case in a match-on statement
+    struct on_case : seq <
+        kw_on,
+        separator,
+        constant_expression,
+        pad <one <':'>, ignored>,
+        stmt_or_block
+    > {};
+
+    // A call to a predicate function, with optional arguments
+    struct predicate_call : seq <
+        fully_qualified,
+        separator,
+        opt <
+            if_must <
+                seq <
+                    one <'('>,
+                    opt <
+                        pad <expression_list, ignored>
+                    >
+                >,
+                one <')'>
+            >
+        >,
+        one <'?'>
+    > {};
+
+    // A single case in a match-when statement
+    struct when_case : seq <
+        kw_when,
+        separator,
+        predicate_call,
+        pad <one <':'>, ignored>,
+        stmt_or_block
+    > {};
+
+    // The default case for match-on or match-when
+    struct default_case : seq <
+        kw_default,
+        pad <one <':'>, ignored>,
+        stmt_or_block
+    > {};
+
+    template <typename M>
+    struct match_block : if_must <
+        seq <
+            one <'{'>,
+            separator,
+            opt <
+                list_tail <M, separator>
+            >,
+            opt <default_case>,
+            separator
+        >,
+        one <'}'>
+    > {};
+
+    struct match_on_statement : seq <
+        kw_match,
+        separator,
+        fully_qualified,
+        separator,
+        match_block <on_case>
+    > {};
+
+    struct match_when_statement : seq <
+        kw_match,
+        separator,
+        fully_qualified,
+        separator,
+        match_block <when_case>
+    > {};
+
     // Match any kind of statement
     struct statement : sor <
         // These are "block" statements
@@ -170,6 +243,8 @@ namespace rhea { namespace grammar {
         while_statement,
         for_statement,
         with_statement,
+        match_on_statement,
+        match_when_statement,
 
         // These all end in a semicolon
         seq <
@@ -179,6 +254,8 @@ namespace rhea { namespace grammar {
                 do_statement,
                 assignment,
                 compound_assignment,
+                kw_break,
+                kw_continue,
 
                 // If all else fails, try a bare expression
                 expression

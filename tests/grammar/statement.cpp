@@ -77,6 +77,37 @@ std::string with_statement_samples[] = {
     "with n as integer n = 42;"
 };
 
+std::string on_case_samples[] = {
+    "on 1: print('test');",
+    "on 2: { do_something(); }",
+    "on @foo: { bar = 42_u; }"
+};
+
+std::string when_case_samples[] = {
+    "when nonzero?: { print('Not zero'); }",
+    "when zero?: print('Zero');"
+};
+
+std::string default_case_samples[] = {
+    "default: doIt();",
+    "default: { if x == 42 print(the_answer); else quit(); }"
+};
+
+std::string match_on_samples[] = {
+    "match foo {\n"
+    "   on 1: print('test');\n"
+    "   on 2: { do_something_else(foo); }\n"
+    "   default: { result = error; }\n"
+    "}"
+};
+
+std::string match_when_samples[] = {
+    "match foo {\n"
+    "   when nonzero?: { print('Not zero'); }\n"
+    "   when zero?: { print('Zero'); }\n"
+    "}"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -196,6 +227,51 @@ BOOST_DATA_TEST_CASE(with_statement, data::make(with_statement_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::with_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(on_case, data::make(on_case_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::on_case>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(when_case, data::make(when_case_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::when_case>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(default_case, data::make(default_case_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::default_case>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(match_on_statement, data::make(match_on_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::match_on_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(match_when_statement, data::make(match_when_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::match_when_statement>
     >(in) == true);
 }
 

@@ -287,6 +287,18 @@ namespace rhea { namespace grammar {
         symbol_list_expression,
         symbol_name
     > {};
+
+    // Certain statements require constant expressions. Technically,
+    // we can't determine if an expression is constant during the
+    // parsing phase, but we can throw a few of them out.
+    struct constant_expression : sor <
+        ternary_op,
+        parenthesized,
+        numeric_literal,
+        string_literal,
+        fully_qualified,
+        symbol_name
+    > {};
 }}
 
 #endif /* RHEA_GRAMMAR_OPERATORS_HPP */
