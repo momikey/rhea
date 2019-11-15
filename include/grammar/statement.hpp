@@ -273,6 +273,7 @@ namespace rhea { namespace grammar {
         seq <
             sor <
                 enum_declaration,
+                structure_declaration,
                 constant_declaration,
                 variable_declaration,
                 do_statement,
