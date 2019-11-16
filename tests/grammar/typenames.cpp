@@ -49,6 +49,10 @@ std::string constructor_expression_samples[] = {
     "dict <integer, File> (a, b, c)"
 };
 
+std::string ptr_ref_samples[] = {
+    "ref string"
+};
+
 BOOST_AUTO_TEST_SUITE (Typenames)
 
 BOOST_DATA_TEST_CASE(type_pair, data::make(type_pair_samples))
@@ -99,6 +103,16 @@ BOOST_DATA_TEST_CASE(constructor_expression, data::make(constructor_expression_s
     BOOST_TEST(parse<
         simple_parser<rg::constructor_expression>
     >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(ptr_ref_type, data::make(ptr_ref_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST((parse<
+        simple_parser<rg::type_name>, tao::pegtl::nothing, tao::pegtl::tracer
+    >(in)) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

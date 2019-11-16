@@ -186,9 +186,11 @@ namespace rhea { namespace grammar {
                 one <'~'>,
                 one <'*'>,
                 seq < one <'+', '-'>, not_at <digit> >,
-                seq <kw_not, spacer>
+                seq <kw_not, separator>,
+                seq <kw_ref, separator>,
+                seq <kw_ptr, separator>
             >,
-            postfix_op
+            unary_prefix_op
         >,
         postfix_op
     > {};

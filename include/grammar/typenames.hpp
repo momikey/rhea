@@ -37,6 +37,10 @@ namespace rhea { namespace grammar {
         type_name
     > {};
 
+    struct ptr_reference_type : sor <kw_ref, kw_ptr> {};
+
+    struct simple_type_name : fully_qualified {};
+
     struct complex_type_name : seq <
         fully_qualified,
         at <
@@ -48,7 +52,16 @@ namespace rhea { namespace grammar {
         pad <opt <array_type>, ignored>
     > {};
 
-    struct type_name : sor <complex_type_name, fully_qualified> {};
+    struct either_type_name : sor <complex_type_name, simple_type_name> {};
+
+    struct type_name : sor <
+        seq <
+            ptr_reference_type,
+            separator,
+            type_name
+        >,
+        either_type_name
+    > {};
 
     // A type pair is a key-value pair where the value is a type name.
     // This is used in structure and concept definitions.
