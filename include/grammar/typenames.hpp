@@ -88,7 +88,8 @@ namespace rhea { namespace grammar {
     > {};
 
     // A type pair is a key-value pair where the value is a type name.
-    // This is used in structure and concept definitions.
+    // This is used in structure and concept definitions, as well as
+    // catching exceptions.
     struct type_pair : seq <
         identifier,
         separator,

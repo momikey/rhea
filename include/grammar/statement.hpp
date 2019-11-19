@@ -277,6 +277,50 @@ namespace rhea { namespace grammar {
         type_name
     > {};
 
+    struct throw_statement : seq <
+        kw_throw,
+        separator,
+        expression
+    > {};
+
+    struct catch_statement : seq <
+        kw_catch,
+        separator,
+        if_must <
+            seq <
+                one <'{'>,
+                pad <type_pair, ignored>
+            >,
+            one <'}'>
+        >,
+        separator,
+        stmt_or_block
+    > {};
+
+    struct finally_statement : seq <
+        kw_finally,
+        separator,
+        stmt_or_block
+    > {};
+
+    // The "head" of a try statement is the try block, which is also
+    // the only required part.
+    struct try_statement_head : seq <
+        kw_try,
+        separator,
+        stmt_or_block
+    > {};
+
+    struct try_statement : seq <
+        try_statement_head,
+        separator,
+        opt <
+            list <catch_statement, ignored>
+        >,
+        separator,
+        opt <finally_statement>
+    > {};
+
     // Match any kind of statement
     struct statement : sor <
         // These are "block" statements
@@ -302,6 +346,8 @@ namespace rhea { namespace grammar {
                 compound_assignment,
                 kw_break,
                 kw_continue,
+                try_statement,
+                throw_statement,
 
                 // If all else fails, try a bare expression
                 expression

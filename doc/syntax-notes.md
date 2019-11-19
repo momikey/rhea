@@ -914,10 +914,8 @@ This is only valid for two-type variants where the second type is `nothing`; you
 We can declare one type as an alias of another. This is especially useful with variants, which can become unwieldy.
 
 ```
-	type MyType = type |string, integer, MyStructure|;
+	type MyType = |string, integer, MyStructure|;
 ```
-
-
 
 # Exceptions
 
@@ -935,11 +933,30 @@ We can declare one type as an alias of another. This is especially useful with v
 	}
 ```
 
-{TBD: Description, `finally`?, wildcard catching.}
+Exceptions are typed: the `catch` block specifies the type of exception you want to catch. If that exception is thrown during execution of the `try` block, the corresponding `catch` block will be executed.
+
+You can have multiple `catch` blocks, each catching a different type of exception. If you would rather catch all exceptions, use a catch type of `any`.
+
+A `finally` block will be executed last, regardless of whether an exception was thrown.
+
+{TBD: Concept catching?}
+
+## Throw
+
+The `throw` statement throws an exception.
+
+```
+	throw bad_input();
+	
+	# Most standard exception types take a message argument
+	throw error("Something went wrong");
+```
+
+Strictly speaking, Rhea doesn't have an exception hierarchy, because it doesn't have object hierarchies at all. Instead, exceptions are values of a given type, so the argument to a `throw` statement is typically a call to a type construction function. If you like, you can throw *any* type; `throw "Bad";` is syntactically correct.
 
 ## Standard exceptions
 
-The standard library defines a number of basic exceptions, such as dividing by zero. These are located in the `std:exception` module, which is automatically imported into all programs.
+The standard library defines a number of basic exception types, such as dividing by zero. These are located in the `std:exception` module, which is automatically imported into all programs.
 
 # Modules
 

@@ -8,6 +8,10 @@ namespace rhea { namespace grammar {
     // Language keywords
     ////
 
+    // Variable declaration
+    struct kw_const : TAO_PEGTL_KEYWORD("const") {};
+    struct kw_var : TAO_PEGTL_KEYWORD("var") {};
+
     // Control flow
     struct kw_if : TAO_PEGTL_KEYWORD("if") {};
     struct kw_then : TAO_PEGTL_KEYWORD("then") {};
@@ -41,10 +45,11 @@ namespace rhea { namespace grammar {
     struct kw_any : TAO_PEGTL_KEYWORD("any") {};
     struct kw_nothing : TAO_PEGTL_KEYWORD("nothing") {};
 
-    // Variable declaration
-    struct kw_const : TAO_PEGTL_KEYWORD("const") {};
-    struct kw_var : TAO_PEGTL_KEYWORD("var") {};
-
+    // Exceptions
+    struct kw_try : TAO_PEGTL_KEYWORD("try") {};
+    struct kw_catch : TAO_PEGTL_KEYWORD("catch") {};
+    struct kw_throw : TAO_PEGTL_KEYWORD("throw") {};
+    struct kw_finally : TAO_PEGTL_KEYWORD("finally") {};
 }}
 
 #endif /* RHEA_GRAMMAR_KEYWORDS_HPP */

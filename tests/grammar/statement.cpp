@@ -132,6 +132,22 @@ std::string match_type_samples[] = {
     "}"
 };
 
+std::string throw_samples[] = {
+    "throw foo",
+    "throw error('Something went wrong')"
+};
+
+std::string try_statement_samples[] = {
+    "try {\n"
+    "   z = x / y;\n"
+    "} catch { e: divide_by_zero }\n"
+    "{\n"
+    "   print(e.message);\n"
+    "} finally {\n"
+    "   print('finally');\n"
+    "}"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -332,6 +348,24 @@ BOOST_DATA_TEST_CASE(type_alias, data::make(type_alias_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::type_alias>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(throw_statement, data::make(throw_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::throw_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(try_statement, data::make(try_statement_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::try_statement>
     >(in) == true);
 }
 
