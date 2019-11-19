@@ -125,6 +125,13 @@ std::string type_alias_samples[] = {
     "type File = std:fs:File"
 };
 
+std::string match_type_samples[] = {
+    "match arg {"
+    "   type integer: print('Integer');"
+    "   type string: print('String');"
+    "}"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -289,6 +296,15 @@ BOOST_DATA_TEST_CASE(match_when_statement, data::make(match_when_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::match_when_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(match_type_statement, data::make(match_type_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::match_type_statement>
     >(in) == true);
 }
 

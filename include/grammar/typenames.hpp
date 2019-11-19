@@ -117,6 +117,15 @@ namespace rhea { namespace grammar {
         separator,
         one <'='>
     > {};
+
+    // Type assertions are used in the match-type statement. We define
+    // them as unable to use variants/optionals, since the whole purpose
+    // of the construct is to let us match against those.
+    struct type_assertion : seq <
+        kw_type,
+        separator,
+        either_type_name
+    > {};
 }}
 
 #endif /* RHEA_GRAMMAR_TYPENAMES_HPP */

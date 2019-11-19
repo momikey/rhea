@@ -769,9 +769,9 @@ Type functions are functions that operate on *types* instead of *values*. In gen
 
 ### Naming a function type
 
-Every specific overload of a function in Rhea has a unique name of the format `identifier [return type] <argument types>`, where `identifier` is the exact name of the function (including suffixes such as `?`), `return type` is the exact type returned (even if inferred), and `argument types` describes a comma-separated list of types.
+Every specific overload of a function in Rhea has a unique name of the format `identifier <argument types> -> return type`, where `identifier` is the exact name of the function (including suffixes such as `?`), `return type` is the exact type returned (even if inferred), and `argument types` describes a comma-separated list of types.
 
-For example, the conversion function above has the type `to$ [string] <Complex>`
+For example, the conversion function above has the type `to$ <Complex> -> string`.
 
 ## Generic functions (templates)
 
@@ -865,9 +865,59 @@ The compiler will still generate separate functions for different types, but it 
 
 You can't define variables as having the type of a concept, because concepts are not themselves types. They're only descriptions. Blueprints, in a sense.
 
-## Tagged unions
+## Variants (tagged unions)
 
-{TBD}
+Variables and function arguments can also be declared as members of a *variant* type. This is similar to what some languages call a "tagged union".
+
+```
+	var v as |integer, string|;
+	v = 1234;		# assign an integer
+	v = "abc";		# assign a string
+
+	def fn { arg: |integer, string| } =
+	{
+		match arg
+		{
+			type integer: print("Integer");
+			type string: print("String");
+		}
+	}
+```
+
+Constants can't be variants, and you can't have a variant as a possible type. (In other words, variants can't be nested.)
+
+If a value of variant type is used in a `match-type` statement, the compiler can check to ensure that all possible types are accounted for. It can't do this with `any`, so this is a reason to use variants instead, if possible.
+
+Finally, note that the compiler will consider the type of the variant's current value when choosing an overload of a generic function. Thus, a variable of `|integer, string|` is not an exact match for an argument of `|integer, string|`, and it is possible that it will match simply `integer` or `string`, if those overloads are available *and* the variable's current value is of the correct type.
+
+{TBD: Explain `match-type` and put it in the parser.}
+
+## Optionals
+
+A variant with any specific type and `nothing` is such a useful pattern that Rhea offers a shortcut notation.
+
+```
+	var nullable as |integer|?;		# an optional integer
+
+	# ...do some work that assigns to the variable...
+
+	match nullable {
+		type integer: print("Integer");
+		type nothing: print("nullable is null");
+	}
+```
+
+This is only valid for two-type variants where the second type is `nothing`; you can't, for instance, write `|integer, string|?`.
+
+## Type aliases
+
+We can declare one type as an alias of another. This is especially useful with variants, which can become unwieldy.
+
+```
+	type MyType = type |string, integer, MyStructure|;
+```
+
+
 
 # Exceptions
 

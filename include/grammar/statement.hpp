@@ -206,6 +206,13 @@ namespace rhea { namespace grammar {
         stmt_or_block
     > {};
 
+    // A case in a match-type statement
+    struct type_case : seq <
+        type_assertion,
+        pad <one <':'>, ignored>,
+        stmt_or_block
+    > {};
+
     template <typename M>
     struct match_block : if_must <
         seq <
@@ -234,6 +241,14 @@ namespace rhea { namespace grammar {
         fully_qualified,
         separator,
         match_block <when_case>
+    > {};
+
+    struct match_type_statement : seq <
+        kw_match,
+        separator,
+        fully_qualified,
+        separator,
+        match_block <type_case>
     > {};
 
     struct enum_declaration : seq <
@@ -274,6 +289,7 @@ namespace rhea { namespace grammar {
         with_statement,
         match_on_statement,
         match_when_statement,
+        match_type_statement,
 
         // These all end in a semicolon
         seq <

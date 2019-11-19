@@ -53,10 +53,9 @@ namespace rhea { namespace debug {
         }
         else
         {
-            std::cout << "Parse error\n";
+            std::cerr << "Parse error\n";
         }
     }
-
 
 }}
 
