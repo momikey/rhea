@@ -152,10 +152,21 @@ namespace rhea { namespace grammar {
         identifier
     > {};
 
+    struct named_argument : kv_pair <identifier> {};
+
+    struct named_argument_list : list_must <
+        named_argument,
+        one <','>,
+        ignored
+    > {};
+
     struct function_call_expr : seq <
         one <'('>,
         opt <
-            pad <expression_list, ignored>
+            pad <
+                sor <named_argument_list, expression_list>,
+                ignored
+            >
         >,
         one <')'>,
         opt <function_suffix>
