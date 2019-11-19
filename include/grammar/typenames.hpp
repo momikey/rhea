@@ -54,13 +54,37 @@ namespace rhea { namespace grammar {
 
     struct either_type_name : sor <complex_type_name, simple_type_name> {};
 
+    struct variant_type_list : list <type_name, one <','>, ignored> {};
+
+    struct tagged_union : if_must <
+        seq <
+            one <'|'>,
+            variant_type_list
+        >,
+        one <'|'>,
+        not_at <separator, one <'?'> >
+    > {};
+
+    struct optional_type : if_must <
+        seq <
+            one <'|'>,
+            at <until <one <'|'> >, separator, one <'?'> >,
+            type_name
+        >,
+        one <'|'>,
+        separator,
+        one <'?'>
+    > {};
+
     struct type_name : sor <
         seq <
             ptr_reference_type,
             separator,
             type_name
         >,
-        either_type_name
+        either_type_name,
+        optional_type,
+        tagged_union
     > {};
 
     // A type pair is a key-value pair where the value is a type name.

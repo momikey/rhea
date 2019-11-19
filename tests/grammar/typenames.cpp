@@ -53,6 +53,18 @@ std::string ptr_ref_samples[] = {
     "ref string"
 };
 
+std::string tagged_union_samples[] = {
+    "|integer, string|",
+    "|string, std:fs:File|",
+    "|X, Y, Z, Foo|"
+};
+
+std::string optional_type_samples[] = {
+    "|integer|?",
+    "|string|?",
+    "|std:fs:File|?"
+};
+
 BOOST_AUTO_TEST_SUITE (Typenames)
 
 BOOST_DATA_TEST_CASE(type_pair, data::make(type_pair_samples))
@@ -110,9 +122,29 @@ BOOST_DATA_TEST_CASE(ptr_ref_type, data::make(ptr_ref_samples))
     BOOST_TEST_MESSAGE("Parsing " << sample);
     string_input<> in(sample, "test");
 
-    BOOST_TEST((parse<
-        simple_parser<rg::type_name>, tao::pegtl::nothing, tao::pegtl::tracer
-    >(in)) == true);
+    BOOST_TEST(parse<
+        simple_parser<rg::type_name>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(tagged_union, data::make(tagged_union_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::tagged_union>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(optional_type, data::make(optional_type_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::optional_type>
+    >(in) == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

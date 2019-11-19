@@ -258,6 +258,12 @@ namespace rhea { namespace grammar {
         >
     > {};
 
+    struct type_alias : seq <
+        type_definition_lhs,
+        separator,
+        type_name
+    > {};
+
     // Match any kind of statement
     struct statement : sor <
         // These are "block" statements
@@ -274,6 +280,7 @@ namespace rhea { namespace grammar {
             sor <
                 enum_declaration,
                 structure_declaration,
+                type_alias,
                 constant_declaration,
                 variable_declaration,
                 do_statement,

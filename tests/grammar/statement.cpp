@@ -119,6 +119,12 @@ std::string structure_declaration_samples[] = {
     "}"
 };
 
+std::string type_alias_samples[] = {
+    "type my_int = integer",
+    "type StringList = list <string>",
+    "type File = std:fs:File"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -301,6 +307,15 @@ BOOST_DATA_TEST_CASE(structure_declaration, data::make(structure_declaration_sam
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::structure_declaration>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(type_alias, data::make(type_alias_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::type_alias>
     >(in) == true);
 }
 
