@@ -214,16 +214,14 @@ namespace rhea { namespace grammar {
     > {};
 
     template <typename M>
-    struct match_block : if_must <
-        seq <
-            one <'{'>,
-            separator,
-            opt <
-                list_tail <M, separator>
-            >,
-            opt <default_case>,
-            separator
+    struct match_block : seq <
+        one <'{'>,
+        separator,
+        opt <
+            list_tail <M, separator>
         >,
+        opt <default_case>,
+        separator,
         one <'}'>
     > {};
 
