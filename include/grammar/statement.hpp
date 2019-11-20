@@ -355,7 +355,7 @@ namespace rhea { namespace grammar {
     > {};
 
     struct arguments_list : sor <
-        fn_values_list <type_pair>,
+        fn_values_list < sor <type_match, concept_match> >,
         wildcard_argument
     > {};
 
