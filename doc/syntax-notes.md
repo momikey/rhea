@@ -126,9 +126,9 @@ Uninitialized variables cannot be used until assignment, and such uses will prod
 Constant values are declared in the same way as variables, except that they use the `const` keyword, and they must be initialized at the point of declaration.
 
 ```
-	const Max_items = 8			# okay, "Max_items" is an integer
+	const Max_items = 8;		# okay, "Max_items" is an integer
 	const Min_items;			# error: uninitialized constant
-	const Min_items as integer	# same error as above
+	const Min_items as integer;	# same error as above
 ```
 
 ## Assignment
@@ -216,7 +216,7 @@ Instead of chaining `if` statements, Rhea provides a pattern-matching construct 
 
 Every `on` case must be of the same type, which must match that of the tested variable. There is no fall-through, so break statements are not necessary.
 
-{TBD: Multiple cases per `on`, destructuring, and possibly `match type` for switching on the type of a value.}
+{TBD: Multiple cases per `on`, destructuring.}
 
 ## Match-when (boolean match)
 
@@ -238,7 +238,7 @@ You can't mix `on` and `when` in the same `match` statement.
 
 ## For loop (iteration)
 
-Rhea has a `for` loop, but it is intended only for iteration over collections (arrays, lists, and user-defined types which fulfill the `Iterable` concept.
+Rhea has a `for` loop, but it is intended only for iteration over collections (arrays, lists, and user-defined types which follow the `Iterable` concept.
 
 ```
 	for i in [1, 2, 3, 4, 5]
@@ -253,7 +253,7 @@ The induction variable (`i` in the example above) is local to the loop, and acts
 
 ## While loop
 
-The `while` loop is more general than `for`, but care must be taken. Remember that the condition is a boolean, and assignments (as is common in C) are not allowed.
+The `while` loop is more general than `for`, but care must be taken. Remember that the condition is a boolean, and assignments are not allowed, unlike in C and C++.
 
 ```
 	while (score < 100)
@@ -328,7 +328,7 @@ Arrays are accessed with the index operator `[]`; the index is zero-based.
 
 ## Lists
 
-Lists are dynamic in size, though still homogeneous in type. They are created with the `list()` function.
+Lists are dynamic in size, though still homogeneous in type. They are created with the `list()` function, which is generic (see below).
 
 ```
 	var l = list <string> (10);		# reserve 10 elements
@@ -362,7 +362,7 @@ Strings contain UTF-8 characters, and can be initialized using the `""` literal 
 
 Rhea strings use the same notation as C for escaped characters such as `\n`.
 
-Single quotes are an acceptable alternative, with no different in function.
+Single quotes are an acceptable alternative, with no difference in function.
 
 ## Dictionaries
 
@@ -370,9 +370,10 @@ Dictionaries map numbers or symbols to values of a specific type. Rhea has speci
 
 ```
 	var d1 as dict <string>;		# declare with value type
+	var d2 = dict <string> ();		# initialize w/constructor
 
 	# declare and initialize using literal notation
-	var d2 = {
+	var d3 = {
 		@foo: "Hello",
 		@bar: "World"
 	};
@@ -389,7 +390,7 @@ Tuples are anonymous structures of heterogeneous types. They can be indexed like
 	t[0] == 1;						# = true
 ```
 
-Tuples are immutable; assignment to an element is an error. Operations are provided to combine tuples, but these return a new instance. {TBD: Document operations.}
+Tuples are immutable; assignment to an element is an error. Operations are provided to combine tuples, but these return a new instance. {TBD: Document operations, possibly including `head` and `tail`?}
 
 Enumerations ("enums") are similar to tuples, but they can only contain symbols, and they define a new type.
 
@@ -403,7 +404,24 @@ Enumerations ("enums") are similar to tuples, but they can only contain symbols,
 
 Note the convenience syntax above: `@{...}` implicitly changes all the identifiers into their corresponding symbols.
 
-{TBD: More about enums, including using them in matches.}
+If used in a `match-on` statement, the compiler will warn about unused symbols.
+
+```
+	# Using the definition of type En above.
+
+	var e as En;
+
+	# ...do something that sets e...
+	match e
+	{
+		on @foo: print("e is foo");
+		on @baz: print("e is baz");
+	}
+```
+
+As we forgot to match against the symbol `bar` in this example, the compiler will issue a warning, which can be upgraded to an error if desired.
+
+{TBD: More about enums.}
 
 ## Structures
 
@@ -458,8 +476,6 @@ The `nothing` type is used as the return type for functions which do not return 
 		# do something with x
 	}
 ```
-
-{TBD: More about `nothing`, including case matching.}
 
 ## References
 
@@ -821,8 +837,6 @@ In the case where a specific type must be treated specially, you can define a sp
 		return (n as integer)**2 as string;
 	}
 ```
-
-{TBD: Do we like this syntax?}
 
 ## Concepts (interfaces, protocols)
 
