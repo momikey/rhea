@@ -65,6 +65,11 @@ std::string optional_type_samples[] = {
     "|std:fs:File|?"
 };
 
+std::string concept_match_samples[] = {
+    "T ~> Iterable",
+    "Ty ~> Stringable"
+};
+
 BOOST_AUTO_TEST_SUITE (Typenames)
 
 BOOST_DATA_TEST_CASE(type_pair, data::make(type_pair_samples))
@@ -144,6 +149,16 @@ BOOST_DATA_TEST_CASE(optional_type, data::make(optional_type_samples))
 
     BOOST_TEST(parse<
         simple_parser<rg::optional_type>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(concept_match, data::make(concept_match_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+
+    BOOST_TEST(parse<
+        simple_parser<rg::concept_match>
     >(in) == true);
 }
 

@@ -127,6 +127,15 @@ namespace rhea { namespace grammar {
         separator,
         either_type_name
     > {};
+
+    // Type and concept matching
+    struct type_match : type_pair {};
+
+    struct concept_match : seq <
+        identifier,
+        pad < string <'~', '>'>, ignored >,
+        type_name
+    > {};
 }}
 
 #endif /* RHEA_GRAMMAR_TYPENAMES_HPP */

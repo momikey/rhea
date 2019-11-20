@@ -45,6 +45,10 @@ namespace rhea { namespace grammar {
     struct kw_any : TAO_PEGTL_KEYWORD("any") {};
     struct kw_nothing : TAO_PEGTL_KEYWORD("nothing") {};
 
+    // Functions
+    struct kw_def : TAO_PEGTL_KEYWORD("def") {};
+    struct kw_return : TAO_PEGTL_KEYWORD("return") {};
+
     // Exceptions
     struct kw_try : TAO_PEGTL_KEYWORD("try") {};
     struct kw_catch : TAO_PEGTL_KEYWORD("catch") {};

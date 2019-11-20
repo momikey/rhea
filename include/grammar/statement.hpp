@@ -321,7 +321,173 @@ namespace rhea { namespace grammar {
         opt <finally_statement>
     > {};
 
-    // Match any kind of statement
+    ////
+    // Function definitions
+    ////
+    
+    // All the parts come first, then we build the definition rule
+    // out of them at the end.
+
+    // Helper template to reduce redundancy
+    template <typename Expr>
+    struct fn_values_list : if_must <
+        seq <
+            one <'{'>,
+            separator,
+            list <Expr, one <','>, ignored>,
+            separator
+        >,
+        one <'}'>
+    > {};
+
+    // If the wildcard argument is used, no others are allowed.
+    struct wildcard_argument : seq <
+        one <'{'>,
+        pad <
+            seq <
+                identifier,
+                pad <one <':'>, ignored>,
+                one <'*'>
+            >,
+            ignored
+        >,
+        one <'}'>
+    > {};
+
+    struct arguments_list : sor <
+        fn_values_list <type_pair>,
+        wildcard_argument
+    > {};
+
+    struct predicate_arguments_list : if_must <
+        seq <
+            one <'('>,
+            separator,
+            list <expression, one <','>, ignored>,
+            separator
+        >,
+        one <')'>
+    > {};
+
+    // Predicate calls are used in preconditions and postconditions.
+    struct fn_condition_predicate_call : seq <
+        identifier,
+        pad <one <'.'>, ignored>,
+        identifier,
+        pad <opt <predicate_arguments_list>, ignored>,
+        separator,
+        one <'?'>
+    > {};
+
+    struct conditions_list : fn_values_list <fn_condition_predicate_call> {};
+
+    // The "with" block indicates pre/postconditions.
+    struct fn_with_block : seq <
+        kw_with,
+        separator,
+        conditions_list
+    > {};
+
+    // Return statements can only come insside functions, though there's
+    // nothing in the parser that ensures this.
+    struct return_statement : seq <
+        kw_return,
+        separator,
+        expression
+    > {};
+
+    // Return types are enclosed in square brackets, and are optional.
+    struct return_type : if_must <
+        one <'['>,
+        pad <type_name, ignored>,
+        one <']'>        
+    > {};
+
+    // Different kinds of functions. We use different rules to match them.
+    struct function_name : identifier {};
+    struct predicate_name : seq < function_name, separator, one <'?'> > {};
+    struct operator_name : seq < function_name, separator, one <'$'> > {};
+    struct unchecked_name : seq < function_name, separator, one <'!'> > {};
+
+    // The generic parts of a function.
+    template <typename Expr>
+    struct generic_part : seq <
+        one < '<' >,
+        pad <Expr, ignored>,
+        one < '>' >
+    > {};
+
+    struct generic_concept : generic_part <concept_match> {};
+    struct generic_specialization : generic_part <type_match> {};
+    struct generic_function_type : sor <generic_concept, generic_specialization> {};
+
+    // Separate rules for different functions.
+
+    // Basic function definition, with all optionas possible
+    struct basic_function_def : seq <
+        kw_def,
+        separator,
+        function_name,
+        separator,
+        opt < pad <generic_function_type, ignored> >,
+        opt < pad <return_type, ignored> >,
+        opt < pad <arguments_list, ignored> >,
+        opt < pad <fn_with_block, ignored> >,
+        pad < one <'='>, ignored >,
+        stmt_or_block
+    > {};
+    
+    // Unchecked can't have pre/postconditions
+    struct unchecked_function_def : seq <
+        kw_def,
+        separator,
+        unchecked_name,
+        separator,
+        opt < pad <generic_function_type, ignored> >,
+        opt < pad <return_type, ignored> >,
+        opt < pad <arguments_list, ignored> >,
+        pad < one <'='>, ignored >,
+        stmt_or_block
+    > {};
+
+    // Predicates have fixed return types
+    struct predicate_function_def : seq <
+        kw_def,
+        separator,
+        predicate_name,
+        separator,
+        opt < pad <generic_function_type, ignored> >,
+        opt < pad <arguments_list, ignored> >,
+        opt < pad <fn_with_block, ignored> >,
+        pad < one <'='>, ignored >,
+        stmt_or_block
+    > {};
+
+    // Operator/conversion functions don't have special syntax (yet)
+    struct operator_function_def : seq <
+        kw_def,
+        separator,
+        operator_name,
+        separator,
+        opt < pad <generic_function_type, ignored> >,
+        opt < pad <return_type, ignored> >,
+        opt < pad <arguments_list, ignored> >,
+        opt < pad <fn_with_block, ignored> >,
+        pad < one <'='>, ignored >,
+        stmt_or_block
+    > {};
+
+    // Now put them all together, but basic last (because of suffixes).
+    struct function_definition : sor <
+        predicate_function_def,
+        operator_function_def,
+        unchecked_function_def,
+        basic_function_def
+    > {};
+
+    ////
+    // Statement
+    ////
     struct statement : sor <
         // These are "block" statements
         if_statement,
@@ -332,6 +498,7 @@ namespace rhea { namespace grammar {
         match_on_statement,
         match_when_statement,
         match_type_statement,
+        function_definition,
 
         // These all end in a semicolon
         seq <
@@ -348,6 +515,7 @@ namespace rhea { namespace grammar {
                 kw_continue,
                 try_statement,
                 throw_statement,
+                return_statement,
 
                 // If all else fails, try a bare expression
                 expression

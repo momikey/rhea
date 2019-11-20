@@ -148,6 +148,55 @@ std::string try_statement_samples[] = {
     "}"
 };
 
+std::string arguments_list_samples[] = {
+    "{ n: integer }",
+    "{ xyz: string, abc: list<integer> }",
+    "{ foo: Enum, bar: A_Structure, baz: |a, b, c| }"
+};
+
+std::string fn_predicate_call_samples[] = {
+    "foo.bar?",
+    "x.y(z)?",
+    "arg.my_predicate(1234, 'abc')?"
+};
+
+std::string with_block_samples[] = {
+    "with {\n"
+    "   y.not_negative?,\n"
+    "   y.less_than(32)?\n"
+    "}"
+};
+
+std::string unchecked_function_samples[] = {
+    "def f! = print('test');",
+    "def unchecked! <Ty ~> Stringable> [string] { s: Ty } = {\n"
+    "   print(s);\n"
+    "}"
+};
+
+std::string predicate_function_samples[] = {
+    "def f? { n: integer } = return n < 0;",
+    "def predicate? <Ty ~> Numeric> { n : Ty }\n"
+    "with { n.not_equal(0 as Ty)? } = {\n"
+    "   return ^1 / n;\n"
+    "}"
+};
+
+std::string operator_function_samples[] = {
+    "def add$ { l: Complex, r: Complex } =\n"
+    "{\n"
+    "   return Complex(l.real + r.real, l.imag + r.imag);\n"
+    "}"
+};
+
+std::string basic_function_samples[] = {
+    "def my_function = return 'Hello, world!';",
+
+    "def power [integer] { x : integer, y : integer }\n"
+    "with { y.not_negative?, y.less_than(32)? } =\n"
+    "{ return x ** y; }"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -202,6 +251,10 @@ BOOST_DATA_TEST_CASE(variable_declaration, data::make(variable_decl_samples))
         simple_parser<rg::variable_declaration>
     >(in) == true);
 }
+
+BOOST_AUTO_TEST_SUITE_END ()
+
+BOOST_AUTO_TEST_SUITE (Statements)
 
 BOOST_AUTO_TEST_CASE(statement_block)
 {
@@ -366,6 +419,73 @@ BOOST_DATA_TEST_CASE(try_statement, data::make(try_statement_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::try_statement>
+    >(in) == true);
+}
+
+BOOST_AUTO_TEST_SUITE_END ()
+
+BOOST_AUTO_TEST_SUITE (Functions)
+
+BOOST_DATA_TEST_CASE(arguments_list, data::make(arguments_list_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::arguments_list>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(fn_predicate_call, data::make(fn_predicate_call_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::fn_condition_predicate_call>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(with_block, data::make(with_block_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::fn_with_block>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(unchecked_function_def, data::make(unchecked_function_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::unchecked_function_def>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(predicate_function_def, data::make(predicate_function_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::predicate_function_def>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(operator_function_def, data::make(operator_function_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::operator_function_def>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(basic_function_def, data::make(basic_function_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::basic_function_def>
     >(in) == true);
 }
 
