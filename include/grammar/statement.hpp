@@ -6,7 +6,7 @@
 #include "keywords.hpp"
 #include "tokens.hpp"
 #include "typenames.hpp"
-#include "operators.hpp"
+#include "expression.hpp"
 #include "concepts.hpp"
 
 namespace rhea { namespace grammar {

@@ -1,6 +1,6 @@
 set(TESTS_GRAMMAR_SOURCES
     tokens.cpp
-    operators.cpp
+    expression.cpp
     statement.cpp
     strings.cpp
     typenames.cpp

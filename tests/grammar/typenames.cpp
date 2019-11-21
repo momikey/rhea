@@ -10,7 +10,7 @@
 #include "test_setup.hpp"
 
 #include "../../include/grammar/typenames.hpp"
-#include "../../include/grammar/operators.hpp"
+#include "../../include/grammar/expression.hpp"
 
 namespace data = boost::unit_test::data;
 

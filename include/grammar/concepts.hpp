@@ -5,7 +5,7 @@
 
 #include "tokens.hpp"
 #include "typenames.hpp"
-#include "operators.hpp"
+#include "expression.hpp"
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;

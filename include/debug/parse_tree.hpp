@@ -9,7 +9,7 @@
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
 #include "../grammar/tokens.hpp"
-#include "../grammar/operators.hpp"
+#include "../grammar/expression.hpp"
 #include "../grammar/statement.hpp"
 
 namespace rhea { namespace debug {
