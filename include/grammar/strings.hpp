@@ -1,6 +1,8 @@
 #ifndef RHEA_GRAMMAR_STRINGS_HPP
 #define RHEA_GRAMMAR_STRINGS_HPP
 
+#include <tao/pegtl.hpp>
+
 /*
  * String parsing is always hard and complex. For Rhea, we'll isolate
  * it in its own header. That's mostly to keep from cluttering up other

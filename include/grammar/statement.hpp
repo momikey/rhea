@@ -1,6 +1,8 @@
 #ifndef RHEA_GRAMMAR_STATEMENT_HPP
 #define RHEA_GRAMMAR_STATEMENT_HPP
 
+#include <tao/pegtl.hpp>
+
 #include "keywords.hpp"
 #include "tokens.hpp"
 #include "typenames.hpp"
@@ -512,7 +514,7 @@ namespace rhea { namespace grammar {
 
     struct module_name : sor <fully_qualified, relative_module_name> {};
 
-    struct module_definition : seq <
+    struct module_statement : seq <
         kw_module,
         separator,
         module_name
@@ -577,6 +579,10 @@ namespace rhea { namespace grammar {
                 try_statement,
                 throw_statement,
                 return_statement,
+                module_statement,
+                use_statement,
+                import_statement,
+                export_statement,
 
                 // If all else fails, try a bare expression
                 expression

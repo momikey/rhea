@@ -5,6 +5,7 @@ set(TESTS_GRAMMAR_SOURCES
     strings.cpp
     typenames.cpp
     concepts.cpp
+    module.cpp
 )
 
 add_library(tests_grammar OBJECT ${TESTS_GRAMMAR_SOURCES})

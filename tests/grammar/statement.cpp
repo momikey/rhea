@@ -538,12 +538,12 @@ BOOST_DATA_TEST_CASE(use_statement, data::make(use_samples))
     >(in) == true);
 }
 
-BOOST_DATA_TEST_CASE(module_definition, data::make(module_samples))
+BOOST_DATA_TEST_CASE(module_statement, data::make(module_samples))
 {
     BOOST_TEST_MESSAGE("Parsing " << sample);
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
-        simple_parser<rg::module_definition>
+        simple_parser<rg::module_statement>
     >(in) == true);
 }
 
