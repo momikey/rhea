@@ -204,6 +204,26 @@ std::string concept_samples[] = {
     "}"
 };
 
+std::string use_samples[] = {
+    "use std:fs",
+    "use :foo"
+};
+
+std::string module_samples[] = {
+    "module Mod",
+    "module com:example:my_module"
+};
+
+std::string import_samples[] = {
+    "import { foo, bar } from my_module",
+    "import { A, B } from a:long:module_name"
+};
+
+std::string export_samples[] = {
+    "export { foo, bar }",
+    "export { A }"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -429,6 +449,15 @@ BOOST_DATA_TEST_CASE(try_statement, data::make(try_statement_samples))
     >(in) == true);
 }
 
+BOOST_DATA_TEST_CASE(concept_definition, data::make(concept_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::concept_definition>
+    >(in) == true);
+}
+
 BOOST_AUTO_TEST_SUITE_END ()
 
 BOOST_AUTO_TEST_SUITE (Functions)
@@ -496,12 +525,43 @@ BOOST_DATA_TEST_CASE(basic_function_def, data::make(basic_function_samples))
     >(in) == true);
 }
 
-BOOST_DATA_TEST_CASE(concept_definition, data::make(concept_samples))
+BOOST_AUTO_TEST_SUITE_END ()
+
+BOOST_AUTO_TEST_SUITE (Modules)
+
+BOOST_DATA_TEST_CASE(use_statement, data::make(use_samples))
 {
     BOOST_TEST_MESSAGE("Parsing " << sample);
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
-        simple_parser<rg::concept_definition>
+        simple_parser<rg::use_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(module_definition, data::make(module_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::module_definition>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(import_statement, data::make(import_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::import_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(export_statement, data::make(export_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::export_statement>
     >(in) == true);
 }
 

@@ -52,6 +52,13 @@ namespace rhea { namespace grammar {
     // Concepts
     struct kw_concept : TAO_PEGTL_KEYWORD("concept") {};
 
+    // Modules
+    struct kw_module : TAO_PEGTL_KEYWORD("module") {};
+    struct kw_import : TAO_PEGTL_KEYWORD("import") {};
+    struct kw_export : TAO_PEGTL_KEYWORD("export") {};
+    struct kw_use : TAO_PEGTL_KEYWORD("use") {};
+    struct kw_from : TAO_PEGTL_KEYWORD("from") {};
+
     // Exceptions
     struct kw_try : TAO_PEGTL_KEYWORD("try") {};
     struct kw_catch : TAO_PEGTL_KEYWORD("catch") {};

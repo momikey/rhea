@@ -859,6 +859,8 @@ Concepts have their own syntax, which relies heavily on that of type functions.
 
 {TBD: Much more. This is one of the core features of Rhea, so give it its due.}
 
+{TBD: `.=` operator to determine if a structure type has a given field.}
+
 ### Use
 
 A function can take arguments that are concepts. Instead of defining these using the "named" syntax shown throughout this guide, concept parameters take a different form, using the "like" operator `~>`.

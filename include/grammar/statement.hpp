@@ -501,6 +501,51 @@ namespace rhea { namespace grammar {
     > {};
 
     ////
+    // Modules
+    ////
+
+    struct relative_module_name : seq <
+        one <':'>,
+        separator,
+        fully_qualified
+    > {};
+
+    struct module_name : sor <fully_qualified, relative_module_name> {};
+
+    struct module_definition : seq <
+        kw_module,
+        separator,
+        module_name
+    > {};
+
+    struct use_statement : seq <
+        kw_use,
+        separator,
+        module_name
+    > {};
+
+    struct import_list : seq <
+        one <'{'>,
+        separator,
+        list <identifier, one <','>, ignored>,
+        separator,
+        one <'}'>
+    > {};
+
+    struct import_statement : seq <
+        kw_import,
+        pad <import_list, ignored>,
+        kw_from,
+        separator,
+        module_name
+    > {};
+
+    struct export_statement : seq <
+        kw_export,
+        pad <import_list, ignored>
+    > {};
+
+    ////
     // Statement
     ////
     struct statement : sor <
@@ -514,6 +559,7 @@ namespace rhea { namespace grammar {
         match_when_statement,
         match_type_statement,
         function_definition,
+        concept_definition,
 
         // These all end in a semicolon
         seq <
