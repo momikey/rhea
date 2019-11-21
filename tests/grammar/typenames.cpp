@@ -40,7 +40,7 @@ std::string array_type_samples[] = {
 
 std::string complex_type_samples[] = {
     "list <string> [5]",
-    "dict <integer>[n*2]"
+    "dict <integer>[n*2]",
 };
 
 std::string constructor_expression_samples[] = {
@@ -63,11 +63,6 @@ std::string optional_type_samples[] = {
     "|integer|?",
     "|string|?",
     "|std:fs:File|?"
-};
-
-std::string concept_match_samples[] = {
-    "T ~> Iterable",
-    "Ty ~> Stringable"
 };
 
 BOOST_AUTO_TEST_SUITE (Typenames)
@@ -151,15 +146,4 @@ BOOST_DATA_TEST_CASE(optional_type, data::make(optional_type_samples))
         simple_parser<rg::optional_type>
     >(in) == true);
 }
-
-BOOST_DATA_TEST_CASE(concept_match, data::make(concept_match_samples))
-{
-    BOOST_TEST_MESSAGE("Parsing " << sample);
-    string_input<> in(sample, "test");
-
-    BOOST_TEST(parse<
-        simple_parser<rg::concept_match>
-    >(in) == true);
-}
-
 BOOST_AUTO_TEST_SUITE_END ()

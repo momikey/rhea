@@ -197,6 +197,13 @@ std::string basic_function_samples[] = {
     "{ return x ** y; }"
 };
 
+std::string concept_samples[] = {
+    "concept Stringable <Ty> = {\n"
+    "   # Check for a conversion to string\n"
+    "   Ty => to$ <Ty> -> string\n"
+    "}"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -486,6 +493,15 @@ BOOST_DATA_TEST_CASE(basic_function_def, data::make(basic_function_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::basic_function_def>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(concept_definition, data::make(concept_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::concept_definition>
     >(in) == true);
 }
 

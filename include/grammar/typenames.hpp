@@ -45,10 +45,9 @@ namespace rhea { namespace grammar {
         fully_qualified,
         at <
             separator,
-            sor <generic_type, /*return_type_spec,*/ array_type>
+            sor <generic_type, array_type>
         >,
         pad <opt <generic_type>, ignored>,
-        // pad <opt <return_type_spec>, ignored>,
         pad <opt <array_type>, ignored>
     > {};
 
@@ -130,12 +129,6 @@ namespace rhea { namespace grammar {
 
     // Type and concept matching
     struct type_match : type_pair {};
-
-    struct concept_match : seq <
-        identifier,
-        pad < string <'~', '>'>, ignored >,
-        type_name
-    > {};
 }}
 
 #endif /* RHEA_GRAMMAR_TYPENAMES_HPP */

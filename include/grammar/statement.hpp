@@ -5,6 +5,7 @@
 #include "tokens.hpp"
 #include "typenames.hpp"
 #include "operators.hpp"
+#include "concepts.hpp"
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
@@ -483,6 +484,20 @@ namespace rhea { namespace grammar {
         operator_function_def,
         unchecked_function_def,
         basic_function_def
+    > {};
+
+    ////
+    // Concepts
+    ////
+
+    struct concept_definition : seq <
+        kw_concept,
+        separator,
+        identifier,
+        separator,
+        concept_generic_type,
+        pad <one <'='>, ignored>,
+        concept_block
     > {};
 
     ////
