@@ -11,6 +11,7 @@
 #include "../grammar/tokens.hpp"
 #include "../grammar/expression.hpp"
 #include "../grammar/statement.hpp"
+#include "../grammar/selector.hpp"
 
 namespace rhea { namespace debug {
     namespace pt = tao::pegtl::parse_tree;
@@ -40,12 +41,22 @@ namespace rhea { namespace debug {
         }
     }
 
+    template <typename Node>
+    void print_partial_tree(std::ostream& os, Node* root)
+    {
+        if (root)
+        {
+            internal::print_node(os, root, 0);
+        }
+    }
+
     void print_parse_tree(std::ostream& os, std::string& input)
     {
         tao::pegtl::string_input<> in(input, "debug");
         auto root = pt::parse< 
             tao::pegtl::sor<rhea::grammar::stmt_or_block>,
-            selector > (in);
+            rhea::grammar::tree_selector // selector
+        > (in);
 
         if (root)
         {
