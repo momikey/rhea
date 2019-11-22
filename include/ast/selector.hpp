@@ -1,16 +1,12 @@
-#ifndef RHEA_GRAMMAR_SELECTOR_HPP
-#define RHEA_GRAMMAR_SELECTOR_HPP
+#ifndef RHEA_AST_SELECTOR_HPP
+#define RHEA_AST_SELECTOR_HPP
 
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
-#include "tokens.hpp"
-#include "strings.hpp"
-#include "expression.hpp"
-#include "typenames.hpp"
-#include "concepts.hpp"
-#include "statement.hpp"
-#include "module.hpp"
+#include "../grammar.hpp"
+
+#include "transform.hpp"
 
 /*
  * PEGTL provides an automatic parse tree builder. It can also be used
@@ -24,7 +20,7 @@
 
 namespace rhea { namespace ast {
     using namespace tao::pegtl;
-    using namesace rhea::grammar;
+    using namespace rhea::grammar;
 
     /*
      * The base selector. For anything that PEGTL has built in, we can
@@ -40,10 +36,9 @@ namespace rhea { namespace ast {
          * from strings.
          */
         parse_tree::store_content::on <
-            integer_literal,
-            hex_literal,
-            float_literal,
+            signed_integer,
             boolean_literal,
+            string_literal,
             symbol_name,
             identifier
             // and other rules that produce simple tokens
@@ -54,6 +49,27 @@ namespace rhea { namespace ast {
          * we can use it for "do nothing" nodes that still get stored
          * for whatever reason.
          */
+        parse_tree::remove_content::on <
+            exponent_operator,
+            multiply_operator,
+            divide_operator,
+            modulus_operator,
+            add_operator,
+            subtract_operator,
+            left_shift_operator,
+            right_shift_operator,
+            equals_operator,
+            not_equal_operator,
+            greater_equal_operator,
+            less_equal_operator,
+            less_than_operator,
+            greater_than_operator,
+            bitand_operator,
+            bitor_operator,
+            bitxor_operator,
+            kw_and,
+            kw_or
+        >,
 
         /*
          * parse_tree::fold_one::on removes its own content if it has multiple
@@ -61,16 +77,32 @@ namespace rhea { namespace ast {
          * for a lot of group/list/alternation things.
          */
         parse_tree::fold_one::on <
-            numeric_literal,
-            fully_qualified
-        >
+            numeric_literal
+        >,
 
         /*
          * parse_tree::discard_empty:on stores the node if it has children,
          * discarding any of its own content; if no children, then it removes
          * the node entirely. This might come in handy in a few cases.
          */
+
+        /*
+         * Any custom selectors we want to create. These can transform a node
+         * and its children in essentially any way, including removing some or
+         * all of them. For the most part, we'll just want to make AST info
+         * from them.
+         */
+
+        binop_rearrange::on <
+            exponential_binop,
+            multiplicative_binop,
+            additive_binop,
+            shift_binop,
+            relation_binop,
+            bitwise_binop,
+            boolean_binop
+        >
     > {};
 }}
 
-#endif /* RHEA_GRAMMAR_SELECTOR_HPP */
+#endif /* RHEA_AST_SELECTOR_HPP */

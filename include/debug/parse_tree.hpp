@@ -25,10 +25,15 @@ namespace rhea { namespace debug {
         template <typename Node>
         void print_node(std::ostream& os, const Node& n, int level)
         {
+            std::string space(level, ' ' );
+
             if (n->has_content())
             {
-                std::string space(level, ' ' );
                 os << level << space << n->name() << '\t' << n->string() << '\n';
+            }
+            else if (!n->is_root())
+            {
+                os << level << space << n->name() << '\n';
             }
 
             if (!n->children.empty())
@@ -55,7 +60,8 @@ namespace rhea { namespace debug {
         tao::pegtl::string_input<> in(input, "debug");
         auto root = pt::parse< 
             tao::pegtl::sor<rhea::grammar::stmt_or_block>,
-            rhea::grammar::tree_selector // selector
+            rhea::ast::tree_selector
+            // selector
         > (in);
 
         if (root)
