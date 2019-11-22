@@ -11,7 +11,7 @@
 #include "../grammar/tokens.hpp"
 #include "../grammar/expression.hpp"
 #include "../grammar/statement.hpp"
-#include "../grammar/selector.hpp"
+#include "../ast/selector.hpp"
 
 namespace rhea { namespace debug {
     namespace pt = tao::pegtl::parse_tree;
