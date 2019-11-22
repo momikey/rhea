@@ -1,5 +1,5 @@
-#ifndef RHEA_GRAMMAR_OPERATORS_HPP
-#define RHEA_GRAMMAR_OPERATORS_HPP
+#ifndef RHEA_GRAMMAR_EXPRESSION_HPP
+#define RHEA_GRAMMAR_EXPRESSION_HPP
 
 #include <tao/pegtl.hpp>
 
@@ -7,6 +7,7 @@
 #include "keywords.hpp"
 #include "strings.hpp"
 #include "typenames.hpp"
+#include "operator.hpp"
 #include "expression_fwd.hpp"
 
 namespace rhea { namespace grammar {
@@ -147,7 +148,7 @@ namespace rhea { namespace grammar {
     > {};
 
     struct member_expr : seq <
-        one <'.'>,
+        dot_operator,
         separator,
         identifier
     > {};
@@ -193,10 +194,13 @@ namespace rhea { namespace grammar {
     struct unary_prefix_op : sor <
         seq <
             sor <
-                one <'^'>,
-                one <'~'>,
-                one <'*'>,
-                seq < one <'+', '-'>, not_at <digit> >,
+                coerce_operator,
+                bitnot_operator,
+                dereference_operator,
+                seq < 
+                    sor <unary_plus_operator, unary_minus_operator>,
+                    not_at <digit>
+                >,
                 seq <kw_not, separator>,
                 seq <kw_ref, separator>,
                 seq <kw_ptr, separator>
@@ -208,55 +212,42 @@ namespace rhea { namespace grammar {
 
     struct exponential_binop : right_associative <
         unary_prefix_op,
-        TAO_PEGTL_STRING("**")
+        exponent_operator
     > {};
 
     struct multiplicative_binop : left_associative <
         exponential_binop,
-        sor <
-            seq< one <'*'>, not_at <one <'*'>>>,
-            one <'/'>,
-            one <'%'>
-        >        
+        sor <multiply_operator, divide_operator, modulus_operator>
     > {};
 
     struct additive_binop : left_associative <
         multiplicative_binop,
-        sor <
-            one <'+'>,
-            one <'-'>
-        >        
+        sor <add_operator, subtract_operator>        
     > {};
 
     struct shift_binop : left_associative <
         additive_binop,
-        sor <
-            TAO_PEGTL_STRING("<<"),
-            TAO_PEGTL_STRING(">>")
-        >
+        sor <left_shift_operator, right_shift_operator>
     > {};
 
     struct relation_binop : left_associative <
         shift_binop,
         sor <
-            TAO_PEGTL_STRING("=="),
-            TAO_PEGTL_STRING("!="),
-            TAO_PEGTL_STRING("<="),
-            TAO_PEGTL_STRING(">="),
-
-            // We have to use lookahead here so that these won't
-            // get picked up ahead of the shift operators below.
-            seq < one <'<'>, not_at < one <'<'> > >,
-            seq < one <'>'>, not_at < one <'>'> > >
+            equals_operator,
+            not_equal_operator,
+            greater_equal_operator,
+            less_equal_operator,
+            less_than_operator,
+            greater_than_operator
         >
     > {};
 
     struct bitwise_binop : left_associative <
         relation_binop,
         sor <
-            one <'&'>,
-            one <'|'>,
-            one <'^'>
+            bitand_operator,
+            bitor_operator,
+            bitxor_operator
         >
     > {};
 
@@ -271,7 +262,9 @@ namespace rhea { namespace grammar {
     struct cast_op : sor <
         seq <
             boolean_binop,
-            pad <kw_as, ignored>,
+            separator,
+            kw_as,
+            separator,
             type_name
         >,
         boolean_binop
@@ -280,7 +273,9 @@ namespace rhea { namespace grammar {
     struct type_check_op : sor <
         seq <
             cast_op,
-            pad <kw_is, ignored>,
+            separator,
+            kw_is,
+            separator,
             type_name
         >,
         cast_op
@@ -324,4 +319,4 @@ namespace rhea { namespace grammar {
 
 }}
 
-#endif /* RHEA_GRAMMAR_OPERATORS_HPP */
+#endif /* RHEA_GRAMMAR_EXPRESSION_HPP */
