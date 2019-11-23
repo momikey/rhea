@@ -23,6 +23,7 @@ std::string basic_string_samples[] = {
     "'abc'",
     R"("abc")",
     R"("\n")",
+    R"("\"")",
     "'123'",
     R"('\x1b')",
     R"("\u03b0")",

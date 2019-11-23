@@ -59,9 +59,14 @@ namespace rhea { namespace grammar {
     struct character : sor <escaped, regular_character> {};
 
     template <char Q>
+    struct character_string : star <not_at <one <Q>>, character> {};
+
+    template <char Q>
     struct quoted_string : if_must <
-        one <Q>,
-        until < one <Q>, character >
+        seq <
+            one <Q>, character_string <Q>
+        >,
+        one <Q>
     > {};
 
     // Rhea strings can be single or double quoted, with no real difference.
