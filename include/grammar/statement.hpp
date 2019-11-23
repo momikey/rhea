@@ -488,6 +488,13 @@ namespace rhea { namespace grammar {
         basic_function_def
     > {};
 
+    // Extern declarations are for non-Rhea functions (FFI).
+    struct extern_declaration : seq <
+        kw_extern,
+        separator,
+        identifier
+    > {};
+
     ////
     // Concepts
     ////
@@ -583,6 +590,7 @@ namespace rhea { namespace grammar {
                 use_statement,
                 import_statement,
                 export_statement,
+                extern_declaration,
 
                 // If all else fails, try a bare expression
                 expression

@@ -224,6 +224,11 @@ std::string export_samples[] = {
     "export { A }"
 };
 
+std::string extern_samples[] = {
+    "extern atan2",
+    "extern rhea_runtime_print"
+};
+
 ////////////////////
 //// Test cases
 ////////////////////
@@ -562,6 +567,15 @@ BOOST_DATA_TEST_CASE(export_statement, data::make(export_samples))
     string_input<> in(sample, "test");
     BOOST_TEST(parse<
         simple_parser<rg::export_statement>
+    >(in) == true);
+}
+
+BOOST_DATA_TEST_CASE(extern_statement, data::make(extern_samples))
+{
+    BOOST_TEST_MESSAGE("Parsing " << sample);
+    string_input<> in(sample, "test");
+    BOOST_TEST(parse<
+        simple_parser<rg::extern_declaration>
     >(in) == true);
 }
 
