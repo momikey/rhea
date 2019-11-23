@@ -37,19 +37,34 @@ namespace rhea { namespace ast {
          */
         parse_tree::store_content::on <
             signed_integer,
+            floating_point_number,
+            hex_literal,
             boolean_literal,
-            string_literal,
-            symbol_name,
-            identifier
+            integer_literal_suffix,
+            float_literal_suffix,
+            character_string<'\''>,
+            character_string<'"'>,
+            identifier,
+            function_suffix
             // and other rules that produce simple tokens
+
+            // These are here temporarily (note prefixing commas)
+            ,type_name
         >,
 
         /*
          * parse_tree::remove_content::on removes content (obviosuly);
-         * we can use it for "do nothing" nodes that still get stored
-         * for whatever reason.
+         * we can use it for nodes such as operators, where we can
+         * figure out what's going on with just the rule name. It's also
+         * useful for certain type definitions that only contain other tokens.
          */
         parse_tree::remove_content::on <
+            string_literal,
+            integer_literal,
+            float_literal,
+            symbol_name,
+
+            // Operators
             exponent_operator,
             multiply_operator,
             divide_operator,
@@ -68,7 +83,9 @@ namespace rhea { namespace ast {
             bitor_operator,
             bitxor_operator,
             kw_and,
-            kw_or
+            kw_or,
+            kw_is,
+            kw_as
         >,
 
         /*
@@ -77,7 +94,8 @@ namespace rhea { namespace ast {
          * for a lot of group/list/alternation things.
          */
         parse_tree::fold_one::on <
-            numeric_literal
+            numeric_literal,
+            fully_qualified
         >,
 
         /*
@@ -101,6 +119,15 @@ namespace rhea { namespace ast {
             relation_binop,
             bitwise_binop,
             boolean_binop
+        >,
+
+        typecheck_rearrange::on <
+            cast_op,
+            type_check_op
+        >,
+
+        ternary_transform::on <
+            ternary_op
         >
     > {};
 }}

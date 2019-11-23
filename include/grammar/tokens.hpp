@@ -67,7 +67,7 @@ namespace rhea { namespace grammar {
         must < rep_min_max <1, 16, xdigit> >
     > {};
 
-    struct float_literal : seq <
+    struct floating_point_number : seq <
         opt < one<'+', '-'> >,
         plus <digit>,
         at < one <'.', 'e', 'E' > >,
@@ -78,7 +78,11 @@ namespace rhea { namespace grammar {
         opt_must <
             one <'e','E'>,
             signed_integer
-        >,
+        >
+    > {};
+
+    struct float_literal : seq <
+        floating_point_number,
         opt <float_literal_suffix>
     > {};
 
