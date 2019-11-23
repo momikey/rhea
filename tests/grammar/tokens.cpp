@@ -19,7 +19,6 @@ namespace rg = rhea::grammar;
 
 // Datasets
 
-std::string unsigned_integer_samples[] = {"0", "1", "42", "999", "1234567890"};
 std::string signed_integer_samples[] = {"0", "+1", "-2", "-1234", "0000004"};
 std::string hex_literal_samples[] = {"0x0", "0x1", "0xa", "0xff", "0x0000aaaa00005555"};
 std::string float_literal_samples[] {"0.01", "123.456", "-1e6", "+999E-999", "46.29_f"};
@@ -29,27 +28,6 @@ std::string symbol_samples[] = {"@foo", "@A", "@a_long_name", "@a1b2"};
 std::string fully_qualified_samples[] = { "id", "main:_id", "std:math:sin", ":relative", "a_module:n123:CONSTANT"};
 
 BOOST_AUTO_TEST_SUITE(Integer)
-
-BOOST_DATA_TEST_CASE_F(fixture, unsigned_integer, data::make(unsigned_integer_samples))
-{
-    BOOST_TEST_MESSAGE("Parsing " << sample);
-    string_input<> in(sample, "test");
-
-    BOOST_TEST(parse<
-        simple_parser<rg::unsigned_integer>
-    >(in) == true);
-}
-
-BOOST_AUTO_TEST_CASE(bad_unsigned_integer)
-{
-    std::string invalid { "1abc" };
-
-    BOOST_TEST_MESSAGE("Parsing invalid input " << invalid);
-    string_input<> in(invalid, "test");
-    BOOST_TEST(parse<
-        simple_parser<rg::unsigned_integer>
-    >(in) == false);
-}
 
 BOOST_DATA_TEST_CASE_F(fixture, signed_integer, data::make(signed_integer_samples))
 {

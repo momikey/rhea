@@ -32,8 +32,6 @@ namespace rhea { namespace grammar {
     // A spacer is for tokens that *do* need space, like keywords
     struct spacer : plus<ignored> {};
 
-    struct unsigned_integer : rep_min_max <1, 20, digit> {};
-
     struct signed_integer : seq <
         opt < one < '+', '-' > >,
         rep_min_max <1, 20, digit>
