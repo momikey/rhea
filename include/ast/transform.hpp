@@ -22,5 +22,6 @@
 #include "transform/binary_operator.hpp"
 #include "transform/ternary_operator.hpp"
 #include "transform/typecheck_operator.hpp"
+#include "transform/unary_operator.hpp"
 
 #endif /* RHEA_AST_TRANSFORM_HPP */

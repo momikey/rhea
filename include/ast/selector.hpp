@@ -65,6 +65,14 @@ namespace rhea { namespace ast {
             symbol_name,
 
             // Operators
+            coerce_operator,
+            bitnot_operator,
+            dereference_operator,
+            unary_plus_operator,
+            unary_minus_operator,
+            kw_not,
+            kw_ref,
+            kw_ptr,
             exponent_operator,
             multiply_operator,
             divide_operator,
@@ -96,6 +104,8 @@ namespace rhea { namespace ast {
         parse_tree::fold_one::on <
             numeric_literal,
             fully_qualified
+
+            // These are temorarily placed here for debugging
         >,
 
         /*
@@ -128,6 +138,10 @@ namespace rhea { namespace ast {
 
         ternary_transform::on <
             ternary_op
+        >,
+
+        unary_rearrange::on <
+            unary_prefix_op
         >
     > {};
 }}
