@@ -1,7 +1,6 @@
 #ifndef RHEA_TRANSFORM_UNARY_HPP
 #define RHEA_TRANSFORM_UNARY_HPP
 
-
 #include <memory>
 
 #include <tao/pegtl.hpp>

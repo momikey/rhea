@@ -50,6 +50,7 @@ namespace rhea { namespace ast {
 
             // These are here temporarily (note prefixing commas)
             ,type_name
+            // ,postfix_op
         >,
 
         /*
@@ -65,6 +66,8 @@ namespace rhea { namespace ast {
             symbol_name,
 
             // Operators
+            subscript_expr,
+            member_expr,
             coerce_operator,
             bitnot_operator,
             dereference_operator,
@@ -103,7 +106,8 @@ namespace rhea { namespace ast {
          */
         parse_tree::fold_one::on <
             numeric_literal,
-            fully_qualified
+            fully_qualified,
+            postfix_expr
 
             // These are temorarily placed here for debugging
         >,
@@ -142,6 +146,10 @@ namespace rhea { namespace ast {
 
         unary_rearrange::on <
             unary_prefix_op
+        >,
+
+        postfix_rearrange::on <
+            postfix_op
         >
     > {};
 }}

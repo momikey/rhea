@@ -173,17 +173,16 @@ namespace rhea { namespace grammar {
         opt <function_suffix>
     > {};
 
+    struct postfix_expr : sor <
+        subscript_expr,
+        member_expr,
+        function_call_expr
+    > {};
+
     struct postfix_op : seq <
         operand,
         star <
-            pad <
-                sor <
-                    subscript_expr,
-                    member_expr,
-                    function_call_expr
-                >,
-                ignored
-            >
+            pad <postfix_expr, ignored>
         >
     > {};
 
