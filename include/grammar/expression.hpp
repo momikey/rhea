@@ -110,14 +110,16 @@ namespace rhea { namespace grammar {
         expression
     > {};
 
+    struct dictionary_entry : kv_pair <
+        sor <symbol_name, numeric_literal, string_literal>
+    > {};
+
     struct dictionary_expression : if_must <
         seq <
             one <'{'>,
             separator,
             list_must <
-                kv_pair <
-                    sor <symbol_name, numeric_literal, string_literal>
-                >,
+                dictionary_entry,
                 one <','>,
                 ignored
             >,
@@ -161,13 +163,20 @@ namespace rhea { namespace grammar {
         ignored
     > {};
 
+    struct unnamed_argument_list : expression_list {};
+
+    struct empty_argument_list : success {};
+
+    struct function_argument_list : pad <
+        sor <named_argument_list, unnamed_argument_list, empty_argument_list>,
+        ignored
+    > {};
+
     struct function_call_expr : seq <
         one <'('>,
-        opt <
-            pad <
-                sor <named_argument_list, expression_list>,
-                ignored
-            >
+        pad <
+            sor <named_argument_list, unnamed_argument_list, empty_argument_list>,
+            ignored
         >,
         one <')'>,
         opt <function_suffix>

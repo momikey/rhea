@@ -64,8 +64,18 @@ namespace rhea { namespace ast {
             integer_literal,
             float_literal,
             symbol_name,
+            named_argument_list,
+            unnamed_argument_list,
+            empty_argument_list,
+            dictionary_entry,
+            dictionary_expression,
+            tuple_expression,
+            list_expression,
+            array_expression,
+            symbol_list_expression,
 
             // Operators
+            function_call_expr,
             subscript_expr,
             member_expr,
             coerce_operator,
@@ -107,7 +117,9 @@ namespace rhea { namespace ast {
         parse_tree::fold_one::on <
             numeric_literal,
             fully_qualified,
-            postfix_expr
+            postfix_expr,
+            named_argument,
+            function_argument_list
 
             // These are temorarily placed here for debugging
         >,
