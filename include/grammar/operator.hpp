@@ -64,6 +64,10 @@ namespace rhea { namespace grammar {
     struct bitor_operator : one <'|'> {};
 
     struct bitxor_operator : one <'^'> {};
+
+    struct return_type_operator : string <'-', '>'> {};
+
+    struct assignment_operator : one <'='> {};
 }}
 
 #endif /* RHEA_GRAMMAR_OPERATOR_HPP */

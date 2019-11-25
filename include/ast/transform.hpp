@@ -20,6 +20,7 @@
      */
 
 #include "transform/binary_operator.hpp"
+#include "transform/discard_subtree.hpp"
 #include "transform/postfix_operator.hpp"
 #include "transform/ternary_operator.hpp"
 #include "transform/typecheck_operator.hpp"

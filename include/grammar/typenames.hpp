@@ -4,6 +4,7 @@
 #include <tao/pegtl.hpp>
 
 #include "tokens.hpp"
+#include "operator.hpp"
 #include "expression_fwd.hpp"
 
 namespace rhea { namespace grammar {
@@ -32,7 +33,7 @@ namespace rhea { namespace grammar {
     > {};
 
     struct return_type_spec : seq <
-        string <'-', '>'>,
+        return_type_operator,
         separator,
         type_name
     > {};
@@ -41,14 +42,22 @@ namespace rhea { namespace grammar {
 
     struct simple_type_name : fully_qualified {};
 
+    struct complex_type_lookahead : at <
+        separator,
+        sor <generic_type, array_type>
+    > {};
+
     struct complex_type_name : seq <
         fully_qualified,
-        at <
-            separator,
-            sor <generic_type, array_type>
-        >,
+        complex_type_lookahead,
         pad <opt <generic_type>, ignored>,
         pad <opt <array_type>, ignored>
+    > {};
+
+    struct pointer_or_reference_name : seq <
+        ptr_reference_type,
+        separator,
+        type_name
     > {};
 
     struct either_type_name : sor <complex_type_name, simple_type_name> {};
@@ -76,11 +85,7 @@ namespace rhea { namespace grammar {
     > {};
 
     struct type_name : sor <
-        seq <
-            ptr_reference_type,
-            separator,
-            type_name
-        >,
+        pointer_or_reference_name,
         either_type_name,
         optional_type,
         tagged_union
@@ -115,7 +120,7 @@ namespace rhea { namespace grammar {
         separator,
         identifier,
         separator,
-        one <'='>
+        assignment_operator
     > {};
 
     // Type assertions are used in the match-type statement. We define

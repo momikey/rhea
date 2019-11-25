@@ -49,8 +49,6 @@ namespace rhea { namespace ast {
             // and other rules that produce simple tokens
 
             // These are here temporarily (note prefixing commas)
-            ,type_name
-            // ,postfix_op
         >,
 
         /*
@@ -106,7 +104,19 @@ namespace rhea { namespace ast {
             kw_and,
             kw_or,
             kw_is,
-            kw_as
+            kw_as,
+
+            // Typenames
+            generic_type,
+            array_type,
+            return_type_spec,
+            simple_type_name,
+            complex_type_name,
+            variant_type_list,
+            optional_type,
+            type_pair,
+            constructor_expression,
+            type_assertion
         >,
 
         /*
@@ -119,7 +129,11 @@ namespace rhea { namespace ast {
             fully_qualified,
             postfix_expr,
             named_argument,
-            function_argument_list
+            function_argument_list,
+            type_name,
+            constant_expression,
+            type_match,
+            tagged_union
 
             // These are temorarily placed here for debugging
         >,
@@ -136,6 +150,10 @@ namespace rhea { namespace ast {
          * all of them. For the most part, we'll just want to make AST info
          * from them.
          */
+
+        discard_subtree::on <
+            complex_type_lookahead
+        >,
 
         binop_rearrange::on <
             exponential_binop,
@@ -157,7 +175,9 @@ namespace rhea { namespace ast {
         >,
 
         unary_rearrange::on <
-            unary_prefix_op
+            unary_prefix_op,
+            pointer_or_reference_name,
+            either_type_name
         >,
 
         postfix_rearrange::on <
