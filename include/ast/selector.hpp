@@ -138,6 +138,21 @@ namespace rhea { namespace ast {
             throw_statement,
             finally_statement,
 
+            // Functions
+            arguments_list,
+            wildcard_argument,
+            predicate_arguments_list,
+            fn_condition_predicate_call,
+            fn_with_block,
+            return_statement,
+            return_type,
+            generic_function_type,
+            basic_function_def,
+            predicate_function_def,
+            unchecked_function_def,
+            operator_function_def,
+            extern_declaration,
+
             // Typenames
             generic_type,
             array_type,
@@ -156,8 +171,8 @@ namespace rhea { namespace ast {
             concept_function_type,
             concept_function_check,
             concept_member_check,
-            concept_check,
-            concept_block
+            concept_block,
+            concept_definition
 
         >,
 
@@ -183,7 +198,13 @@ namespace rhea { namespace ast {
             variable_declaration,
             exception_spec,
             statement,
-            stmt_or_block
+            stmt_or_block,
+            function_name,
+            predicate_name,
+            operator_name,
+            unchecked_name,
+            function_definition,
+            concept_check
 
             // These are temorarily placed here for debugging
         >,
