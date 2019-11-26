@@ -68,6 +68,12 @@ namespace rhea { namespace grammar {
     struct return_type_operator : string <'-', '>'> {};
 
     struct assignment_operator : one <'='> {};
+
+    struct concept_match_operator : string <'~', '>'> {};
+
+    struct function_match_operator : string <'=', '>'> {};
+
+    struct member_match_operator : string <'.', '='> {};
 }}
 
 #endif /* RHEA_GRAMMAR_OPERATOR_HPP */

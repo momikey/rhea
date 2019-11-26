@@ -13,7 +13,7 @@ namespace rhea { namespace grammar {
     using namespace tao::pegtl;
 
     // TODO: Add other types of assignment LHS, such as structure fields
-    struct assignment_lhs : identifier
+    struct assignment_lhs : unary_prefix_op
     {};
 
     struct assignment_rhs : sor <
@@ -25,43 +25,45 @@ namespace rhea { namespace grammar {
 
     struct assignment : seq <
         assignment_lhs,
-        pad < one<'='>, ignored >,
+        pad <assignment_operator, ignored>,
         assignment_rhs
     > {};
 
     // The valid operators for compound assignment (like C's +=)
     struct augment_operators : sor <
-        string <'*', '*'>,
-        string <'<', '<'>,
-        string <'>', '>'>,
-        one <'+'>,
-        one <'-'>,
-        one <'*'>,
-        one <'/'>,
-        one <'%'>,
-        one <'&'>,
-        one <'|'>,
-        one <'^'>
+        exponent_operator,
+        left_shift_operator,
+        right_shift_operator,
+        add_operator,
+        subtract_operator,
+        multiply_operator,
+        divide_operator,
+        modulus_operator,
+        bitand_operator,
+        bitor_operator,
+        bitxor_operator
     > {};
+
+    struct augmented_assign : seq <augment_operators, assignment_operator> {};
 
     struct compound_assignment : seq <
         assignment_lhs,
-        pad <
-            seq < augment_operators, one <'='> >,
-            ignored
-        >,
+        pad <augmented_assign, ignored>,
         assignment_rhs
     > {};
 
     struct variable_initialization : seq <
         assignment_lhs,
-        pad < one<'='>, ignored >,
+        pad <assignment_operator, ignored >,
         assignment_rhs
     > {};
 
+    // Rule alias so we can use a selector in the AST
+    struct type_declaration_operator : kw_as {};
+
     struct declaration_as_type : seq <
         assignment_lhs,
-        pad < kw_as, ignored >,
+        pad <type_declaration_operator, ignored >,
         type_name
     > {};
 
@@ -152,18 +154,18 @@ namespace rhea { namespace grammar {
         expression
     > {};
 
+    struct with_declaration :  if_must_else <
+        one <'('>,
+        seq <
+            list <declaration_as_type, one <','>, ignored>,
+            one <')'>
+        >,
+        declaration_as_type
+    > {};
+
     struct with_statement : seq <
         kw_with,
-        separator,
-        if_must_else <
-            one <'('>,
-            seq <
-                pad <declaration_as_type, ignored>,
-                one <')'>
-            >,
-            declaration_as_type
-        >,
-        separator,
+        pad <with_declaration, ignored>,
         stmt_or_block
     > {};
 
@@ -286,16 +288,18 @@ namespace rhea { namespace grammar {
         expression
     > {};
 
+    struct exception_spec : if_must <
+        seq <
+            one <'{'>,
+            pad <type_pair, ignored>
+        >,
+        one <'}'>
+    > {};
+
     struct catch_statement : seq <
         kw_catch,
         separator,
-        if_must <
-            seq <
-                one <'{'>,
-                pad <type_pair, ignored>
-            >,
-            one <'}'>
-        >,
+        exception_spec,
         separator,
         stmt_or_block
     > {};
@@ -323,6 +327,11 @@ namespace rhea { namespace grammar {
         separator,
         opt <finally_statement>
     > {};
+
+    // A bare expression is just that. It's the last resort parse for
+    // any statement context. We'll give it an alias here so we can
+    // account for it in the AST.
+    struct bare_expression : expression {};
 
     ////
     // Function definitions
@@ -567,6 +576,7 @@ namespace rhea { namespace grammar {
         match_on_statement,
         match_when_statement,
         match_type_statement,
+        try_statement,
         function_definition,
         concept_definition,
 
@@ -583,7 +593,6 @@ namespace rhea { namespace grammar {
                 compound_assignment,
                 kw_break,
                 kw_continue,
-                try_statement,
                 throw_statement,
                 return_statement,
                 module_statement,
@@ -593,7 +602,7 @@ namespace rhea { namespace grammar {
                 extern_declaration,
 
                 // If all else fails, try a bare expression
-                expression
+                bare_expression
             >,
             separator,
             one <';'>

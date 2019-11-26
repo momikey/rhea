@@ -40,7 +40,7 @@ namespace rhea { namespace grammar {
 
     struct ptr_reference_type : sor <kw_ref, kw_ptr> {};
 
-    struct simple_type_name : fully_qualified {};
+    // struct simple_type_name : fully_qualified {};
 
     struct complex_type_lookahead : at <
         separator,
@@ -60,7 +60,7 @@ namespace rhea { namespace grammar {
         type_name
     > {};
 
-    struct either_type_name : sor <complex_type_name, simple_type_name> {};
+    struct either_type_name : sor <complex_type_name, fully_qualified> {};
 
     struct variant_type_list : list <type_name, one <','>, ignored> {};
 

@@ -74,6 +74,7 @@ std::string do_statement_samples[] = {
 
 std::string with_statement_samples[] = {
     "with (s as string) {}",
+    "with (s as string, b as byte) {}",
     "with n as integer n = 42;"
 };
 

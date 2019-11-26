@@ -8,6 +8,7 @@ namespace rhea { namespace grammar {
     struct expression;
     struct constant_expression;
     struct function_call_expr;
+    struct unary_prefix_op;
 }}
 
 #endif /* RHEA_GRAMMAR_EXPR_FWD_HPP */

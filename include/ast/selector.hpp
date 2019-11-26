@@ -55,7 +55,9 @@ namespace rhea { namespace ast {
          * parse_tree::remove_content::on removes content (obviosuly);
          * we can use it for nodes such as operators, where we can
          * figure out what's going on with just the rule name. It's also
-         * useful for certain type definitions that only contain other tokens.
+         * useful for certain type definitions that only contain other tokens,
+         * so most of our non-terminals will actually use this selector if
+         * they don't need to do further rearranging.
          */
         parse_tree::remove_content::on <
             string_literal,
@@ -106,17 +108,57 @@ namespace rhea { namespace ast {
             kw_is,
             kw_as,
 
+            // Statements
+            assignment,
+            compound_assignment,
+            bare_expression,
+            declaration_as_type,
+            constant_declaration,
+            statement_block,
+            if_statement,
+            unless_statement,
+            while_statement,
+            for_statement,
+            do_statement,
+            with_statement,
+            with_declaration,
+            on_case,
+            predicate_call,
+            when_case,
+            default_case,
+            type_case,
+            match_on_statement,
+            match_when_statement,
+            match_type_statement,
+            enum_declaration,
+            structure_declaration,
+            type_alias,
+            try_statement,
+            catch_statement,
+            throw_statement,
+            finally_statement,
+
             // Typenames
             generic_type,
             array_type,
             return_type_spec,
-            simple_type_name,
+            // simple_type_name,
             complex_type_name,
             variant_type_list,
             optional_type,
             type_pair,
             constructor_expression,
-            type_assertion
+            type_assertion,
+
+            // Concepts
+            concept_match,
+            concept_function_name,
+            concept_function_type,
+            concept_function_check,
+            concept_member_check,
+            concept_check,
+            concept_block
+
         >,
 
         /*
@@ -133,7 +175,15 @@ namespace rhea { namespace ast {
             type_name,
             constant_expression,
             type_match,
-            tagged_union
+            tagged_union,
+            concept_generic_type,
+            assignment_lhs,
+            assignment_rhs,
+            augment_operators,
+            variable_declaration,
+            exception_spec,
+            statement,
+            stmt_or_block
 
             // These are temorarily placed here for debugging
         >,
@@ -143,6 +193,9 @@ namespace rhea { namespace ast {
          * discarding any of its own content; if no children, then it removes
          * the node entirely. This might come in handy in a few cases.
          */
+        parse_tree::discard_empty::on <
+            else_block
+        >,
 
         /*
          * Any custom selectors we want to create. These can transform a node
@@ -152,7 +205,8 @@ namespace rhea { namespace ast {
          */
 
         discard_subtree::on <
-            complex_type_lookahead
+            complex_type_lookahead,
+            type_declaration_operator
         >,
 
         binop_rearrange::on <

@@ -13,7 +13,7 @@ namespace rhea { namespace grammar {
     // A concept match in a function argument or generic type.
     struct concept_match : seq <
         identifier,
-        pad < string <'~', '>'>, ignored >,
+        pad <concept_match_operator, ignored>,
         type_name
     > {};
 
@@ -43,7 +43,7 @@ namespace rhea { namespace grammar {
     // returning type R defined for that type? In Rhea syntax: `T => F <T> -> R`
     struct concept_function_check : seq <
         identifier,
-        pad <string <'=', '>'>, ignored>,
+        pad <function_match_operator, ignored>,
         concept_function_type
     > {};
 
@@ -51,7 +51,7 @@ namespace rhea { namespace grammar {
     // is the member m defined? In Rhea syntax: `T .= m`
     struct concept_member_check : seq <
         identifier,
-        pad <string <'.', '='>, ignored>,
+        pad <member_match_operator, ignored>,
         identifier
     > {};
 
