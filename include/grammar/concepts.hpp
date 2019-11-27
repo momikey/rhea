@@ -26,7 +26,7 @@ namespace rhea { namespace grammar {
 
     // A function name in a concept check.
     struct concept_function_name : seq <
-        fully_qualified,
+        any_identifier,
         opt <function_suffix>
     > {};
 

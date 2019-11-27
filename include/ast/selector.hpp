@@ -73,6 +73,7 @@ namespace rhea { namespace ast {
             list_expression,
             array_expression,
             symbol_list_expression,
+            relative_identifier,
 
             // Operators
             function_call_expr,
@@ -172,8 +173,19 @@ namespace rhea { namespace ast {
             concept_function_check,
             concept_member_check,
             concept_block,
-            concept_definition
+            concept_definition,
 
+            // Modules
+            module_statement,
+            use_statement,
+            import_list,
+            import_statement,
+            export_statement,
+            module_name,
+
+            // Top-level nodes
+            module_definition,
+            program_definition
         >,
 
         /*
@@ -184,6 +196,7 @@ namespace rhea { namespace ast {
         parse_tree::fold_one::on <
             numeric_literal,
             fully_qualified,
+            any_identifier,
             postfix_expr,
             named_argument,
             function_argument_list,

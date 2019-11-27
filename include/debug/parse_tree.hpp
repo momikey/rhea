@@ -59,7 +59,11 @@ namespace rhea { namespace debug {
     {
         tao::pegtl::string_input<> in(input, "debug");
         auto root = pt::parse< 
-            tao::pegtl::sor<rhea::grammar::stmt_or_block>,
+            tao::pegtl::sor<
+                rhea::grammar::program_definition,
+                rhea::grammar::stmt_or_block,
+                rhea::grammar::expression
+            >,
             rhea::ast::tree_selector
             // selector
         > (in);

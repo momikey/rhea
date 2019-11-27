@@ -136,7 +136,7 @@ namespace rhea { namespace grammar {
         parenthesized,
         numeric_literal,
         string_literal,
-        fully_qualified
+        any_identifier
     > {};
 
     ////
@@ -321,7 +321,7 @@ namespace rhea { namespace grammar {
         parenthesized,
         numeric_literal,
         string_literal,
-        fully_qualified,
+        any_identifier,
         symbol_name
     > {};
 

@@ -180,7 +180,7 @@ namespace rhea { namespace grammar {
 
     // A call to a predicate function, with optional arguments
     struct predicate_call : seq <
-        fully_qualified,
+        any_identifier,
         separator,
         opt_must <
             seq <
@@ -233,7 +233,7 @@ namespace rhea { namespace grammar {
     struct match_on_statement : seq <
         kw_match,
         separator,
-        fully_qualified,
+        any_identifier,
         separator,
         match_block <on_case>
     > {};
@@ -241,7 +241,7 @@ namespace rhea { namespace grammar {
     struct match_when_statement : seq <
         kw_match,
         separator,
-        fully_qualified,
+        any_identifier,
         separator,
         match_block <when_case>
     > {};
@@ -249,7 +249,7 @@ namespace rhea { namespace grammar {
     struct match_type_statement : seq <
         kw_match,
         separator,
-        fully_qualified,
+        any_identifier,
         separator,
         match_block <type_case>
     > {};
@@ -522,13 +522,7 @@ namespace rhea { namespace grammar {
     // Modules
     ////
 
-    struct relative_module_name : seq <
-        one <':'>,
-        separator,
-        fully_qualified
-    > {};
-
-    struct module_name : sor <fully_qualified, relative_module_name> {};
+    struct module_name : any_identifier {};
 
     struct module_statement : seq <
         kw_module,

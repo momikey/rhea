@@ -48,7 +48,7 @@ namespace rhea { namespace grammar {
     > {};
 
     struct complex_type_name : seq <
-        fully_qualified,
+        any_identifier,
         complex_type_lookahead,
         pad <opt <generic_type>, ignored>,
         pad <opt <array_type>, ignored>
@@ -60,7 +60,7 @@ namespace rhea { namespace grammar {
         type_name
     > {};
 
-    struct either_type_name : sor <complex_type_name, fully_qualified> {};
+    struct either_type_name : sor <complex_type_name, any_identifier> {};
 
     struct variant_type_list : list <type_name, one <','>, ignored> {};
 

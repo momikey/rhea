@@ -110,12 +110,20 @@ namespace rhea { namespace grammar {
     // A fully-qualified identifier contains a list of modules
     // separated by colons.
     struct fully_qualified : seq <
-        opt < one <':'> >,
         list <
             identifier,
             one <':'>
         >
     > {};
+
+    // A relative identifier contains a list of modules
+    // prefixed with a colon.
+    struct relative_identifier : seq <
+        one <':'>,
+        fully_qualified
+    > {};
+
+    struct any_identifier : sor <relative_identifier, fully_qualified> {};
 
     struct symbol_name : if_must <
         one <'@'>,
