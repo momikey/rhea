@@ -61,8 +61,7 @@ namespace rhea { namespace debug {
         auto root = pt::parse< 
             tao::pegtl::sor<
                 rhea::grammar::program_definition,
-                rhea::grammar::stmt_or_block,
-                rhea::grammar::expression
+                rhea::grammar::stmt_or_block
             >,
             rhea::ast::tree_selector
             // selector
