@@ -1,6 +1,8 @@
 #ifndef RHEA_AST_NODE_BASE_HPP
 #define RHEA_AST_NODE_BASE_HPP
 
+#include "tao/pegtl.hpp"
+
 #include "../parse_tree_node.hpp"
 
 /*
@@ -22,9 +24,6 @@
  */
 
 namespace rhea { namespace ast {
-    // Forward declaration specific to this file.
-    struct parser_node;
-
     class ASTNode
     {
         public:
@@ -32,7 +31,7 @@ namespace rhea { namespace ast {
         virtual ~ASTNode() {};
 
         private:
-        parser_node* owner;
+        tao::pegtl::position m_position;
     };
 }}
 

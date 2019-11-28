@@ -24,17 +24,19 @@ namespace rhea { namespace debug {
 
     namespace internal {
         template <typename Node>
-        void print_node(std::ostream& os, const Node& n, int level)
+        std::ostream& print_node(std::ostream& os, const Node& n, int level)
         {
             std::string space(level, ' ' );
 
             if (n->has_content())
             {
-                os << level << space << n->name() << '\t' << n->string() << '\n';
+                os << level << ' ' << tao::pegtl::to_string(n->begin())
+                   << space << n->name() << '\t' << n->string() << '\n';
             }
             else if (!n->is_root())
             {
-                os << level << space << n->name() << '\n';
+                os << level << ' ' << tao::pegtl::to_string(n->begin())
+                   << space << n->name() << '\n';
             }
 
             if (!n->children.empty())
@@ -44,6 +46,8 @@ namespace rhea { namespace debug {
                     print_node(os, child, level+1);
                 }
             }
+
+            return os;
         }
     }
 
