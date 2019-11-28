@@ -4,14 +4,15 @@
 #include <string>
 #include <iostream>
 #include <type_traits>
+#include <memory>
 
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
-#include "../grammar/tokens.hpp"
-#include "../grammar/expression.hpp"
+#include "../grammar/module.hpp"
 #include "../grammar/statement.hpp"
 #include "../ast/selector.hpp"
+#include "../ast/parse_tree_node.hpp"
 
 namespace rhea { namespace debug {
     namespace pt = tao::pegtl::parse_tree;
@@ -51,7 +52,7 @@ namespace rhea { namespace debug {
     {
         if (root)
         {
-            internal::print_node(os, root, 0);
+            internal::print_node(os, root, 0u);
         }
     }
 
@@ -63,8 +64,8 @@ namespace rhea { namespace debug {
                 rhea::grammar::program_definition,
                 rhea::grammar::stmt_or_block
             >,
+            rhea::ast::parser_node,
             rhea::ast::tree_selector
-            // selector
         > (in);
 
         if (root)
@@ -75,6 +76,41 @@ namespace rhea { namespace debug {
         {
             std::cerr << "Parse error\n";
         }
+    }
+
+    auto input_from_string(std::string& input)
+    {
+        return std::make_unique<tao::pegtl::string_input<>>(input, "debug");
+    }
+
+    template <typename Node = tao::pegtl::parse_tree::node>
+    std::unique_ptr<Node> parse(tao::pegtl::string_input<>& in)
+    {
+        // tao::pegtl::string_input<> in(input, "debug");
+
+        try
+        {
+            auto root = pt::parse< 
+                tao::pegtl::sor<
+                    rhea::grammar::program_definition,
+                    rhea::grammar::stmt_or_block
+                >,
+                Node,
+                rhea::ast::tree_selector
+            > (in);
+
+            return std::move(root);
+        }
+        catch (tao::pegtl::parse_error& error)
+        {
+            const auto p = error.positions.front();
+            std::cerr
+                << error.what() << '\n'
+                << in.line_at(p) << '\n'
+                << std::string(p.byte_in_line, ' ') << "^\n";
+        }
+
+        return nullptr;
     }
 
 }}

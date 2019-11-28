@@ -10,7 +10,10 @@ int main()
 
     while (std::getline(std::cin, input))
     {
-        rhea::debug::print_parse_tree(std::cout, input);
+        auto in = rhea::debug::input_from_string(input);
+        auto tree = rhea::debug::parse<rhea::ast::parser_node>(*in);
+        rhea::debug::print_partial_tree(std::cout, tree.get());
+        // rhea::debug::print_parse_tree(std::cout, input);
     }
 
     return 0;
