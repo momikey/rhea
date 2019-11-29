@@ -36,7 +36,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::Integer);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Integer);
     }
 
     BOOST_DATA_TEST_CASE(byte_ast, data::make(byte_samples))
@@ -46,7 +46,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::Byte);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Byte);
     }
 
     BOOST_DATA_TEST_CASE(float_ast, data::make(float_samples))
@@ -56,7 +56,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::Float);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Float);
     }
 
     BOOST_DATA_TEST_CASE(double_ast, data::make(double_samples))
@@ -66,7 +66,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::Double);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Double);
     }
 
     BOOST_DATA_TEST_CASE(long_ast, data::make(long_samples))
@@ -76,7 +76,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::Long);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Long);
     }
 
     BOOST_DATA_TEST_CASE(uinteger_ast, data::make(uinteger_samples))
@@ -86,7 +86,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::UnsignedInteger);
+        BOOST_TEST(node.type == rhea::ast::BasicType::UnsignedInteger);
     }
 
     BOOST_DATA_TEST_CASE(ubyte_ast, data::make(ubyte_samples))
@@ -96,7 +96,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::UnsignedByte);
+        BOOST_TEST(node.type == rhea::ast::BasicType::UnsignedByte);
     }
 
     BOOST_DATA_TEST_CASE(ulong_ast, data::make(ulong_samples))
@@ -106,7 +106,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
-        BOOST_TEST(node.type == rhea::ast::Numeric::UnsignedLong);
+        BOOST_TEST(node.type == rhea::ast::BasicType::UnsignedLong);
     }
 
     BOOST_DATA_TEST_CASE(boolean_ast, data::make(boolean_samples))
@@ -116,6 +116,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Boolean);
     }
 
     BOOST_DATA_TEST_CASE(string_ast, data::make(string_samples))
@@ -125,6 +126,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
+        BOOST_TEST(node.type == rhea::ast::BasicType::String);
     }
 
     BOOST_DATA_TEST_CASE(symbol_ast, data::make(symbol_samples))
@@ -134,6 +136,18 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.value == sample);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Symbol);
     }
+
+    BOOST_AUTO_TEST_CASE(nothing_literal)
+    {
+        auto node = rhea::ast::Nothing();
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
+
+        BOOST_TEST(node.value == nullptr);
+        BOOST_TEST(node.type == rhea::ast::BasicType::Nothing);
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

@@ -12,6 +12,7 @@ character_string<'\''>
 character_string<'"'>
 identifier
 function_suffix
+nothing_literal
 
 ## Operands
 
