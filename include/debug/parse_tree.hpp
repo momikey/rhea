@@ -12,6 +12,7 @@
 #include "../grammar/module.hpp"
 #include "../grammar/statement.hpp"
 #include "../ast/selector.hpp"
+#include "../ast/nodes.hpp"
 #include "../ast/parse_tree_node.hpp"
 
 namespace rhea { namespace debug {

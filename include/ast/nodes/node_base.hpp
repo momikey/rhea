@@ -1,7 +1,9 @@
 #ifndef RHEA_AST_NODE_BASE_HPP
 #define RHEA_AST_NODE_BASE_HPP
 
-#include "tao/pegtl.hpp"
+#include <string>
+
+#include <tao/pegtl.hpp>
 
 #include "../parse_tree_node.hpp"
 
@@ -27,11 +29,12 @@ namespace rhea { namespace ast {
     class ASTNode
     {
         public:
-        ASTNode() = default;
-        virtual ~ASTNode() {};
+        ASTNode(): position(nullptr) {}
+        virtual ~ASTNode() {}
 
-        private:
-        tao::pegtl::position m_position;
+        virtual std::string to_string() = 0;
+
+        const tao::pegtl::position* position;
     };
 }}
 

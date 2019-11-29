@@ -6,6 +6,7 @@
  * Some of the included files are themselves amalgamated headers.
  */
 
+#include "ast/nodes.hpp"
 #include "ast/parse_tree_node.hpp"
 #include "ast/selector.hpp"
 #include "ast/transform.hpp"
