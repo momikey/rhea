@@ -109,7 +109,7 @@ namespace rhea { namespace ast {
 
         const std::string value;
 
-        std::string to_string() { return fmt::format("(String,{0})", value); }
+        std::string to_string() { return fmt::format("(String,\"{0}\")", value); }
     };
 
     // The symbol node class stores the name of the symbol. We can use that
