@@ -1077,6 +1077,8 @@ A program may be invoked with command-line arguments. These are not directly pas
 	}
 ```
 
+This array can also be referenced as `std:basic:argv` unless the compiler is in strict mode.
+
 ## Returning error codes
 
 Similarly, although `main` itself isn't defined with a return value (and thus that value is implicitly `nothing`), the Rhea runtime will, at program exit, pass the value in `std:program:ret` to the operating system.
@@ -1099,6 +1101,8 @@ Similarly, although `main` itself isn't defined with a return value (and thus th
 		}
 	}
 ```
+
+A simpler alternative is to call the `std:basic:exit` function, passing the integer code as the single parameter.
 
 # Foreign function interface
 
