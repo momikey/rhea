@@ -1,5 +1,5 @@
 set(TESTS_AST_SOURCES
-    numeric.cpp
+    literals.cpp
 )
 
 add_library(tests_ast OBJECT ${TESTS_AST_SOURCES})

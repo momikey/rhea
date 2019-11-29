@@ -7,7 +7,7 @@
 // Include all the "nodes/" headers.
 #include "nodes/node_base.hpp"
 
-#include "nodes/numeric.hpp"
+#include "nodes/literals.hpp"
 
 namespace rhea { namespace ast {
     /*

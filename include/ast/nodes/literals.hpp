@@ -1,15 +1,17 @@
-#ifndef RHEA_NODES_NUMERIC_HPP
-#define RHEA_NODES_NUMERIC_HPP
+#ifndef RHEA_NODES_LITERAL_HPP
+#define RHEA_NODES_LITERAL_HPP
 
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <fmt/format.h>
 
 #include "node_base.hpp"
 
 /*
- * AST node classes for numeric types, including both integer and
- * floating-point, in varying widths.
+ * AST node classes for literal types, including integer and
+ * floating-point numbers (in varying widths), booleans, symbols,
+ * and strings.
  */
 
 namespace rhea { namespace ast {
@@ -85,6 +87,42 @@ namespace rhea { namespace ast {
     using UnsignedLong = Integral<uint64_t>;
     using Float = FloatingPoint<float>;
     using Double = FloatingPoint<double>;
+
+    // This node class is for boolean literals. It's a lot simpler than
+    // the numeric types, as booleans don't have to worry about width.
+    class Boolean : public ASTNode
+    {
+        public:
+        Boolean(bool v): value(v) {}
+
+        const bool value;
+
+        std::string to_string() { return fmt::format("(Boolean,{0})", value); }
+    };
+
+    // For the string literal class, we have to think about encodings.
+    // Rhea is UTF-8 by default, at least for strings.
+    class String : public ASTNode
+    {
+        public:
+        String(std::string v): value(v) {}
+
+        const std::string value;
+
+        std::string to_string() { return fmt::format("(String,{0})", value); }
+    };
+
+    // The symbol node class stores the name of the symbol. We can use that
+    // to generate a hash code or some other identifier in a later phase.
+    class Symbol : public ASTNode
+    {
+        public:
+        Symbol(std::string v): value(v) {}
+
+        const std::string value;
+
+        std::string to_string() { return fmt::format("(Symbol,{0})", value); }
+    };
 }}
 
-#endif /* RHEA_NODES_NUMERIC_HPP */
+#endif /* RHEA_NODES_LITERAL_HPP */
