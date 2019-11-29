@@ -12,6 +12,17 @@ namespace rhea { namespace grammar {
     struct kw_const : TAO_PEGTL_KEYWORD("const") {};
     struct kw_var : TAO_PEGTL_KEYWORD("var") {};
 
+    // Builtin types
+    struct kw_integer : TAO_PEGTL_KEYWORD("integer") {};
+    struct kw_byte : TAO_PEGTL_KEYWORD("byte") {};
+    struct kw_long : TAO_PEGTL_KEYWORD("long") {};
+    struct kw_uinteger : TAO_PEGTL_KEYWORD("uinteger") {};
+    struct kw_ubyte : TAO_PEGTL_KEYWORD("ubyte") {};
+    struct kw_ulong : TAO_PEGTL_KEYWORD("ulong") {};
+    struct kw_string : TAO_PEGTL_KEYWORD("string") {};
+    struct kw_any : TAO_PEGTL_KEYWORD("any") {};
+    struct kw_nothing : TAO_PEGTL_KEYWORD("nothing") {};
+
     // Control flow
     struct kw_if : TAO_PEGTL_KEYWORD("if") {};
     struct kw_then : TAO_PEGTL_KEYWORD("then") {};
@@ -42,8 +53,6 @@ namespace rhea { namespace grammar {
     struct kw_is : TAO_PEGTL_KEYWORD("is") {};
     struct kw_ref : TAO_PEGTL_KEYWORD("ref") {};
     struct kw_ptr : TAO_PEGTL_KEYWORD("ptr") {};
-    struct kw_any : TAO_PEGTL_KEYWORD("any") {};
-    struct kw_nothing : TAO_PEGTL_KEYWORD("nothing") {};
 
     // Functions
     struct kw_def : TAO_PEGTL_KEYWORD("def") {};

@@ -44,6 +44,7 @@ namespace rhea { namespace ast {
             float_literal_suffix,
             character_string<'\''>,
             character_string<'"'>,
+            builtin_types,
             identifier,
             function_suffix
             // and other rules that produce simple tokens
@@ -64,6 +65,7 @@ namespace rhea { namespace ast {
             integer_literal,
             float_literal,
             symbol_name,
+            nothing_literal,
             named_argument_list,
             unnamed_argument_list,
             empty_argument_list,
@@ -217,6 +219,7 @@ namespace rhea { namespace ast {
             operator_name,
             unchecked_name,
             function_definition,
+            simple_type_name,
             concept_check
 
             // These are temorarily placed here for debugging

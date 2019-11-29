@@ -133,6 +133,7 @@ namespace rhea { namespace grammar {
         list_expression,
         dictionary_expression,
         tuple_expression,
+        nothing_literal,
         parenthesized,
         numeric_literal,
         string_literal,
