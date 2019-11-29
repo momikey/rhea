@@ -1,5 +1,5 @@
-#ifndef RHEA_TEST_SETUP_HPP
-#define RHEA_TEST_SETUP_HPP
+#ifndef RHEA_GRAMMAR_TEST_SETUP_HPP
+#define RHEA_GRAMMAR_TEST_SETUP_HPP
 
 struct fixture
 {
@@ -15,4 +15,4 @@ template<typename T>
 struct simple_parser : tao::pegtl::seq<
     T, tao::pegtl::eolf> {};
 
-#endif /* RHEA_TEST_SETUP_HPP */
+#endif /* RHEA_GRAMMAR_TEST_SETUP_HPP */
