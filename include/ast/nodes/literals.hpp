@@ -15,7 +15,7 @@
  */
 
 namespace rhea { namespace ast {
-    // This enum holds all the basic scalar types Rhea understands.
+    // This enum holds all the basic literal types Rhea understands.
     enum class BasicType
     {
         Integer,
@@ -41,14 +41,14 @@ namespace rhea { namespace ast {
 
     // Get the proper enum member for a given ype. 
     template <typename T> BasicType numeric_type()    { return BasicType::Unknown; }
-    template<> BasicType numeric_type<int32_t>()      { return BasicType::Integer; }
-    template<> BasicType numeric_type<int8_t>()       { return BasicType::Byte;  }
-    template<> BasicType numeric_type<float>()        { return BasicType::Float; }
-    template<> BasicType numeric_type<double>()       { return BasicType::Double; }
-    template<> BasicType numeric_type<int64_t>()      { return BasicType::Long; }
-    template<> BasicType numeric_type<uint32_t>()     { return BasicType::UnsignedInteger; }
-    template<> BasicType numeric_type<uint8_t>()      { return BasicType::UnsignedByte; }
-    template<> BasicType numeric_type<uint64_t>()     { return BasicType::UnsignedLong; }
+    template<> inline BasicType numeric_type<int32_t>()      { return BasicType::Integer; }
+    template<> inline BasicType numeric_type<int8_t>()       { return BasicType::Byte;  }
+    template<> inline BasicType numeric_type<float>()        { return BasicType::Float; }
+    template<> inline BasicType numeric_type<double>()       { return BasicType::Double; }
+    template<> inline BasicType numeric_type<int64_t>()      { return BasicType::Long; }
+    template<> inline BasicType numeric_type<uint32_t>()     { return BasicType::UnsignedInteger; }
+    template<> inline BasicType numeric_type<uint8_t>()      { return BasicType::UnsignedByte; }
+    template<> inline BasicType numeric_type<uint64_t>()     { return BasicType::UnsignedLong; }
 
     // This node class represents any integral literal. We template it
     // on the underlying value type.
@@ -65,7 +65,8 @@ namespace rhea { namespace ast {
         const Int value;
         const BasicType type;
 
-        std::string to_string() { return fmt::format("(Integral,{0},{1})", value, static_cast<int>(type)); }
+        std::string to_string() override
+            { return fmt::format("(Integral,{0},{1})", value, static_cast<int>(type)); }
     };
 
     // This node class represents floating-point types. Again, it's
@@ -83,7 +84,8 @@ namespace rhea { namespace ast {
         const Float value;
         const BasicType type;
 
-        std::string to_string() { return fmt::format("(FloatingPoint,{0},{1})", value, static_cast<int>(type)); }
+        std::string to_string() override
+            { return fmt::format("(FloatingPoint,{0},{1})", value, static_cast<int>(type)); }
     };
 
     // Convenience declarations for the defined types.
@@ -119,7 +121,8 @@ namespace rhea { namespace ast {
         const std::string value;
         const BasicType type = BasicType::String;
 
-        std::string to_string() { return fmt::format("(String,\"{0}\")", value); }
+        std::string to_string() override
+            { return fmt::format("(String,\"{0}\")", value); }
     };
 
     // The symbol node class stores the name of the symbol. We can use that
@@ -132,7 +135,8 @@ namespace rhea { namespace ast {
         const std::string value;
         const BasicType type = BasicType::Symbol;
 
-        std::string to_string() { return fmt::format("(Symbol,{0})", value); }
+        std::string to_string() override
+            { return fmt::format("(Symbol,{0})", value); }
     };
 
     // For the "nothing" node class, we don't have store do much of anything.
@@ -145,7 +149,8 @@ namespace rhea { namespace ast {
         const void* value = nullptr;
         const BasicType type = BasicType::Nothing;
 
-        std::string to_string() { return fmt::format("(Nothing)"); }
+        std::string to_string() override
+            { return fmt::format("(Nothing)"); }
     };
 }}
 

@@ -2,6 +2,8 @@
 #define RHEA_AST_NODE_BASE_HPP
 
 #include <string>
+#include <vector>
+#include <memory>
 
 #include <tao/pegtl.hpp>
 
@@ -36,6 +38,12 @@ namespace rhea { namespace ast {
 
         const tao::pegtl::position position;
     };
+
+    // A lot of nodes need to store lists of children. These will
+    // always be unique_ptrs to AST nodes, but we may want to restrict
+    // that to a specific subtype, so we use a template alias here.
+    template <typename T>
+    using child_vector = std::vector<std::unique_ptr<T>>;
 }}
 
 #endif /* RHEA_AST_NODE_BASE_HPP */

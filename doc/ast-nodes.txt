@@ -5,25 +5,25 @@
 signed_integer
 floating_point_number
 hex_literal
-boolean_literal
+--boolean_literal
 integer_literal_suffix
 float_literal_suffix
 character_string<'\''>
 character_string<'"'>
 identifier
 function_suffix
-nothing_literal
+--nothing_literal
 
 ## Operands
 
-string_literal
+--string_literal
     character_string
-integer_literal
+--integer_literal
     signed_integer
     integer_literal_suffix ?
-float_literal
+--float_literal
     floating_point_number
-symbol_name
+--symbol_name
     identifier
 named_argument_list
     named_argument_list +
