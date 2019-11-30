@@ -5,8 +5,7 @@
 
 #include <string>
 #include <vector>
-#include <type_traits>
-#include <typeinfo>
+#include <memory>
 
 #include "../../include/ast.hpp"
 
@@ -41,6 +40,29 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
         BOOST_TEST(node.children().size() == ids.size());
+    }
+
+    BOOST_DATA_TEST_CASE(fully_qualified_ast_2, data::make(fully_qualified_samples))
+    {
+        std::vector<std::string> ids;
+        boost::algorithm::split(ids, sample, [] (auto e) { return e == ':'; });
+
+        std::vector<std::unique_ptr<rhea::ast::Identifier>> nodes;
+
+        for (auto&& id : ids)
+        {
+            nodes.emplace_back(std::make_unique<rhea::ast::Identifier>(id));
+        }
+
+        auto node = rhea::ast::FullyQualified(nodes);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
+
+        BOOST_TEST(node.children().size() == ids.size());
+        for (auto i = 0u; i < node.children().size(); ++i)
+        {
+            BOOST_TEST(node.children()[i]->name == ids[i]);
+        }
     }
 
     BOOST_AUTO_TEST_SUITE_END ()
