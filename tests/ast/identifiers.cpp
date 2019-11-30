@@ -18,6 +18,8 @@ namespace {
     std::string identifier_samples[] = { "a", "foo", "a_long_identifier", "With42Numbers" };
     std::string fully_qualified_samples[] =
         { "a:b", "foo:bar:baz", "Big:Long:List:of:Module:names", "Now:With1:Number___" };
+    std::string relative_samples[] =
+        { ":a", ":a:b", ":foo:bar:baz", ":Big:Long:List:of:Module:names", ":Now:With1:Number___" };
 
     BOOST_AUTO_TEST_SUITE (AST_Identifiers)
 
@@ -65,5 +67,45 @@ namespace {
         }
     }
 
+    BOOST_DATA_TEST_CASE(relative_identifier_ast, data::make(relative_samples))
+    {
+        std::vector<std::string> ids;
+        boost::algorithm::split(ids, sample, [] (auto e) { return e == ':'; });
+
+        if (ids.size() > 2)
+        {
+            std::vector<std::unique_ptr<rhea::ast::Identifier>> nodes;
+
+            for (auto&& id : ids)
+            {
+                if (id != "")
+                {
+                    nodes.emplace_back(std::make_unique<rhea::ast::Identifier>(id));
+                }
+            }
+
+            auto child = std::make_unique<rhea::ast::FullyQualified>(nodes);
+            auto parent = std::make_unique<rhea::ast::RelativeIdentifier>(child);
+
+            BOOST_TEST_MESSAGE("Testing AST Node " << parent->to_string());
+
+            auto ptr = dynamic_cast<rhea::ast::FullyQualified*>(parent->identifier.get()) != nullptr;
+
+            BOOST_TEST(ptr);
+        }
+        else
+        {
+            auto child = std::make_unique<rhea::ast::Identifier>(ids[1]);
+            auto parent = std::make_unique<rhea::ast::RelativeIdentifier>(child);
+        
+            BOOST_TEST_MESSAGE("Testing AST Node " << parent->to_string());
+
+            auto ptr = dynamic_cast<rhea::ast::Identifier*>(parent->identifier.get());
+
+            BOOST_TEST((ptr != nullptr));
+            BOOST_TEST((ptr->name == sample.substr(1)));
+        }
+
+    }
     BOOST_AUTO_TEST_SUITE_END ()
 }

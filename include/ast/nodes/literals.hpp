@@ -53,7 +53,7 @@ namespace rhea { namespace ast {
     // This node class represents any integral literal. We template it
     // on the underlying value type.
     template <typename Int>
-    class Integral : public ASTNode
+    class Integral : public Expression
     {
         static_assert(std::is_integral<Int>::value, "Only integral types are allowed");
 
@@ -72,7 +72,7 @@ namespace rhea { namespace ast {
     // This node class represents floating-point types. Again, it's
     // templated on the underlying value type.
     template <typename Float>
-    class FloatingPoint : public ASTNode
+    class FloatingPoint : public Expression
     {
         static_assert(std::is_floating_point<Float>::value, "Only floating-point types are allowed");
 
@@ -100,7 +100,7 @@ namespace rhea { namespace ast {
 
     // This node class is for boolean literals. It's a lot simpler than
     // the numeric types, as booleans don't have to worry about width.
-    class Boolean : public ASTNode
+    class Boolean : public Expression
     {
         public:
         Boolean(bool v): value(v) {}
@@ -113,7 +113,7 @@ namespace rhea { namespace ast {
 
     // For the string literal class, we have to think about encodings.
     // Rhea is UTF-8 by default, at least for strings.
-    class String : public ASTNode
+    class String : public Expression
     {
         public:
         String(std::string v): value(v) {}
@@ -127,7 +127,7 @@ namespace rhea { namespace ast {
 
     // The symbol node class stores the name of the symbol. We can use that
     // to generate a hash code or some other identifier in a later phase.
-    class Symbol : public ASTNode
+    class Symbol : public Expression
     {
         public:
         Symbol(std::string v): value(v) {}
@@ -140,7 +140,7 @@ namespace rhea { namespace ast {
     };
 
     // For the "nothing" node class, we don't have store do much of anything.
-    class Nothing : public ASTNode
+    class Nothing : public Expression
     {
         public:
         Nothing() {}

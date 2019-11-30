@@ -1155,3 +1155,63 @@ The modules `std:basic` and `std:exception` are automatically imported into all 
 
 {TBD: `math`}
 
+# Ideas for later
+
+{Everything in this section is TBD, subject to change, etc.}
+
+## Subtypes
+
+* Allow creating a structure type that inherits another structure's fields.
+* The subtype would identify as its own type, but also check as true when testing against its parent (as per LSP).
+
+Example with possible syntax:
+
+```
+	type Foo = {
+		i: integer,
+		s: string
+	};
+
+	type Bar = Foo +> { b: byte };
+
+	var x as Foo;
+	var y as Bar;
+
+	y is Foo;	# evaluates to true, because Bar IS-A Foo
+	x is Bar;	# evaluates to false, as the relation is one-way
+
+	x.i = 123;	# this is allowed; Bar inherits Foo's fields
+	y.b = -1;	# but it doesn't work the other way
+```
+
+Questions to answer:
+
+* How would this affect type-matching?
+* What about syntax?
+
+## Extensible variants
+
+* Allow a variant to derive from another, adding new types.
+
+Example with possible syntax:
+
+```
+	type foo = |integer, string|;
+	type bar = foo |> byte;
+
+	var x as bar;
+	x = 42_b;
+
+	# If using `foo` type, the third case could never happen,
+	# and the compiler would warn about that.
+	match x {
+		type integer: print("Int");
+		type string: print("String");
+		type byte: print("Byte");
+	}
+```
+
+Questions to answer:
+
+* All questions from above.
+* Do we want to allow this to "promote" an optional into a variant? (Probably not.)

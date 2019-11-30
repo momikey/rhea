@@ -13,10 +13,14 @@
  */
 
 namespace rhea { namespace ast {
+    // The base for all identifier node types
+    class AnyIdentifier : public Expression
+    {};
+
     // A basic identifier is just a string of alphanumeric characters
     // or _, starting with a letter. All the node needs to store is the name;
     // symbol table lookup, etc., can come during analysis and codegen.
-    class Identifier : public ASTNode
+    class Identifier : public AnyIdentifier
     {
         public:
         Identifier(std::string n): name(n) {}
@@ -29,7 +33,7 @@ namespace rhea { namespace ast {
 
     // A fully-qualified identifier is used for accessing identifiers
     // in modules. For it, we need to store a list of basic identifiers.
-    class FullyQualified : public ASTNode
+    class FullyQualified : public AnyIdentifier
     {
         public:
         FullyQualified(std::vector<std::string>& ns);
@@ -41,6 +45,21 @@ namespace rhea { namespace ast {
 
         private:
         child_vector<Identifier> m_children;
+    };
+
+    // A relative identifier is a qualified identifier relative to the
+    // current module.
+    class RelativeIdentifier : public AnyIdentifier
+    {
+        public:
+        RelativeIdentifier(std::unique_ptr<Identifier>& id): identifier(std::move(id)) {}
+        RelativeIdentifier(std::unique_ptr<FullyQualified>& id): identifier(std::move(id)) {}
+        // RelativeIdentifier(RelativeIdentifier&& rhs) noexcept : identifier(std::move(rhs.identifier)) {}
+
+        const std::unique_ptr<AnyIdentifier> identifier;
+
+        std::string to_string() override
+            { return fmt::format("(RelativeIdentifier,{0})", identifier->to_string()); }
     };
 }}
 

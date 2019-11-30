@@ -2,16 +2,16 @@
 
 ## Terminals
 
-signed_integer
-floating_point_number
-hex_literal
+**signed_integer
+**floating_point_number
+**hex_literal
 --boolean_literal
-integer_literal_suffix
-float_literal_suffix
-character_string<'\''>
-character_string<'"'>
-identifier
-function_suffix
+**integer_literal_suffix
+**float_literal_suffix
+**character_string<'\''>
+**character_string<'"'>
+--identifier
+**function_suffix
 --nothing_literal
 
 ## Operands
@@ -26,7 +26,7 @@ function_suffix
 --symbol_name
     identifier
 named_argument_list
-    named_argument_list +
+    named_argument +
 unnamed_argument_list
     <expression> +
 empty_argument_list
@@ -43,7 +43,7 @@ array_expression
     <expression> +
 symbol_list_expression
     identifier +
-relative_identifier
+--relative_identifier
     identifier | fully_qualified
 
 ## Operators
@@ -309,7 +309,7 @@ program_definition
 
 (Rules that don't produce nodes are excluded.)
 
-fully_qualified
+--fully_qualified
     identifier +
 named_argument
     identifier              ; name

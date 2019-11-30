@@ -28,6 +28,7 @@
  */
 
 namespace rhea { namespace ast {
+    // The base type for all AST nodes
     class ASTNode
     {
         public:
@@ -37,6 +38,17 @@ namespace rhea { namespace ast {
         virtual std::string to_string() = 0;
 
         const tao::pegtl::position position;
+    };
+
+    // "Top-level" node types
+    class Expression : public ASTNode
+    {
+
+    };
+
+    class Statement : public ASTNode
+    {
+
     };
 
     // A lot of nodes need to store lists of children. These will
