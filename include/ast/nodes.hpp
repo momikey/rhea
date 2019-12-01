@@ -7,8 +7,10 @@
 // Include all the "nodes/" headers.
 #include "nodes/node_base.hpp"
 
+#include "nodes/binary_operator.hpp"
 #include "nodes/identifiers.hpp"
 #include "nodes/literals.hpp"
+#include "nodes/ternary_operator.hpp"
 
 namespace rhea { namespace ast {
     /*

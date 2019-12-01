@@ -56,6 +56,12 @@ namespace rhea { namespace ast {
     // that to a specific subtype, so we use a template alias here.
     template <typename T>
     using child_vector = std::vector<std::unique_ptr<T>>;
+
+    // std::unique_ptrs to the main node types. We use these a lot,
+    // so it helps to have aliases.
+    using node_ptr = std::unique_ptr<ASTNode>;
+    using expression_ptr = std::unique_ptr<Expression>;
+    using statement_ptr = std::unique_ptr<Statement>;
 }}
 
 #endif /* RHEA_AST_NODE_BASE_HPP */

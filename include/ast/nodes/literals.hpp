@@ -36,7 +36,7 @@ namespace rhea { namespace ast {
         Other,          // Used for structures, user-defined types, generics, etc.
         
         Promoted,       // Used for the coercion opertor `^`
-        Unknown         // Error case
+        Unknown = -1    // Error case
     };
 
     // Get the proper enum member for a given ype. 

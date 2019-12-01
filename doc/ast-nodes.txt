@@ -58,7 +58,7 @@ subscript_expr
 member_expr
     identifier      ; member
     <expression>
-ternary_op
+--ternary_op
     <expression>    ; condition
     <expression>    ; then case
     <expression>    ; else case
@@ -78,26 +78,26 @@ kw_ptr
 ### Binary Operators
 
 ; All have LHS and RHS children, both expressions
-exponent_operator
-multiply_operator
-divide_operator
-modulus_operator
-add_operator
-subtract_operator
-left_shift_operator
-right_shift_operator
-equals_operator
-not_equal_operator
-greater_equal_operator
-less_equal_operator
-less_than_operator
-greater_than_operator
-bitand_operator
-bitor_operator
-bitxor_operator
-kw_and
-kw_or
-kw_is
+--exponent_operator
+--multiply_operator
+--divide_operator
+--modulus_operator
+--add_operator
+--subtract_operator
+--left_shift_operator
+--right_shift_operator
+--equals_operator
+--not_equal_operator
+--greater_equal_operator
+--less_equal_operator
+--less_than_operator
+--greater_than_operator
+--bitand_operator
+--bitor_operator
+--bitxor_operator
+--kw_and
+--kw_or
+--kw_is
 kw_as
 
 ## Statements
