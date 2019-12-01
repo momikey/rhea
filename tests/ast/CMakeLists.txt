@@ -3,6 +3,7 @@ set(TESTS_AST_SOURCES
     literals.cpp
     identifiers.cpp
     operators.cpp
+    typenames.cpp
 )
 
 add_library(tests_ast OBJECT ${TESTS_AST_SOURCES})

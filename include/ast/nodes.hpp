@@ -11,6 +11,7 @@
 #include "nodes/identifiers.hpp"
 #include "nodes/literals.hpp"
 #include "nodes/ternary_operator.hpp"
+#include "nodes/typenames.hpp"
 
 namespace rhea { namespace ast {
     /*

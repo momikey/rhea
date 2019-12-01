@@ -1,5 +1,6 @@
 set(AST_SOURCES
     identifiers.cpp
+    typenames.cpp
 )
 
 add_library(rhea_ast STATIC ${AST_SOURCES})

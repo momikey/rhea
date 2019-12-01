@@ -28,7 +28,7 @@ namespace rhea { namespace ast {
         const std::string name;
 
         std::string to_string() override
-            { return fmt::format("(Identifier, {0})", name); }
+            { return fmt::format("(Identifier,{0})", name); }
     };
 
     // A fully-qualified identifier is used for accessing identifiers

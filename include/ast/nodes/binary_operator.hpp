@@ -34,7 +34,7 @@ namespace rhea { namespace ast {
         BitXor,
         BooleanAnd,
         BooleanOr,
-        TypeCheck
+        TypeCheck,
 
         Unknown = -1
     };
