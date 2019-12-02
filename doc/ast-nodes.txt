@@ -98,7 +98,7 @@ kw_ptr
 --kw_and
 --kw_or
 --kw_is
-kw_as
+--kw_as
 
 ## Statements
 

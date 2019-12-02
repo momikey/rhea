@@ -84,6 +84,22 @@ namespace rhea { namespace ast {
         std::string to_string() override
             { return fmt::format("(Optional,{0})", type->to_string()); }
     };
+
+    // The typecasting operator `as`, though a binary operator in form,
+    // fits better here, as it directly deals with types instead of only
+    // values.
+    class Cast : public Typename
+    {
+        public:
+        Cast(std::unique_ptr<Expression>& l, std::unique_ptr<Typename>& r)
+            : left(std::move(l)), right(std::move(r)) {}
+
+        const std::unique_ptr<Expression> left;
+        const std::unique_ptr<Typename> right;
+
+        std::string to_string() override
+            { return fmt::format("(Cast,{0},{1})", left->to_string(), right->to_string()); }
+    };
 }}
 
 #endif /* RHEA_NODES_TYPENAMES_HPP */
