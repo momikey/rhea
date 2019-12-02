@@ -249,9 +249,9 @@ return_type_spec
     <any_identifier>
     generic_type ?
     array_type ?
-variant_type_list
+--variant_type_list
     <type_name> *
-optional_type
+--optional_type
     <type_name>
 type_pair
     identifier      ; name

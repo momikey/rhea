@@ -1008,3 +1008,89 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 
 	}
 ```
+
+### Simple windowed application
+
+{TBD: Until we decide what kind of windowing/GUI we want.}
+
+### Split a character string based on change of character
+
+```
+	# Helper function to split a string into runs of characters
+	def split { input: string } = {
+		var working as string;
+		var separate as list <string>;
+
+		# Temp variable to hold our previous character
+		with (last as string)
+		{
+			working = input[0];
+			last = input[0];
+
+			for i in range(1,string.length())
+			{
+				var current = input[i];
+
+				if (current == last)
+				{
+					# Still on the same character
+					working += current;
+				}
+				else
+				{
+					# Character has changed
+					separate.append(working);
+					working = current;
+				}
+
+				last = current;
+			}
+		}
+	}
+
+	def main = {
+		var split_string = split("gHHH5YY++///\\");
+
+		for el in slice(split_string, -1)
+		{
+			print(el + ", ");
+		}
+		print split_string[split_string.length()-1];
+	}
+```
+
+### String append
+
+```
+	# Create a string variable, append another string literal to it, and print.
+	def main = {
+		var s = "Foo";
+
+		# Rhea does define append and append/assign operators for strings
+		# (ref: `std:basic:add_assign$(string, string)`)
+		s += "Bar";
+
+		print(s);		# prints "FooBar"
+	}
+```
+
+### String comparison
+
+{TBD: Lots of work here, especially stdlib stuff. Save for later.}
+
+### String concatenation
+
+```
+	# Create a string variable, then another that has that string
+	# concatenated to another. Print both.
+	def main = {
+		var s1 = "Foo";
+
+		# (ref: `std:basic:add$(string, string)`)
+		var s2 = s1 + "Bar";
+
+		print(s1);			# prints "Foo"
+		print(s2);			# prints "FooBar"
+	}
+```
+

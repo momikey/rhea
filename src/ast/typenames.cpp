@@ -4,6 +4,8 @@
 #include <iterator>
 
 namespace rhea { namespace ast {
+
+    // Definitions for generic types
     GenericTypename::GenericTypename(child_vector<Typename>& c)
     {
         std::move(c.begin(), c.end(), std::back_inserter(m_children));
@@ -22,5 +24,26 @@ namespace rhea { namespace ast {
         }
 
         return fmt::format("(GenericTypename{0})", s);
+    }
+
+    // Definition for variants
+    Variant::Variant(child_vector<Typename>& ts)
+    {
+        std::move(ts.begin(), ts.end(), std::back_inserter(m_children));
+    }
+
+    std::string Variant::to_string()
+    {
+        // Same logic as in FyllyQualified (identifiers.cpp)
+        std::string s;
+        s.reserve(m_children.size()*16);    // profile this to find a nice default
+
+        for (auto&& id : m_children)
+        {
+            s += ',';
+            s += id->to_string();
+        }
+
+        return fmt::format("(Variant{0})", s);        
     }
 }}

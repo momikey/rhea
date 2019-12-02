@@ -43,6 +43,8 @@ namespace rhea { namespace ast {
         Typename(std::unique_ptr<AnyIdentifier>& n, std::unique_ptr<GenericTypename>& g, std::unique_ptr<Expression>& a)
             : name(std::move(n)), generic_part(std::move(g)), array_part(std::move(a)) {}
 
+        Typename() = default;
+
         const std::unique_ptr<AnyIdentifier> name;
 
         // These are optional; if not present (as for a simple type),
@@ -56,7 +58,31 @@ namespace rhea { namespace ast {
                 generic_part != nullptr ? generic_part->to_string() : "null",
                 array_part != nullptr ? array_part->to_string() : "null"
             ); }
+    };
 
+    // Class for variant types. These can take a number of different typenames,
+    // so we have to store all of those.
+    class Variant : public Typename
+    {
+        public:
+        Variant(child_vector<Typename>& ts);
+
+        std::string to_string() override;
+
+        private:
+        child_vector<Typename> m_children;
+    };
+
+    // An optional has only one possible type (besides nothing, which is implied).
+    class Optional : public Typename
+    {
+        public:
+        Optional(std::unique_ptr<Typename>& t): type(std::move(t)) {}
+
+        const std::unique_ptr<Typename> type;
+
+        std::string to_string() override
+            { return fmt::format("(Optional,{0})", type->to_string()); }
     };
 }}
 

@@ -61,5 +61,34 @@ namespace {
         BOOST_TEST((node->array_part->to_string() == "(Integral,42,0)"));
     }
 
+    BOOST_AUTO_TEST_CASE (optional_typename)
+    {
+        auto id = ast::make_identifier<ast::Identifier>("Foo");
+        auto tn = std::make_unique<ast::Typename>(id);
+
+        auto node = std::make_unique<ast::Optional>(tn);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() == "(Optional,(Typename,(Identifier,Foo),null,null))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (variant_typename)
+    {
+        ast::child_vector<ast::AnyIdentifier> ids;
+        ids.emplace_back(std::make_unique<ast::Identifier>("Foo"));
+        ids.emplace_back(std::make_unique<ast::Identifier>("Bar"));
+
+        ast::child_vector<ast::Typename> ts;
+        for (auto& id : ids)
+        {
+            ts.emplace_back(std::make_unique<ast::Typename>(id));
+        }
+
+        auto node = std::make_unique<ast::Variant>(ts);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() == "(Variant,(Typename,(Identifier,Foo),null,null),(Typename,(Identifier,Bar),null,null))"));
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }
