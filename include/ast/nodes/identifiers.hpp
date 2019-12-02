@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <utility>
 #include <fmt/format.h>
 
 #include "node_base.hpp"
@@ -16,6 +17,11 @@ namespace rhea { namespace ast {
     // The base for all identifier node types
     class AnyIdentifier : public Expression
     {};
+
+    // Maker function for identifiers.
+    template <typename Id, typename... Args>
+    std::unique_ptr<AnyIdentifier> make_identifier(Args&&... args)
+        { return std::make_unique<Id>(std::forward<Args>(args)...); }
 
     // A basic identifier is just a string of alphanumeric characters
     // or _, starting with a letter. All the node needs to store is the name;

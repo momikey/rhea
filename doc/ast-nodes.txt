@@ -239,13 +239,13 @@ extern_declaration
 
 ## Types and Concepts
 
-generic_type
+--generic_type
     <type_name> *
-array_type
+--array_type
     <constant_expression>
 return_type_spec
     <type_name>
-complex_type_name
+--complex_type_name
     <any_identifier>
     generic_type ?
     array_type ?

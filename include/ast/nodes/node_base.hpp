@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <utility>
 
 #include <tao/pegtl.hpp>
 
@@ -62,6 +63,15 @@ namespace rhea { namespace ast {
     using node_ptr = std::unique_ptr<ASTNode>;
     using expression_ptr = std::unique_ptr<Expression>;
     using statement_ptr = std::unique_ptr<Statement>;
+
+    // Maker functions, in the vein of make_unique.
+    template <typename Expr, typename... Args>
+    inline expression_ptr make_expression(Args&&... args)
+        { return std::make_unique<Expr>(std::forward<Args>(args)...); }
+
+    template <typename Stmt, typename... Args>
+    inline statement_ptr make_statement(Args&&... args)
+        { return std::make_unique<Stmt>(std::forward<Args>(args)...); }
 }}
 
 #endif /* RHEA_AST_NODE_BASE_HPP */

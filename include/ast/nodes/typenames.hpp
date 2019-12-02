@@ -35,7 +35,11 @@ namespace rhea { namespace ast {
         // Basic types will use this constructor
         Typename(std::unique_ptr<AnyIdentifier>& n): name(std::move(n)) {}
 
-        // More complex types will use this one
+        // More complex types will use one of these
+        Typename(std::unique_ptr<AnyIdentifier>& n, std::unique_ptr<GenericTypename>& g)
+            : name(std::move(n)), generic_part(std::move(g)), array_part(nullptr) {}
+        Typename(std::unique_ptr<AnyIdentifier>& n, std::unique_ptr<Expression>& a)
+            : name(std::move(n)), generic_part(nullptr), array_part(std::move(a)) {}
         Typename(std::unique_ptr<AnyIdentifier>& n, std::unique_ptr<GenericTypename>& g, std::unique_ptr<Expression>& a)
             : name(std::move(n)), generic_part(std::move(g)), array_part(std::move(a)) {}
 
