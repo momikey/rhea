@@ -102,5 +102,17 @@ namespace {
         BOOST_TEST((node->to_string() == "(Cast,(Integral,42,0),(Typename,(Identifier,ubyte),null,null))"));
     }
 
+    BOOST_AUTO_TEST_CASE (check_operator)
+    {
+        auto lhs = ast::make_expression<ast::Integer>(42);
+        auto rid = ast::make_identifier<ast::Identifier>("integer");
+        auto rhs = std::make_unique<ast::Typename>(rid);
+
+        auto node = std::make_unique<ast::TypeCheck>(lhs, rhs);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() == "(TypeCheck,(Integral,42,0),(Typename,(Identifier,integer),null,null))"));
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

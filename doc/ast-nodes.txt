@@ -66,14 +66,14 @@ member_expr
 ### Unary Operators
 
 ; All have a single expression child
-coerce_operator
-bitnot_operator
-dereference_operator
-unary_plus_operator
-unary_minus_operator
-kw_not
-kw_ref
-kw_ptr
+--coerce_operator
+--bitnot_operator
+--dereference_operator
+--unary_plus_operator
+--unary_minus_operator
+--kw_not
+--kw_ref
+--kw_ptr
 
 ### Binary Operators
 

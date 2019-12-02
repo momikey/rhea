@@ -12,6 +12,7 @@
 #include "nodes/literals.hpp"
 #include "nodes/ternary_operator.hpp"
 #include "nodes/typenames.hpp"
+#include "nodes/unary_operator.hpp"
 
 namespace rhea { namespace ast {
     /*

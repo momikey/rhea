@@ -60,4 +60,20 @@ namespace {
     }
 
     BOOST_AUTO_TEST_SUITE_END ()
+
+    BOOST_AUTO_TEST_SUITE (AST_UnaryOp)
+
+    BOOST_AUTO_TEST_CASE (unary_ast)
+    {
+        ast::expression_ptr o = std::make_unique<ast::Integer>(42);
+
+        auto node = std::make_unique<ast::UnaryOp>(ast::UnaryOperators::Minus, o);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+
+        BOOST_TEST((node->op == ast::UnaryOperators::Minus));
+        BOOST_TEST((node->to_string() == "(UnaryOp,1,(Integral,42,0))"));
+    }
+
+    BOOST_AUTO_TEST_SUITE_END ()
 }
