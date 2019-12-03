@@ -33,9 +33,7 @@ namespace rhea { namespace ast {
         BitOr,
         BitXor,
         BooleanAnd,
-        BooleanOr,
-
-        Unknown = -1
+        BooleanOr
     };
 
     // The base class

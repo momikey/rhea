@@ -102,22 +102,25 @@ member_expr
 
 ## Statements
 
-assignment
+--assignment
     <expression>    ; LHS
     <expression>    ; RHS
-compound_assignment
+--compound_assignment
     <expression>    ; LHS
     <operator>
     <expression>    ; RHS
-bare_expression
+--bare_expression
     <expression>
-declaration_as_type
-    <expression>
-    <type_name>
-constant_declaration
+--variable_declaration
     <expression>    ; LHS
     <expression>    ; RHS
-statement_block
+--declaration_as_type
+    <expression>
+    <type_name>
+--constant_declaration
+    <expression>    ; LHS
+    <expression>    ; RHS
+--statement_block
     <statement> *
 if_statement
     <expression>        ; condition

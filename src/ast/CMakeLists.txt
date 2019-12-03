@@ -1,5 +1,6 @@
 set(AST_SOURCES
     identifiers.cpp
+    simple_statement.cpp
     typenames.cpp
 )
 

@@ -18,9 +18,7 @@ namespace rhea { namespace ast {
         Coerce,
         Dereference,
         Ref,
-        Ptr,
-
-        Unknown = -1
+        Ptr
     };
 
     // The base class

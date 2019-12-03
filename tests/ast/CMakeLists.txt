@@ -3,6 +3,7 @@ set(TESTS_AST_SOURCES
     literals.cpp
     identifiers.cpp
     operators.cpp
+    simple_statement.cpp
     typenames.cpp
 )
 
