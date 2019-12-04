@@ -26,7 +26,7 @@ namespace {
         ast::expression_ptr r = std::make_unique<ast::Integer>(69);
         auto op = ast::BinaryOperators::Add;
 
-        auto node = std::make_unique<ast::BinaryOp>(op, l, r);
+        auto node = std::make_unique<ast::BinaryOp>(op, std::move(l), std::move(r));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -47,7 +47,7 @@ namespace {
         ast::expression_ptr t = std::make_unique<ast::Boolean>(true);
         ast::expression_ptr f = std::make_unique<ast::Boolean>(false);
 
-        auto node = std::make_unique<ast::TernaryOp>(c,t,f);
+        auto node = std::make_unique<ast::TernaryOp>(std::move(c),std::move(t),std::move(f));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -67,7 +67,7 @@ namespace {
     {
         ast::expression_ptr o = std::make_unique<ast::Integer>(42);
 
-        auto node = std::make_unique<ast::UnaryOp>(ast::UnaryOperators::Minus, o);
+        auto node = std::make_unique<ast::UnaryOp>(ast::UnaryOperators::Minus, std::move(o));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 

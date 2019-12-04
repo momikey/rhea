@@ -122,26 +122,26 @@ member_expr
     <expression>    ; RHS
 --statement_block
     <statement> *
-if_statement
+--if_statement
     <expression>        ; condition
     <stmt_or_block>     ; then case
     <stmt_or_block>     ; else case
-unless_statement
+--unless_statement
     <expression>        ; condition
     <stmt_or_block>
-while_statement
+--while_statement
     <expression>        ; condition
     <stmt_or_block>     ; loop body
 for_statement
     identifier          ; index variable
     <expression>        ; iteration list
     <stmt_or_block>     ; loop body
-do_statement
+--do_statement
     <expression>        ; identifiers are function calls!
-with_statement
+--with_statement
     with_declaration +
     <stmt_or_block>
-with_declaration
+--with_declaration
     declaration_as_type
 on_case
     <constant_expression>   ; case
@@ -190,6 +190,8 @@ throw_statement
     <expression>
 finally_statement
     <stmt_or_block>
+--break_statement
+--continue_statement
 
 ## Function Defintions
 

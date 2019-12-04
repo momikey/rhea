@@ -8,6 +8,7 @@
 #include "nodes/node_base.hpp"
 
 #include "nodes/binary_operator.hpp"
+#include "nodes/control_statement.hpp"
 #include "nodes/identifiers.hpp"
 #include "nodes/literals.hpp"
 #include "nodes/simple_statement.hpp"

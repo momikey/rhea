@@ -94,7 +94,7 @@ namespace rhea { namespace ast {
                 lhs->to_string(), rhs->to_string(), static_cast<int>(op)); }
     };
 
-    // Type declaration, as in `var foo = string`. In this case,
+    // Type declaration, as in `var foo as string`. In this case,
     // we *can* simply use an identifier for the LHS, because a
     // declaration has to be in the local scope.
     class TypeDeclaration : public Statement

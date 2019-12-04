@@ -4,6 +4,7 @@ set(TESTS_AST_SOURCES
     identifiers.cpp
     operators.cpp
     simple_statement.cpp
+    control_statement.cpp
     typenames.cpp
 )
 
