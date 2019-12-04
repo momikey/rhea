@@ -24,7 +24,7 @@ namespace {
     {
         ast::expression_ptr id = ast::make_identifier<ast::Identifier>("foo");
 
-        auto node = std::make_unique<ast::BareExpression>(id);
+        auto node = std::make_unique<ast::BareExpression>(std::move(id));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -37,8 +37,8 @@ namespace {
         ast::expression_ptr id2 = ast::make_identifier<ast::Identifier>("bar");
 
         ast::child_vector<ast::Statement> stmts;
-        stmts.emplace_back(ast::make_statement<ast::BareExpression>(id1));
-        stmts.emplace_back(ast::make_statement<ast::BareExpression>(id2));
+        stmts.emplace_back(ast::make_statement<ast::BareExpression>(std::move(id1)));
+        stmts.emplace_back(ast::make_statement<ast::BareExpression>(std::move(id2)));
 
         auto node = std::make_unique<ast::Block>(stmts);
 
@@ -52,7 +52,7 @@ namespace {
         ast::expression_ptr lhs = ast::make_identifier<ast::Identifier>("foo");
         ast::expression_ptr rhs = ast::make_expression<ast::Integer>(42);
 
-        auto node = std::make_unique<ast::Assign>(lhs, rhs);
+        auto node = std::make_unique<ast::Assign>(std::move(lhs), std::move(rhs));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -64,7 +64,10 @@ namespace {
         ast::expression_ptr lhs = ast::make_identifier<ast::Identifier>("foo");
         ast::expression_ptr rhs = ast::make_expression<ast::Integer>(42);
 
-        auto node = std::make_unique<ast::CompoundAssign>(lhs, ast::AssignOperator::Add, rhs);
+        auto node = std::make_unique<ast::CompoundAssign>(
+            std::move(lhs),
+            ast::AssignOperator::Add,
+            std::move(rhs));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -75,9 +78,9 @@ namespace {
     {
         std::unique_ptr<ast::AnyIdentifier> lhs = ast::make_identifier<ast::Identifier>("foo");
         std::unique_ptr<ast::AnyIdentifier> tn = ast::make_identifier<ast::Identifier>("integer");
-        auto rhs = std::make_unique<ast::Typename>(tn);
+        auto rhs = std::make_unique<ast::Typename>(std::move(tn));
 
-        auto node = std::make_unique<ast::TypeDeclaration>(lhs, rhs);
+        auto node = std::make_unique<ast::TypeDeclaration>(std::move(lhs), std::move(rhs));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -90,7 +93,7 @@ namespace {
         std::unique_ptr<ast::AnyIdentifier> lhs = ast::make_identifier<ast::Identifier>("foo");
         ast::expression_ptr rhs = ast::make_expression<ast::Integer>(42);
 
-        auto node = std::make_unique<ast::Variable>(lhs, rhs);
+        auto node = std::make_unique<ast::Variable>(std::move(lhs), std::move(rhs));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -102,7 +105,7 @@ namespace {
         std::unique_ptr<ast::AnyIdentifier> lhs = ast::make_identifier<ast::Identifier>("foo");
         ast::expression_ptr rhs = ast::make_expression<ast::Integer>(42);
 
-        auto node = std::make_unique<ast::Constant>(lhs, rhs);
+        auto node = std::make_unique<ast::Constant>(std::move(lhs), std::move(rhs));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
@@ -113,7 +116,7 @@ namespace {
     {
         ast::expression_ptr id = ast::make_identifier<ast::Identifier>("foo");
 
-        auto node = std::make_unique<ast::Do>(id);
+        auto node = std::make_unique<ast::Do>(std::move(id));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 

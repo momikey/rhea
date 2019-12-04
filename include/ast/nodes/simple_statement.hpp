@@ -20,7 +20,7 @@ namespace rhea { namespace ast {
     class BareExpression : public Statement
     {
         public:
-        BareExpression(expression_ptr& e): expression(std::move(e)) {}
+        BareExpression(expression_ptr e): expression(std::move(e)) {}
 
         const expression_ptr expression;
 
@@ -66,7 +66,7 @@ namespace rhea { namespace ast {
         // because it may be, for example, a subscript: `x[1] = 'foo'`
         // is valid code, but wouldn't work if we only accepted
         // identifiers.
-        Assign(expression_ptr& l, expression_ptr& r): lhs(std::move(l)), rhs(std::move(r)) {}
+        Assign(expression_ptr l, expression_ptr r): lhs(std::move(l)), rhs(std::move(r)) {}
 
         const expression_ptr lhs;
         const expression_ptr rhs;
@@ -80,7 +80,7 @@ namespace rhea { namespace ast {
     class CompoundAssign : public Statement
     {
         public:
-        CompoundAssign(expression_ptr& l, AssignOperator o, expression_ptr& r)
+        CompoundAssign(expression_ptr l, AssignOperator o, expression_ptr r)
             : lhs(std::move(l)), op(o), rhs(std::move(r)) {}
 
         const expression_ptr lhs;
@@ -100,7 +100,7 @@ namespace rhea { namespace ast {
     class TypeDeclaration : public Statement
     {
         public:
-        TypeDeclaration(std::unique_ptr<AnyIdentifier>& l, std::unique_ptr<Typename>& r)
+        TypeDeclaration(std::unique_ptr<AnyIdentifier> l, std::unique_ptr<Typename> r)
             : lhs(std::move(l)), rhs(std::move(r)) {}
 
         const std::unique_ptr<AnyIdentifier> lhs;
@@ -117,7 +117,7 @@ namespace rhea { namespace ast {
     class Variable : public Statement
     {
         public:
-        Variable(std::unique_ptr<AnyIdentifier>& l, expression_ptr& r)
+        Variable(std::unique_ptr<AnyIdentifier> l, expression_ptr r)
             : lhs(std::move(l)), rhs(std::move(r)) {}
 
         const std::unique_ptr<AnyIdentifier> lhs;
@@ -133,7 +133,7 @@ namespace rhea { namespace ast {
     class Constant : public Statement
     {
         public:
-        Constant(std::unique_ptr<AnyIdentifier>& l, expression_ptr& r)
+        Constant(std::unique_ptr<AnyIdentifier> l, expression_ptr r)
             : lhs(std::move(l)), rhs(std::move(r)) {}
 
         const std::unique_ptr<AnyIdentifier> lhs;
@@ -149,7 +149,7 @@ namespace rhea { namespace ast {
     class Do : public Statement
     {
         public:
-        Do(expression_ptr& e) : expression(std::move(e)) {}
+        Do(expression_ptr e) : expression(std::move(e)) {}
 
         const expression_ptr expression;
 

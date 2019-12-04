@@ -16,7 +16,7 @@ namespace rhea { namespace ast {
     class TernaryOp : public Expression
     {
         public:
-        TernaryOp(expression_ptr& c, expression_ptr& t, expression_ptr& f) :
+        TernaryOp(expression_ptr c, expression_ptr t, expression_ptr f) :
             condition(std::move(c)), true_branch(std::move(t)), false_branch(std::move(f)) {}
 
         const expression_ptr condition;

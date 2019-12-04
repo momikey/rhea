@@ -33,14 +33,14 @@ namespace rhea { namespace ast {
     {
         public:
         // Basic types will use this constructor
-        Typename(std::unique_ptr<AnyIdentifier>& n): name(std::move(n)) {}
+        Typename(std::unique_ptr<AnyIdentifier> n): name(std::move(n)) {}
 
         // More complex types will use one of these
-        Typename(std::unique_ptr<AnyIdentifier>& n, std::unique_ptr<GenericTypename>& g)
+        Typename(std::unique_ptr<AnyIdentifier> n, std::unique_ptr<GenericTypename> g)
             : name(std::move(n)), generic_part(std::move(g)), array_part(nullptr) {}
-        Typename(std::unique_ptr<AnyIdentifier>& n, std::unique_ptr<Expression>& a)
+        Typename(std::unique_ptr<AnyIdentifier> n, expression_ptr a)
             : name(std::move(n)), generic_part(nullptr), array_part(std::move(a)) {}
-        Typename(std::unique_ptr<AnyIdentifier>& n, std::unique_ptr<GenericTypename>& g, std::unique_ptr<Expression>& a)
+        Typename(std::unique_ptr<AnyIdentifier> n, std::unique_ptr<GenericTypename> g, expression_ptr a)
             : name(std::move(n)), generic_part(std::move(g)), array_part(std::move(a)) {}
 
         Typename() = default;
@@ -50,7 +50,7 @@ namespace rhea { namespace ast {
         // These are optional; if not present (as for a simple type),
         // they will be null.
         const std::unique_ptr<GenericTypename> generic_part;
-        const std::unique_ptr<Expression> array_part;
+        const expression_ptr array_part;
 
         std::string to_string() override
             { return fmt::format("(Typename,{0},{1},{2})",
@@ -77,7 +77,7 @@ namespace rhea { namespace ast {
     class Optional : public Typename
     {
         public:
-        Optional(std::unique_ptr<Typename>& t): type(std::move(t)) {}
+        Optional(std::unique_ptr<Typename> t): type(std::move(t)) {}
 
         const std::unique_ptr<Typename> type;
 
@@ -91,10 +91,10 @@ namespace rhea { namespace ast {
     class Cast : public Expression
     {
         public:
-        Cast(std::unique_ptr<Expression>& l, std::unique_ptr<Typename>& r)
+        Cast(expression_ptr l, std::unique_ptr<Typename> r)
             : left(std::move(l)), right(std::move(r)) {}
 
-        const std::unique_ptr<Expression> left;
+        const expression_ptr left;
         const std::unique_ptr<Typename> right;
 
         std::string to_string() override
@@ -105,10 +105,10 @@ namespace rhea { namespace ast {
     class TypeCheck : public Expression
     {
         public:
-        TypeCheck(std::unique_ptr<Expression>& l, std::unique_ptr<Typename>& r)
+        TypeCheck(expression_ptr l, std::unique_ptr<Typename> r)
             : left(std::move(l)), right(std::move(r)) {}
 
-        const std::unique_ptr<Expression> left;
+        const expression_ptr left;
         const std::unique_ptr<Typename> right;
 
         std::string to_string() override

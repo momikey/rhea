@@ -58,9 +58,8 @@ namespace rhea { namespace ast {
     class RelativeIdentifier : public AnyIdentifier
     {
         public:
-        RelativeIdentifier(std::unique_ptr<Identifier>& id): identifier(std::move(id)) {}
-        RelativeIdentifier(std::unique_ptr<FullyQualified>& id): identifier(std::move(id)) {}
-        // RelativeIdentifier(RelativeIdentifier&& rhs) noexcept : identifier(std::move(rhs.identifier)) {}
+        RelativeIdentifier(std::unique_ptr<Identifier> id): identifier(std::move(id)) {}
+        RelativeIdentifier(std::unique_ptr<FullyQualified> id): identifier(std::move(id)) {}
 
         const std::unique_ptr<AnyIdentifier> identifier;
 

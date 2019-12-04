@@ -85,7 +85,7 @@ namespace {
             }
 
             auto child = std::make_unique<rhea::ast::FullyQualified>(nodes);
-            auto parent = std::make_unique<rhea::ast::RelativeIdentifier>(child);
+            auto parent = std::make_unique<rhea::ast::RelativeIdentifier>(std::move(child));
 
             BOOST_TEST_MESSAGE("Testing AST Node " << parent->to_string());
 
@@ -96,7 +96,7 @@ namespace {
         else
         {
             auto child = std::make_unique<rhea::ast::Identifier>(ids[1]);
-            auto parent = std::make_unique<rhea::ast::RelativeIdentifier>(child);
+            auto parent = std::make_unique<rhea::ast::RelativeIdentifier>(std::move(child));
         
             BOOST_TEST_MESSAGE("Testing AST Node " << parent->to_string());
 

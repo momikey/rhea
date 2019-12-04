@@ -25,7 +25,7 @@ namespace rhea { namespace ast {
     class UnaryOp : public Expression
     {
         public:
-        UnaryOp(UnaryOperators o, expression_ptr& r)
+        UnaryOp(UnaryOperators o, expression_ptr r)
             : op(o), operand(std::move(r)) {}
 
         const UnaryOperators op;

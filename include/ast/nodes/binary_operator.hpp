@@ -40,7 +40,7 @@ namespace rhea { namespace ast {
     class BinaryOp : public Expression
     {
         public:
-        BinaryOp(BinaryOperators o, expression_ptr& l, expression_ptr& r)
+        BinaryOp(BinaryOperators o, expression_ptr l, expression_ptr r)
             : op(o), left(std::move(l)), right(std::move(r)) {}
 
         const BinaryOperators op;
