@@ -35,11 +35,11 @@ dictionary_entry
     <expression>
 dictionary_expression
     dictionary_entry +
-tuple_expression
+--tuple_expression
     <expression> +
-list_expression
+--list_expression
     <expression> +
-array_expression
+--array_expression
     <expression> +
 --symbol_list_expression
     identifier +

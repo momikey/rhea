@@ -12,6 +12,7 @@
 #include "nodes/identifiers.hpp"
 #include "nodes/literals.hpp"
 #include "nodes/simple_statement.hpp"
+#include "nodes/structure_type.hpp"
 #include "nodes/ternary_operator.hpp"
 #include "nodes/typenames.hpp"
 #include "nodes/unary_operator.hpp"
