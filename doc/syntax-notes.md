@@ -1215,3 +1215,14 @@ Questions to answer:
 
 * All questions from above.
 * Do we want to allow this to "promote" an optional into a variant? (Probably not.)
+
+## Macros
+
+* Compile-time macros similar to Haxe and other languages.
+
+Questions to answer:
+
+* What should the syntax look like? (Possibly use surrounding backticks.)
+* How do we do parsing/AST/etc. for this?
+* Do we want hygienic macros, or something different?
+* Should we use this feature to rewrite parts of the Rhea base? (Probably not.)

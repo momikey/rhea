@@ -41,7 +41,7 @@ list_expression
     <expression> +
 array_expression
     <expression> +
-symbol_list_expression
+--symbol_list_expression
     identifier +
 --relative_identifier
     identifier | fully_qualified
@@ -166,7 +166,7 @@ match_when_statement
 match_type_statement
     <expression>
     type_case *
-enum_declaration
+--enum_declaration
     identifier              ; name
     symbol_list_expression  ; values
 structure_declaration
@@ -174,7 +174,7 @@ structure_declaration
     type_pair +             ; fields
         identifier
         <type_name>
-type_alias
+--type_alias
     identifier          ; alias
     <any_identifier>    ; original
 try_statement

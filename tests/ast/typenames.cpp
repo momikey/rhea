@@ -114,5 +114,39 @@ namespace {
         BOOST_TEST((node->to_string() == "(TypeCheck,(Integral,42,0),(Typename,(Identifier,integer),null,null))"));
     }
 
+    BOOST_AUTO_TEST_CASE (alias_statement)
+    {
+        auto a = std::make_unique<ast::Identifier>("Foo");
+        auto o = ast::make_identifier<ast::Identifier>("Bar");
+
+        auto node = std::make_unique<ast::Alias>(std::move(a), std::move(o));
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() == "(Alias,(Identifier,Foo),(Identifier,Bar))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (symbol_list_ast)
+    {
+        std::vector<std::string> ss = { "foo", "bar", "baz" };
+
+        auto node = std::make_unique<ast::SymbolList>(ss);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() == "(SymbolList,(Symbol,foo),(Symbol,bar),(Symbol,baz))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (enum_declaration_ast)
+    {
+        std::vector<std::string> ss = { "foo", "bar", "baz" };
+        auto sl = std::make_unique<ast::SymbolList>(ss);
+        auto id = std::make_unique<ast::Identifier>("En");
+
+        auto node = std::make_unique<ast::Enum>(std::move(id), std::move(sl));
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() ==
+            "(Enum,(Identifier,En),(SymbolList,(Symbol,foo),(Symbol,bar),(Symbol,baz)))"));
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

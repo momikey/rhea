@@ -7,6 +7,7 @@
 
 #include "node_base.hpp"
 #include "identifiers.hpp"
+#include "literals.hpp"
 
 /*
  * AST nodes for type name.
@@ -113,6 +114,52 @@ namespace rhea { namespace ast {
 
         std::string to_string() override
             { return fmt::format("(TypeCheck,{0},{1})", left->to_string(), right->to_string()); }
+    };
+
+    // A type alias is nothing more than renaming a type, the same as
+    // C++ `using` or C `typedef`. It generates no code, but affects
+    // the symbol table of its scope.
+    class Alias : public Statement
+    {
+        public:
+        Alias(std::unique_ptr<Identifier> a, std::unique_ptr<AnyIdentifier> o)
+            : alias(std::move(a)), original(std::move(o)) {}
+
+        const std::unique_ptr<Identifier> alias;
+        const std::unique_ptr<AnyIdentifier> original;
+
+        std::string to_string() override
+            { return fmt::format("(Alias,{0},{1})", alias->to_string(), original->to_string()); }
+    };
+
+    // Symbol lists are, at present, only used in enum declarations.
+    // In the future, we might want to do more with them. For now,
+    // they're just lists of identifiers, which we can convert into
+    // symbols without having to go through Identifier nodes.
+    class SymbolList : public Expression
+    {
+        public:
+        SymbolList(std::vector<std::string>& ss);
+
+        child_vector<Symbol> symbols;
+
+        std::string to_string() override;
+    };
+
+    // A Rhea enum is just an alias given to a symbol list. Unlike C/C++,
+    // Rhea programmers shouldn't care about the specific values. Thus,
+    // we can simplify the AST by just tracking symbols.
+    class Enum : public Statement
+    {
+        public:
+        Enum(std::unique_ptr<Identifier> n, std::unique_ptr<SymbolList> ss)
+            : name(std::move(n)), values(std::move(ss)) {}
+
+        const std::unique_ptr<Identifier> name;
+        const std::unique_ptr<SymbolList> values;
+
+        std::string to_string() override
+            { return fmt::format("(Enum,{0},{1})", name->to_string(), values->to_string()); }
     };
 }}
 

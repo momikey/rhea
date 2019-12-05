@@ -1094,3 +1094,8 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 	}
 ```
 
+### String interpolation
+
+{TBD: Decide on syntax/library support.}
+
+
