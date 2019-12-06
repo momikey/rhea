@@ -52,10 +52,10 @@ function_call_expr
     empty_argument_list | named_argument_list | unnamed_argument_list
     <expression>
     function_suffix ?
-subscript_expr
+--subscript_expr
     <expression>    ; subscript
     <expression>
-member_expr
+--member_expr
     identifier      ; member
     <expression>
 --ternary_op
@@ -132,7 +132,7 @@ member_expr
 --while_statement
     <expression>        ; condition
     <stmt_or_block>     ; loop body
-for_statement
+--for_statement
     identifier          ; index variable
     <expression>        ; iteration list
     <stmt_or_block>     ; loop body

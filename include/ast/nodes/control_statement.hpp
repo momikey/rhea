@@ -37,14 +37,31 @@ namespace rhea { namespace ast {
     class While : public Statement
     {
         public:
-        While(expression_ptr c, statement_ptr b) :
-            condition(std::move(c)), body(std::move(b)) {}
+        While(expression_ptr c, statement_ptr b)
+            : condition(std::move(c)), body(std::move(b)) {}
 
         const expression_ptr condition;
         const statement_ptr body;
 
         std::string to_string() override
             { return fmt::format("(While,{0},{1})", condition->to_string(), body->to_string()); }
+    };
+
+    // For loop AST node class. We store the index variable as a
+    // simple string rather than an Identifier node for the same
+    // reasons as with type pairs.
+    class For : public Statement
+    {
+        public:
+        For(std::string i, expression_ptr r, statement_ptr b)
+            : index(i), range(std::move(r)), body(std::move(b)) {}
+
+        const std::string index;
+        const expression_ptr range;
+        const statement_ptr body;
+
+        std::string to_string() override
+            { return fmt::format("(For,{0},{1},{2})", index, range->to_string(), body->to_string()); }
     };
 
     // With statement. This creates a new scope, prepopulating it with
