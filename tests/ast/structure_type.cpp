@@ -81,5 +81,31 @@ namespace {
         BOOST_TEST((node->to_string() == result));
     }
 
+    BOOST_AUTO_TEST_CASE (structure_declaration_ast)
+    {
+        std::vector<std::string> ns = { "foo", "bar" };
+
+        ast::child_vector<ast::TypePair> fields;
+        auto f0 = std::make_unique<ast::TypePair>(
+            ns[0],
+            std::move(std::make_unique<ast::Typename>(std::move(ast::make_identifier<ast::Identifier>("integer"))))
+        );
+        auto f1 = std::make_unique<ast::TypePair>(
+            ns[1],
+            std::move(std::make_unique<ast::Typename>(std::move(ast::make_identifier<ast::Identifier>("string"))))
+        );
+        fields.emplace_back(std::move(f0));
+        fields.emplace_back(std::move(f1));
+
+        auto name = std::make_unique<ast::Identifier>("Test");
+
+        auto node = std::make_unique<ast::Structure>(std::move(name), fields);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() ==
+            "(Structure,(Identifier,Test),(TypePair,foo,(Typename,(Identifier,integer),null,null)),(TypePair,bar,(Typename,(Identifier,string),null,null)))"
+        ));
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

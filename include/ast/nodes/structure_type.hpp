@@ -8,6 +8,7 @@
 #include "node_base.hpp"
 #include "identifiers.hpp"
 #include "literals.hpp"
+#include "typenames.hpp"
 
 /*
  * AST nodes for types representing data structures. In Rhea,
@@ -50,6 +51,19 @@ namespace rhea { namespace ast {
         public:
         Tuple(child_vector<Expression>& es) : Container(es) {}
         std::string to_string() override { return to_string_base("Tuple"); }
+    };
+
+    // Structure declaration AST. This uses the TypePair node, defined
+    // above, to map fields to their desired types.
+    class Structure : public Statement
+    {
+        public:
+        Structure(std::unique_ptr<Identifier> n, child_vector<TypePair>& fs);
+
+        const std::unique_ptr<Identifier> name;
+        child_vector<TypePair> fields;
+
+        std::string to_string() override;
     };
 }}
 

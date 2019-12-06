@@ -180,19 +180,6 @@ namespace rhea { namespace ast {
         std::string to_string() override
             { return fmt::format("(TypePair,{0},{1})", name, value->to_string()); }
     };
-
-    // Structure declaration AST. This uses the TypePair node, defined
-    // above, to map fields to their desired types.
-    class Structure : public Statement
-    {
-        public:
-        Structure(std::unique_ptr<Identifier> n, child_vector<TypePair>& fs);
-
-        const std::unique_ptr<Identifier> name;
-        child_vector<TypePair> fields;
-
-        std::string to_string() override;
-    };
 }}
 
 #endif /* RHEA_NODES_TYPENAMES_HPP */
