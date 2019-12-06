@@ -4,7 +4,7 @@
 #include <iterator>
 
 namespace rhea { namespace ast {
-    With::With(child_vector<TypeDeclaration>& ds, statement_ptr b)
+    With::With(child_vector<TypePair>& ds, statement_ptr b)
         : body(std::move(b))
     {
         // This is the same logic as in a few other nodes,

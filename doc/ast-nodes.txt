@@ -169,7 +169,7 @@ match_type_statement
 --enum_declaration
     identifier              ; name
     symbol_list_expression  ; values
-structure_declaration
+--structure_declaration
     identifier              ; name
     type_pair +             ; fields
         identifier
@@ -258,7 +258,7 @@ return_type_spec
     <type_name> *
 --optional_type
     <type_name>
-type_pair
+--type_pair
     identifier      ; name
     <type_name>     ; type
 constructor_expression
@@ -319,7 +319,6 @@ program_definition
 named_argument
     identifier              ; name
     <expression>            ; argument
-type_match
+--type_match
     identifier              ; name
     identifier              ; type
-

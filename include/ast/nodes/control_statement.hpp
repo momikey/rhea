@@ -28,7 +28,7 @@ namespace rhea { namespace ast {
         const statement_ptr then_case;
         const statement_ptr else_case;
 
-        std::string to_string() { return fmt::format("(If,{0},{1},{2})", condition->to_string(),
+        std::string to_string() override { return fmt::format("(If,{0},{1},{2})", condition->to_string(),
             then_case != nullptr ? then_case->to_string() : "null",
             else_case != nullptr ? else_case->to_string() : "null"); }
     };
@@ -43,24 +43,23 @@ namespace rhea { namespace ast {
         const expression_ptr condition;
         const statement_ptr body;
 
-        std::string to_string()
+        std::string to_string() override
             { return fmt::format("(While,{0},{1})", condition->to_string(), body->to_string()); }
     };
 
     // With statement. This creates a new scope, prepopulating it with
     // an arbitrary number of default-initialized variables. From the AST's
-    // perspective, that's just a bunch of typed declarations.
+    // perspective, that's just a bunch of type pairs.
     class With : public Statement
     {
         public:
-        With(child_vector<TypeDeclaration>& ds, statement_ptr b);
+        With(child_vector<TypePair>& ds, statement_ptr b);
 
         const statement_ptr body;
+        child_vector<TypePair> declarations;
 
-        std::string to_string();
+        std::string to_string() override;
 
-        private:
-        child_vector<TypeDeclaration> declarations;
     };
 
     // Break and continue are relatively easy (and very similar).
@@ -69,7 +68,7 @@ namespace rhea { namespace ast {
         public:
         Break() {}
 
-        std::string to_string() { return "(Break)"; }
+        std::string to_string() override { return "(Break)"; }
     };
 
     class Continue : public Statement

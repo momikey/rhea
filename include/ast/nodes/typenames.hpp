@@ -161,6 +161,38 @@ namespace rhea { namespace ast {
         std::string to_string() override
             { return fmt::format("(Enum,{0},{1})", name->to_string(), values->to_string()); }
     };
+
+    // In many cases, we need a mapping between a local identifier
+    // (or just a string) and a typename.
+    class TypePair : public ASTNode
+    {
+        public:
+        TypePair(std::string n, std::unique_ptr<Typename> v)
+            : name(n), value(std::move(v)) {}
+        
+        // We store the name as just a string rather than an
+        // Identifier AST node because we don't actually want
+        // the extra functionality of the node class. This class
+        // just creates a mapping, not any actual code.
+        std::string name;
+        std::unique_ptr<Typename> value;
+
+        std::string to_string() override
+            { return fmt::format("(TypePair,{0},{1})", name, value->to_string()); }
+    };
+
+    // Structure declaration AST. This uses the TypePair node, defined
+    // above, to map fields to their desired types.
+    class Structure : public Statement
+    {
+        public:
+        Structure(std::unique_ptr<Identifier> n, child_vector<TypePair>& fs);
+
+        const std::unique_ptr<Identifier> name;
+        child_vector<TypePair> fields;
+
+        std::string to_string() override;
+    };
 }}
 
 #endif /* RHEA_NODES_TYPENAMES_HPP */
