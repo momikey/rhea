@@ -201,7 +201,7 @@ wildcard_argument
     identifier
 --predicate_arguments_list
     <expression> +
-fn_condition_predicate_call
+--fn_condition_predicate_call
     identifier                  ; argument name
     identifier                  ; predicate name
     predicate_arguments_list ?
@@ -209,30 +209,30 @@ fn_with_block
     fn_condition_predicate_call *
 --return_statement
     expression
-return_type
+--return_type
     <type_name>
 generic_function_type
     type_match | concept_match
-basic_function_def
+--basic_function_def
     identifier
     generic_function_type ?
     return_type ?
     arguments_list ?
     fn_with_block ?
     <stmt_or_block>             ; function body
-predicate_function_def
+--predicate_function_def
     identifier
     generic_function_type ?
     arguments_list ?
     fn_with_block ?
     <stmt_or_block>
-unchecked_function_def
+--unchecked_function_def
     identifier
     generic_function_type ?
     return_type ?
     arguments_list ?
     <stmt_or_block>
-operator_function_def
+--operator_function_def
     identifier
     generic_function_type ?
     return_type ?

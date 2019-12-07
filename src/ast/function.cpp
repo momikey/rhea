@@ -58,4 +58,39 @@ namespace rhea { namespace ast {
 
         return fmt::format("(Arguments{0})", s);  
     }
+
+    Def::Def(FunctionType t, std::string n, std::unique_ptr<TypePair> gt,
+        std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition> cs,
+        statement_ptr b)
+        : type(t), name(n), generic_type(std::move(gt)), return_type(std::move(rt)),
+          arguments_list(std::move(al)), body(std::move(b))
+    {
+        std::move(cs.begin(), cs.end(), std::back_inserter(conditions));
+    }
+
+    std::string Def::to_string()
+    {
+        // Only the conditions really need this part. Everything else is
+        // handled by child nodes.
+        std::string s;
+        s.reserve(conditions.size()*32);    // profile this to find a nice default
+
+        for (auto&& c : conditions)
+        {
+            s += ',';
+            s += c->to_string();
+        }
+
+        auto cstr = fmt::format("(Conditions{0})");
+
+        return fmt::format("(Def,{0},{1},{2},{3},{4},{5},{6})",
+            static_cast<int>(type),
+            name,
+            generic_type->to_string(),
+            return_type->to_string(),
+            arguments_list->to_string(),
+            cstr,
+            body->to_string()
+        );
+    }
 }}

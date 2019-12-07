@@ -63,6 +63,52 @@ namespace rhea { namespace ast {
         std::string to_string() override;
     };
 
+    // AST for function pre- and post-conditions.
+    class Condition : public ASTNode
+    {
+        public:
+        Condition(std::string t, expression_ptr p)
+            : target(t), predicate(std::move(p)) {}
+
+        const std::string target;
+        const expression_ptr predicate;
+
+        std::string to_string() override
+            { return fmt::format("(Condition,{0},{1}", target, predicate->to_string()); }
+    };
+
+    // Functions can be of different types. This enum allows us
+    // to choose which type.
+    enum class FunctionType
+    {
+        Basic,      // i.e., not special
+        Predicate,  // implied boolean return type
+        Operator,   // operators are always called implicitly
+        Unchecked   // can't take conditions
+    };
+
+    // AST for function definitions.
+    class Def : public Statement
+    {
+        public:
+        // Full function definition
+        // TODO: Add simpler constructors that delegate to this one.
+        Def(FunctionType t, std::string n, std::unique_ptr<TypePair> gt,
+            std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition> cs,
+            statement_ptr b);
+
+        const FunctionType type;
+        const std::string name;
+        // TODO: Change this to variant of type pair and concept match.
+        const std::unique_ptr<TypePair> generic_type;
+        const std::unique_ptr<Typename> return_type;
+        const std::unique_ptr<Arguments> arguments_list;
+        child_vector<Condition> conditions;
+        const statement_ptr body;
+
+        std::string to_string() override;
+    };
+
     // AST node for the return statement. We put it here because
     // it's function-oriented.
     class Return : public Statement
