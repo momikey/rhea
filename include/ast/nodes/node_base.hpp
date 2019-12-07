@@ -8,6 +8,21 @@
 
 #include <tao/pegtl.hpp>
 
+// Variants don't enter the standard library until C++17.
+// Boost.Variant2 fills the gap for C++14, which is the minimum
+// we require.
+#ifdef __cpp_lib_variant
+#include <variant>
+using std::variant;
+using std::visit;
+using std::monostate;
+#else
+#include <boost/variant2/variant.hpp>
+using boost::variant2::variant;
+using boost::variant2::visit;
+using boost::variant2::monostate;
+#endif
+
 #include "../parse_tree_node.hpp"
 
 /*
@@ -49,7 +64,10 @@ namespace rhea { namespace ast {
 
     class Statement : public ASTNode
     {
-
+        // TODO: Some statements can declare symbols. If we make a quick
+        // pass through some levels of the AST, we can pick these out,
+        // which saves us from having to forward declare as in C/C++.
+        // virtual <SomeScopeType>& declare(<SomeScopeType>& scope) = 0;
     };
 
     // A lot of nodes need to store lists of children. These will

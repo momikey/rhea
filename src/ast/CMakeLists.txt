@@ -1,4 +1,5 @@
 set(AST_SOURCES
+    function.cpp
     identifiers.cpp
     simple_statement.cpp
     structure_type.cpp

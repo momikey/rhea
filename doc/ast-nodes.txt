@@ -48,7 +48,7 @@ dictionary_expression
 
 ## Operators
 
-function_call_expr
+--function_call_expr
     empty_argument_list | named_argument_list | unnamed_argument_list
     <expression>
     function_suffix ?
@@ -195,11 +195,11 @@ finally_statement
 
 ## Function Defintions
 
-arguments_list
+--arguments_list
     (type_match | concept_match) +
 wildcard_argument
     identifier
-predicate_arguments_list
+--predicate_arguments_list
     <expression> +
 fn_condition_predicate_call
     identifier                  ; argument name
@@ -207,7 +207,7 @@ fn_condition_predicate_call
     predicate_arguments_list ?
 fn_with_block
     fn_condition_predicate_call *
-return_statement
+--return_statement
     expression
 return_type
     <type_name>
@@ -239,7 +239,7 @@ operator_function_def
     arguments_list ?
     fn_with_block ?
     <stmt_or_block>
-extern_declaration
+--extern_declaration
     identifier
 
 ## Types and Concepts
