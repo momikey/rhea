@@ -8,6 +8,7 @@ set(TESTS_AST_SOURCES
     control_statement.cpp
     typenames.cpp
     function.cpp
+    builder.cpp
 )
 
 add_library(tests_ast OBJECT ${TESTS_AST_SOURCES})

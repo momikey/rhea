@@ -53,7 +53,7 @@ namespace rhea { namespace ast {
 
         virtual std::string to_string() = 0;
 
-        const tao::pegtl::position position;
+        tao::pegtl::position position;
     };
 
     // "Top-level" node types

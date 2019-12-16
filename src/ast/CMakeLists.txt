@@ -4,6 +4,7 @@ set(AST_SOURCES
     simple_statement.cpp
     structure_type.cpp
     typenames.cpp
+    builder.cpp
 )
 
 add_library(rhea_ast STATIC ${AST_SOURCES})

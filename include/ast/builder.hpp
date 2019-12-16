@@ -16,11 +16,7 @@
  */
 namespace rhea { namespace ast {
     // Build a Rhea AST out of the PEGTL modified parse tree.
-    template <typename Node>
-    std::unique_ptr<ASTNode> build_ast(Node& node)
-    {
-
-    }
+    std::unique_ptr<ASTNode> build_ast(parser_node* node);
 }}
 
 #endif /* RHEA_AST_BUILDER_HPP */

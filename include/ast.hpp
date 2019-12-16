@@ -7,6 +7,7 @@
  */
 
 #include "ast/builder.hpp"
+#include "ast/error.hpp"
 #include "ast/nodes.hpp"
 #include "ast/parse_tree_node.hpp"
 #include "ast/selector.hpp"
