@@ -49,9 +49,9 @@ namespace rhea { namespace grammar {
 
     struct not_equal_operator : TAO_PEGTL_STRING("!=") {};
 
-    struct greater_equal_operator : TAO_PEGTL_STRING("<=") {};
+    struct greater_equal_operator : TAO_PEGTL_STRING(">=") {};
 
-    struct less_equal_operator : TAO_PEGTL_STRING(">=") {};
+    struct less_equal_operator : TAO_PEGTL_STRING("<=") {};
 
     // We have to use lookahead here so that these won't
     // get picked up ahead of the shift operators below.
