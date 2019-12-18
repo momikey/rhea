@@ -144,7 +144,7 @@ namespace rhea { namespace ast {
     };
 
     // The `do` statement doesn't do much of anything, but it can
-    // call a bare identifier as if it wree a function taking no
+    // call a bare identifier as if it were a function taking no
     // arguments. AST doesn't account for this, but codegen does.
     class Do : public Statement
     {

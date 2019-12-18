@@ -69,6 +69,44 @@ namespace rhea { namespace ast {
             );
         }
 
+        // Builder helper for unary operators
+        expression_ptr create_unary_node(parser_node* node, UnaryOperators op)
+        {
+            return make_expression<UnaryOp>(
+                op,
+                create_expression_node(node->children.at(0).get())
+            );
+        }
+
+        // Helper to map node types to the operator enum for compound assignments.
+        AssignOperator assignment_operator_type(parser_node* node)
+        {
+            if (node->is<gr::add_operator>())
+                return AssignOperator::Add;
+            else if (node->is<gr::subtract_operator>())
+                return AssignOperator::Subtract;
+            else if (node->is<gr::multiply_operator>())
+                return AssignOperator::Multiply;
+            else if (node->is<gr::divide_operator>())
+                return AssignOperator::Divide;
+            else if (node->is<gr::modulus_operator>())
+                return AssignOperator::Modulus;
+            else if (node->is<gr::exponent_operator>())
+                return AssignOperator::Exponent;
+            else if (node->is<gr::left_shift_operator>())
+                return AssignOperator::LeftShift;
+            else if (node->is<gr::right_shift_operator>())
+                return AssignOperator::RightShift;
+            else if (node->is<gr::bitand_operator>())
+                return AssignOperator::BitAnd;
+            else if (node->is<gr::bitor_operator>())
+                return AssignOperator::BitOr;
+            else if (node->is<gr::bitxor_operator>())
+                return AssignOperator::BitXor;
+            else
+                throw unimplemented_type(node->name());
+        }
+
         // Builder for expressions.
         expression_ptr create_expression_node(parser_node* node)
         {
@@ -83,11 +121,11 @@ namespace rhea { namespace ast {
                 // otherwise make it a double.
                 if (node->children.back()->is<gr::float_literal_suffix>())
                 {
-                    return make_expression<Float>(std::stof(lit));
+                    expr = make_expression<Float>(std::stof(lit));
                 }
                 else
                 {
-                    return make_expression<Double>(std::stod(lit));
+                    expr = make_expression<Double>(std::stod(lit));
                 }
             }
 
@@ -101,7 +139,7 @@ namespace rhea { namespace ast {
                     // No suffix means use a default signed integer. This is 32-bit
                     // at present, though we may want to make it 64-bit later on.
                     int32_t i = std::stoi(lit);
-                    return make_expression<Integer>(i);
+                    expr = make_expression<Integer>(i);
                 }
                 else
                 {
@@ -111,27 +149,27 @@ namespace rhea { namespace ast {
                         case BasicType::Byte:
                         {
                             int8_t i = std::stoi(lit);
-                            return make_expression<Byte>(i);
+                            expr = make_expression<Byte>(i);
                         }
                         case BasicType::Long:
                         {
                             int64_t i = std::stoll(lit);
-                            return make_expression<Long>(i);
+                            expr = make_expression<Long>(i);
                         }
                         case BasicType::UnsignedInteger:
                         {
                             uint32_t i = std::stoi(lit);
-                            return make_expression<UnsignedInteger>(i);
+                            expr = make_expression<UnsignedInteger>(i);
                         }
                         case BasicType::UnsignedByte:
                         {
                             uint8_t i = std::stoi(lit);
-                            return make_expression<UnsignedByte>(i);
+                            expr = make_expression<UnsignedByte>(i);
                         }
                         case BasicType::UnsignedLong:
                         {
                             uint64_t i = std::stoll(lit);
-                            return make_expression<UnsignedLong>(i);
+                            expr = make_expression<UnsignedLong>(i);
                         }
                         default:
                             throw unimplemented_type(node->name());
@@ -139,82 +177,122 @@ namespace rhea { namespace ast {
                 }
             }
 
+            // Simple identifiers
+            else if (node->is<gr::identifier>())
+            {
+                expr = std::make_unique<Identifier>(node->string());
+            }
+
             // Binary operators: all of these delegate to the helper defined above.
             else if (node->is<gr::add_operator>())
             {
-                return create_binop_node(node, BinaryOperators::Add);
+                expr = create_binop_node(node, BinaryOperators::Add);
             }
             else if (node->is<gr::subtract_operator>())
             {
-                return create_binop_node(node, BinaryOperators::Subtract);
+                expr = create_binop_node(node, BinaryOperators::Subtract);
             }
             else if (node->is<gr::multiply_operator>())
             {
-                return create_binop_node(node, BinaryOperators::Multiply);
+                expr = create_binop_node(node, BinaryOperators::Multiply);
             }
             else if (node->is<gr::divide_operator>())
             {
-                return create_binop_node(node, BinaryOperators::Divide);
+                expr = create_binop_node(node, BinaryOperators::Divide);
             }
             else if (node->is<gr::modulus_operator>())
             {
-                return create_binop_node(node, BinaryOperators::Modulus);
+                expr = create_binop_node(node, BinaryOperators::Modulus);
             }
             else if (node->is<gr::exponent_operator>())
             {
-                return create_binop_node(node, BinaryOperators::Exponent);
+                expr = create_binop_node(node, BinaryOperators::Exponent);
             }
             else if (node->is<gr::left_shift_operator>())
             {
-                return create_binop_node(node, BinaryOperators::LeftShift);
+                expr = create_binop_node(node, BinaryOperators::LeftShift);
             }
             else if (node->is<gr::right_shift_operator>())
             {
-                return create_binop_node(node, BinaryOperators::RightShift);
+                expr = create_binop_node(node, BinaryOperators::RightShift);
             }
             else if (node->is<gr::equals_operator>())
             {
-                return create_binop_node(node, BinaryOperators::Equals);
+                expr = create_binop_node(node, BinaryOperators::Equals);
             }
             else if (node->is<gr::not_equal_operator>())
             {
-                return create_binop_node(node, BinaryOperators::NotEqual);
+                expr = create_binop_node(node, BinaryOperators::NotEqual);
             }
             else if (node->is<gr::less_than_operator>())
             {
-                return create_binop_node(node, BinaryOperators::LessThan);
+                expr = create_binop_node(node, BinaryOperators::LessThan);
             }
             else if (node->is<gr::greater_than_operator>())
             {
-                return create_binop_node(node, BinaryOperators::GreaterThan);
+                expr = create_binop_node(node, BinaryOperators::GreaterThan);
             }
             else if (node->is<gr::less_equal_operator>())
             {
-                return create_binop_node(node, BinaryOperators::LessThanOrEqual);
+                expr = create_binop_node(node, BinaryOperators::LessThanOrEqual);
             }
             else if (node->is<gr::greater_equal_operator>())
             {
-                return create_binop_node(node, BinaryOperators::GreaterThanOrEqual);
+                expr = create_binop_node(node, BinaryOperators::GreaterThanOrEqual);
             }
             else if (node->is<gr::bitand_operator>())
             {
-                return create_binop_node(node, BinaryOperators::BitAnd);
+                expr = create_binop_node(node, BinaryOperators::BitAnd);
             }
             else if (node->is<gr::bitor_operator>())
             {
-                return create_binop_node(node, BinaryOperators::BitOr);
+                expr = create_binop_node(node, BinaryOperators::BitOr);
             }
             else if (node->is<gr::bitxor_operator>())
             {
-                return create_binop_node(node, BinaryOperators::BitXor);
+                expr = create_binop_node(node, BinaryOperators::BitXor);
             }
             else if (node->is<gr::kw_and>())
             {
-                return create_binop_node(node, BinaryOperators::BooleanAnd);
+                expr = create_binop_node(node, BinaryOperators::BooleanAnd);
             }
             else if (node->is<gr::kw_or>())
             {
-                return create_binop_node(node, BinaryOperators::BooleanOr);
+                expr = create_binop_node(node, BinaryOperators::BooleanOr);
+            }
+
+            // Unary operators: all of these delegate to the helper above.
+            else if (node->is<gr::coerce_operator>())
+            {
+                expr = create_unary_node(node, UnaryOperators::Coerce);
+            }
+            else if (node->is<gr::bitnot_operator>())
+            {
+                expr = create_unary_node(node, UnaryOperators::BitNot);
+            }
+            else if (node->is<gr::dereference_operator>())
+            {
+                expr = create_unary_node(node, UnaryOperators::Dereference);
+            }
+            else if (node->is<gr::unary_plus_operator>())
+            {
+                expr = create_unary_node(node, UnaryOperators::Plus);
+            }
+            else if (node->is<gr::unary_minus_operator>())
+            {
+                expr = create_unary_node(node, UnaryOperators::Minus);
+            }
+            else if (node->is<gr::kw_not>())
+            {
+                expr = create_unary_node(node, UnaryOperators::BooleanNot);
+            }
+            else if (node->is<gr::kw_ref>())
+            {
+                expr = create_unary_node(node, UnaryOperators::Ref);
+            }
+            else if (node->is<gr::kw_ptr>())
+            {
+                expr = create_unary_node(node, UnaryOperators::Ptr);
             }
 
 
@@ -241,12 +319,49 @@ namespace rhea { namespace ast {
                 ));
             }
 
+            // Variable declaration: `var x = y * z;`
+            else if (node->is<gr::variable_declaration>())
+            {
+                stmt = make_statement<Variable>(
+                    std::move(create_identifier_node(node->children.at(0).get())),
+                    std::move(create_expression_node(node->children.at(1).get()))
+                );
+            }
+
             // Constant declaration: `const bar = 42;`
             else if (node->is<gr::constant_declaration>())
             {
                 stmt = make_statement<Constant>(
                     std::move(create_identifier_node(node->children.at(0).get())),
                     std::move(create_expression_node(node->children.at(1).get()))
+                );
+            }
+
+            // Variable assignment: `foo = bar ** 2;`
+            else if (node->is<gr::assignment>())
+            {
+                stmt = make_statement<Assign>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    std::move(create_expression_node(node->children.at(1).get()))
+                );
+            }
+
+            // Compound assignment: `i -= 1;`
+            else if (node->is<gr::compound_assignment>())
+            {
+                stmt = make_statement<CompoundAssign>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    assignment_operator_type(node->children.at(1).get()),
+                    std::move(create_expression_node(node->children.at(2).get()))
+                );
+            }
+
+            // Do statement: `do that;`
+            // TODO: Should we do the bare identifier -> function call conversion here?
+            else if (node->is<gr::do_statement>())
+            {
+                stmt = make_statement<Do>(
+                    std::move(create_expression_node(node->children.at(0).get()))
                 );
             }
 
