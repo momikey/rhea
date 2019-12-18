@@ -1,6 +1,8 @@
 #include "ast/internal/builder.hpp"
 
 #include <map>
+#include <vector>
+#include <algorithm>
 #include <memory>
 #include <cassert>
 
@@ -177,10 +179,30 @@ namespace rhea { namespace ast {
                 }
             }
 
+            // Boolean literals
+            else if (node->is<gr::boolean_literal>())
+            {
+                expr = std::make_unique<Boolean>(node->string() == "true");
+            }
+
+            // "Nothing" type literals
+            else if (node->is<gr::nothing_literal>())
+            {
+                expr = std::make_unique<Nothing>();
+            }
+
             // Simple identifiers
             else if (node->is<gr::identifier>())
             {
                 expr = std::make_unique<Identifier>(node->string());
+            }
+
+            // Symbols
+            else if (node->is<gr::symbol_name>())
+            {
+                // Symbol parse nodes always have a single child with the symbol name
+                // as its content.
+                expr = std::make_unique<Symbol>(node->children.at(0)->string());
             }
 
             // Binary operators: all of these delegate to the helper defined above.
@@ -317,6 +339,19 @@ namespace rhea { namespace ast {
                 stmt = make_statement<BareExpression>(std::move(
                     create_expression_node(node->children.at(0).get())
                 ));
+            }
+
+            // Statement blocks: `{ foo(); bar(); }`
+            else if (node->is<gr::statement_block>())
+            {
+                std::vector<statement_ptr> block_stmts;
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { block_stmts.emplace_back(std::move(create_statement_node(el.get()))); }
+                );
+
+                stmt = make_statement<Block>(block_stmts);
             }
 
             // Variable declaration: `var x = y * z;`

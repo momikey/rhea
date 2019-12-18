@@ -82,6 +82,43 @@ namespace {
         BOOST_TEST((node->to_string() == "(BareExpression,(UnaryOp,2,(Identifier,x)))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_literal_expressions)
+    {
+        std::string boolean_lit { "true;" };
+        std::string nothing_lit { "nothing;" };
+        std::string symbol_lit { "@foo;" };
+
+        BOOST_TEST_MESSAGE("Parsing boolean literal " << boolean_lit);
+        string_input<> in1(boolean_lit, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in1);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Boolean,true))"));
+
+        BOOST_TEST_MESSAGE("Parsing nothing literal " << nothing_lit);
+        string_input<> in2(nothing_lit, "test");
+
+        tree = tree_builder<gr::bare_expression>(in2);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Nothing))"));
+
+        BOOST_TEST_MESSAGE("Parsing symbol literal " << symbol_lit);
+        string_input<> in3(symbol_lit, "test");
+
+        tree = tree_builder<gr::bare_expression>(in3);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Symbol,foo))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_variable_declaration)
     {
         std::string sample { "var x = y * z;" };
@@ -116,7 +153,7 @@ namespace {
     {
         std::string sample { "foo = bar ** 2;" };
 
-        BOOST_TEST_MESSAGE("Parsing constant declaration " << sample);
+        BOOST_TEST_MESSAGE("Parsing assignment " << sample);
         string_input<> in(sample, "test");
 
         auto tree = tree_builder<gr::statement>(in);
@@ -131,7 +168,7 @@ namespace {
     {
         std::string sample { "i -= 1;" };
 
-        BOOST_TEST_MESSAGE("Parsing constant declaration " << sample);
+        BOOST_TEST_MESSAGE("Parsing compound assignment " << sample);
         string_input<> in(sample, "test");
 
         auto tree = tree_builder<gr::statement>(in);
@@ -155,6 +192,21 @@ namespace {
 
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() == "(Do,(Identifier,foo))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_statement_block)
+    {
+        std::string sample { "{do foo; do bar;}" };
+
+        BOOST_TEST_MESSAGE("Parsing statement block " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement_block>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(Block,(Do,(Identifier,foo)),(Do,(Identifier,bar)))"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()
