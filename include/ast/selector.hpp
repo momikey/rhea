@@ -230,9 +230,8 @@ namespace rhea { namespace ast {
          * discarding any of its own content; if no children, then it removes
          * the node entirely. This might come in handy in a few cases.
          */
-        parse_tree::discard_empty::on <
-            else_block
-        >,
+        // parse_tree::discard_empty::on <
+        // >,
 
         /*
          * Any custom selectors we want to create. These can transform a node
@@ -273,6 +272,10 @@ namespace rhea { namespace ast {
 
         postfix_rearrange::on <
             postfix_op
+        >,
+
+        else_rearrange::on <
+            else_block
         >
     > {};
 }}
