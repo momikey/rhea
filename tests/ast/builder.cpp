@@ -209,5 +209,93 @@ namespace {
         BOOST_TEST((node->to_string() == "(Block,(Do,(Identifier,foo)),(Do,(Identifier,bar)))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_if_statement)
+    {
+        std::string no_else { "if x do foo;" };
+        
+        BOOST_TEST_MESSAGE("Parsing 'if' statement " << no_else);
+        string_input<> in(no_else, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(If,(Identifier,x),(Do,(Identifier,foo)),null)"));
+
+        std::string with_else { "if y do foo; else do bar;"};
+
+        BOOST_TEST_MESSAGE("Parsing 'if-else' statement " << with_else);
+        string_input<> in2(with_else, "test");
+
+        tree = tree_builder<gr::statement>(in2);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(If,(Identifier,y),(Do,(Identifier,foo)),(Do,(Identifier,bar)))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_unless_statement)
+    {
+        std::string sample { "unless foo do foo;" };
+        
+        BOOST_TEST_MESSAGE("Parsing 'unless' statement " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(If,(Identifier,foo),null,(Do,(Identifier,foo)))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_while_statement)
+    {
+        std::string sample { "while (x < 10) { x += 1; }" };
+        
+        BOOST_TEST_MESSAGE("Parsing 'while' statement " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() ==
+            "(While,(BinaryOp,10,(Identifier,x),(Integral,10,0)),(Block,(CompoundAssign,(Identifier,x),(Integral,1,0),0)))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_for_statement)
+    {
+        std::string sample { "for i in range { do foo; }" };
+        
+        BOOST_TEST_MESSAGE("Parsing 'for' statement " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(For,i,(Identifier,range),(Block,(Do,(Identifier,foo))))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_break_continue_statements)
+    {
+        std::string sample { "{ break; continue; }" };
+        
+        BOOST_TEST_MESSAGE("Parsing 'break' and 'continue' statements " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement_block>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(Block,(Break),(Continue))"));
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

@@ -400,6 +400,59 @@ namespace rhea { namespace ast {
                 );
             }
 
+            // If statement: `if (x > 0) { do this; } else { do that; }`
+            else if (node->is<gr::if_statement>())
+            {
+                stmt = make_statement<If>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    std::move(create_statement_node(node->children.at(1).get())),
+                    node->children.size() > 2
+                        ? std::move(create_statement_node(node->children.at(2).get()))
+                        : nullptr
+                );
+            }
+
+            // Unless statement: `unless (x == nothing) { do x; }`
+            else if (node->is<gr::unless_statement>())
+            {
+                // An "unless" is just an "if" with an inverted condition and no else.
+                // We model that by making an If AST node that has a null "then" part.
+                stmt = make_statement<If>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    nullptr,
+                    std::move(create_statement_node(node->children.at(1).get()))
+                );
+            }
+
+            // While statement: `while x < 10 { x += 1; }`
+            else if (node->is<gr::while_statement>())
+            {
+                stmt = make_statement<While>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    std::move(create_statement_node(node->children.at(1).get()))
+                );
+            }
+
+            // For statement: `for i in range { do foo; }`
+            else if (node->is<gr::for_statement>())
+            {
+                stmt = make_statement<For>(
+                    node->children.at(0)->string(),
+                    std::move(create_expression_node(node->children.at(1).get())),
+                    std::move(create_statement_node(node->children.at(2).get()))
+                );
+            }
+
+            // Break and continue statements are just empty nodes.
+            else if (node->is<gr::kw_break>())
+            {
+                stmt = make_statement<Break>();
+            }
+            else if (node->is<gr::kw_continue>())
+            {
+                stmt = make_statement<Continue>();
+            }
+
             else
             {
                 throw unimplemented_type(node->name());
