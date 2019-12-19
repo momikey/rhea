@@ -123,6 +123,8 @@ namespace rhea { namespace ast {
             while_statement,
             for_statement,
             do_statement,
+            kw_break,
+            kw_continue,
             with_statement,
             with_declaration,
             on_case,
