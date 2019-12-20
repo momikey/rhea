@@ -61,6 +61,27 @@ namespace rhea { namespace ast {
             return ident;
         }
 
+        // Builder for typenames, because these can be complex.
+        std::unique_ptr<Typename> create_typename_node(parser_node* node)
+        {
+            std::unique_ptr<Typename> tname;
+
+            // Simple identifiers
+            if (node->is<gr::identifier>())
+            {
+                tname = std::make_unique<Typename>(std::move(create_identifier_node(node)));
+            }
+
+            else
+            {
+                throw unimplemented_type(node->name());
+            }
+
+            assert(tname != nullptr);
+            tname->position = node->begin();
+            return tname;
+        }
+
         // Builder helper for binary operators
         expression_ptr create_binop_node(parser_node* node, BinaryOperators op)
         {
@@ -179,6 +200,22 @@ namespace rhea { namespace ast {
                 }
             }
 
+            // Hexadecimal literals: these can be either 32-bit or 64-bit;
+            // 64-bit is autodetected if the literal contains more than 8
+            // hex digits. Note that hex literals are unsigned by default.
+            else if (node->is<gr::hex_literal>())
+            {
+                // Check for size up to 10, because of the leading "0x"
+                if (node->string().length() <= 10)
+                {
+                    expr = make_expression<UnsignedInteger>(std::stoi(node->string(), nullptr, 16));
+                }
+                else
+                {
+                    expr = make_expression<UnsignedLong>(std::stoll(node->string(), nullptr, 16));
+                }
+            }
+
             // Boolean literals
             else if (node->is<gr::boolean_literal>())
             {
@@ -189,6 +226,21 @@ namespace rhea { namespace ast {
             else if (node->is<gr::nothing_literal>())
             {
                 expr = std::make_unique<Nothing>();
+            }
+
+            // String literals: these are difficult, because we have to "unescape" them
+            // before passing them to codegen. I wrestled with the decision on where to
+            // do that, but I've decided to pass the buck here. Let the AST node itself
+            // be responsible for that when the time comes. That also helps serialization,
+            // since we don't have to go back and forth as much.
+            else if (node->is<gr::string_literal>())
+            {
+                // String literal parse nodes have a single child containing the string
+                // itself. These are wrapped in a "quote" node, because Rhea strings can
+                // be single or double quoted. But we don't care about that by this point,
+                // so they're normalized to double quotes in the AST, and we just ignore
+                // whatever the user initially chose.
+                expr = make_expression<String>(node->children.front()->string());
             }
 
             // Simple identifiers
@@ -317,6 +369,55 @@ namespace rhea { namespace ast {
                 expr = create_unary_node(node, UnaryOperators::Ptr);
             }
 
+            // Array expressions: `[1,2,3]`
+            else if (node->is<gr::array_expression>())
+            {
+                std::vector<expression_ptr> exs;
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { exs.emplace_back(std::move(create_expression_node(el.get()))); }
+                );
+
+                expr = make_expression<Array>(exs);
+            }
+            // List expressions: `(1,2,3)`
+            else if (node->is<gr::list_expression>())
+            {
+                std::vector<expression_ptr> exs;
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { exs.emplace_back(std::move(create_expression_node(el.get()))); }
+                );
+
+                expr = make_expression<List>(exs);
+            }
+            // Tuple expressions: `{1,2,3}`
+            else if (node->is<gr::tuple_expression>())
+            {
+                std::vector<expression_ptr> exs;
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { exs.emplace_back(std::move(create_expression_node(el.get()))); }
+                );
+
+                expr = make_expression<Tuple>(exs);
+            }
+            // Symbol list expressions: `@{a,b,c}`
+            else if (node->is<gr::symbol_list_expression>())
+            {
+                std::vector<std::string> syms;
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { syms.push_back(el->string()); }
+                );
+
+                expr = make_expression<SymbolList>(syms);
+            }
+
 
             else
             {
@@ -354,7 +455,7 @@ namespace rhea { namespace ast {
                 stmt = make_statement<Block>(block_stmts);
             }
 
-            // Variable declaration: `var x = y * z;`
+            // Variable definition: `var x = y * z;`
             else if (node->is<gr::variable_declaration>())
             {
                 stmt = make_statement<Variable>(
@@ -363,7 +464,16 @@ namespace rhea { namespace ast {
                 );
             }
 
-            // Constant declaration: `const bar = 42;`
+            // Variable declaration: `var x as y;`
+            else if (node->is<gr::declaration_as_type>())
+            {
+                stmt = make_statement<TypeDeclaration>(
+                    std::move(create_identifier_node(node->children.at(0).get())),
+                    std::move(create_typename_node(node->children.at(1).get()))
+                );
+            }
+
+            // Constant definitino: `const bar = 42;`
             else if (node->is<gr::constant_declaration>())
             {
                 stmt = make_statement<Constant>(
@@ -388,6 +498,22 @@ namespace rhea { namespace ast {
                     std::move(create_expression_node(node->children.at(0).get())),
                     assignment_operator_type(node->children.at(1).get()),
                     std::move(create_expression_node(node->children.at(2).get()))
+                );
+            }
+
+            // Enum declaration: `type En = @{a,b,c};`
+            else if (node->is<gr::enum_declaration>())
+            {
+                std::vector<std::string> syms;
+                auto& ch = node->children.at(1)->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { syms.push_back(el->string()); }
+                );
+
+                stmt = make_statement<Enum>(
+                    std::move(std::make_unique<Identifier>(node->children.at(0)->string())),
+                    std::move(std::make_unique<SymbolList>(syms))
                 );
             }
 

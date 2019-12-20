@@ -87,6 +87,9 @@ namespace {
         std::string boolean_lit { "true;" };
         std::string nothing_lit { "nothing;" };
         std::string symbol_lit { "@foo;" };
+        std::string short_hex_lit { "0x1234;" };
+        std::string long_hex_lit { "0x0000111122223333;" };
+        std::string string_lit { "\"abc\";" };
 
         BOOST_TEST_MESSAGE("Parsing boolean literal " << boolean_lit);
         string_input<> in1(boolean_lit, "test");
@@ -117,6 +120,86 @@ namespace {
 
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() == "(BareExpression,(Symbol,foo))"));
+
+        BOOST_TEST_MESSAGE("Parsing short hex literal " << short_hex_lit);
+        string_input<> in4(short_hex_lit, "test");
+
+        tree = tree_builder<gr::bare_expression>(in4);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Integral,4660,5))"));
+
+        BOOST_TEST_MESSAGE("Parsing long hex literal " << long_hex_lit);
+        string_input<> in5(long_hex_lit, "test");
+
+        tree = tree_builder<gr::bare_expression>(in5);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Integral,18765284782899,7))"));
+
+        BOOST_TEST_MESSAGE("Parsing string literal " << string_lit);
+        string_input<> in6(string_lit, "test");
+
+        tree = tree_builder<gr::bare_expression>(in6);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(BareExpression,(String,\"abc\"))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_vector_expressions)
+    {
+        std::string array_expr { "[1,2,3];" };
+        std::string list_expr { "(1,2,3);" };
+        std::string tuple_expr { "({1,2,3});" };
+        std::string symlist_expr { "@{a,b,c};" };
+
+        BOOST_TEST_MESSAGE("Parsing array expression " << array_expr);
+        string_input<> in1(array_expr, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in1);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Array,(Integral,1,0),(Integral,2,0),(Integral,3,0)))"));
+
+        BOOST_TEST_MESSAGE("Parsing list expression " << list_expr);
+        string_input<> in2(list_expr, "test");
+
+        tree = tree_builder<gr::bare_expression>(in2);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(List,(Integral,1,0),(Integral,2,0),(Integral,3,0)))"));
+
+        BOOST_TEST_MESSAGE("Parsing tuple expression " << tuple_expr);
+        string_input<> in3(tuple_expr, "test");
+
+        tree = tree_builder<gr::bare_expression>(in3);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Tuple,(Integral,1,0),(Integral,2,0),(Integral,3,0)))"));
+
+        BOOST_TEST_MESSAGE("Parsing symbol list expression " << symlist_expr);
+        string_input<> in4(symlist_expr, "test");
+
+        tree = tree_builder<gr::bare_expression>(in4);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(SymbolList,(Symbol,a),(Symbol,b),(Symbol,c)))"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_variable_declaration)
@@ -177,6 +260,21 @@ namespace {
 
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() == "(CompoundAssign,(Identifier,i),(Integral,1,0),1)"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_enum_declaration)
+    {
+        std::string sample { "type En = @{a,b,c};" };
+        
+        BOOST_TEST_MESSAGE("Parsing enum declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(Enum,(Identifier,En),(SymbolList,(Symbol,a),(Symbol,b),(Symbol,c)))"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_do_statement)
@@ -295,6 +393,22 @@ namespace {
 
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() == "(Block,(Break),(Continue))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_typenames)
+    {
+        std::string simple { "var x as y;" };
+
+        BOOST_TEST_MESSAGE("Parsing simple typename declaration " << simple);
+        string_input<> in_simple(simple, "test");
+
+        auto tree = tree_builder<gr::statement>(in_simple);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,y),null,null))"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()
