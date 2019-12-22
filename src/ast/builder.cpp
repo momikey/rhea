@@ -101,6 +101,15 @@ namespace rhea { namespace ast {
             );
         }
 
+        // Builder helper for named arguments
+        std::unique_ptr<NamedArgument> create_named_argument(parser_node* node)
+        {
+            return std::make_unique<NamedArgument>(
+                node->children.at(0)->string(),
+                create_expression_node(node->children.at(1).get())
+            );
+        }
+
         // Helper to map node types to the operator enum for compound assignments.
         AssignOperator assignment_operator_type(parser_node* node)
         {
@@ -418,6 +427,81 @@ namespace rhea { namespace ast {
                 expr = make_expression<SymbolList>(syms);
             }
 
+            // Member access expressions: `x.y`
+            else if (node->is<gr::member_expr>())
+            {
+                expr = make_expression<Member>(
+                    std::move(std::make_unique<Identifier>(node->children.at(0)->string())),
+                    std::move(create_expression_node(node->children.at(1).get()))
+                );
+            }
+
+            // Subscript expressions: `x[y]`
+            // Note that the order is swapped. This is intentional.
+            else if (node->is<gr::subscript_expr>())
+            {
+                expr = make_expression<Subscript>(
+                    std::move(create_expression_node(node->children.at(1).get())),
+                    std::move(create_expression_node(node->children.at(0).get()))
+                );
+            }
+
+            // Ternary expressions: `if a then b else c`
+            else if (node->is<gr::ternary_op>())
+            {
+                expr = make_expression<TernaryOp>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    std::move(create_expression_node(node->children.at(1).get())),
+                    std::move(create_expression_node(node->children.at(2).get()))
+                );
+            }
+
+            // Function call expressions
+            else if (node->is<gr::function_call_expr>())
+            {
+                // Function calls have 3 possible parse trees. In all cases, the called
+                // expression is the 2nd child, while the 1st holds the match for the
+                // function's arguments, which can be one of 3 different parse rules.
+                auto fn = create_expression_node(node->children.at(1).get());
+
+                auto& args = node->children.at(0);
+
+                // Empty argument list: `f()`
+                if (args->is<gr::empty_argument_list>())
+                {
+                    expr = make_expression<Call>(std::move(fn));
+                }
+                // Positional argument list: `f(1,2)`
+                else if (args->is<gr::unnamed_argument_list>())
+                {
+                    std::vector<expression_ptr> exs;
+                    auto& ch = args->children;
+                    std::for_each(ch.begin(), ch.end(), 
+                        [&](std::unique_ptr<parser_node>& el)
+                        { exs.emplace_back(std::move(create_expression_node(el.get()))); }
+                    );
+
+                    expr = make_expression<Call>(std::move(fn), exs);
+                }
+                // Named argument list: `f(a: 1, b: 2)`
+                else if (args->is<gr::named_argument_list>())
+                {
+                    std::vector<std::unique_ptr<NamedArgument>> exs;
+                    auto& ch = args->children;
+                    std::for_each(ch.begin(), ch.end(), 
+                        [&](std::unique_ptr<parser_node>& el)
+                        { exs.emplace_back(std::move(create_named_argument(el.get()))); }
+                    );
+
+                    expr = make_expression<Call>(std::move(fn), exs);
+                }
+                // Something else, which shouldn't happen unless someone's trying to
+                // manually construct a parse tree, or there's a bug in the grammar.
+                else
+                {
+                    throw unimplemented_type(node->name());
+                }
+            }
 
             else
             {
@@ -577,6 +661,20 @@ namespace rhea { namespace ast {
             else if (node->is<gr::kw_continue>())
             {
                 stmt = make_statement<Continue>();
+            }
+
+            // Return statement: `return false;`
+            else if (node->is<gr::return_statement>())
+            {
+                stmt = make_statement<Return>(
+                    std::move(create_expression_node(node->children.front().get()))
+                );
+            }
+
+            // Extern declaration: `extern foo;`
+            else if (node->is<gr::extern_declaration>())
+            {
+                stmt = make_statement<Extern>(node->children.front()->string());
             }
 
             else

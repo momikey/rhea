@@ -202,6 +202,89 @@ namespace {
         BOOST_TEST((node->to_string() == "(BareExpression,(SymbolList,(Symbol,a),(Symbol,b),(Symbol,c)))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_member_expression)
+    {
+        std::string sample { "x.y;" };
+
+        BOOST_TEST_MESSAGE("Parsing member expression " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Member,(Identifier,y),(Identifier,x)))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_subscript_expression)
+    {
+        std::string sample { "x[y];" };
+
+        BOOST_TEST_MESSAGE("Parsing subscript operation " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Subscript,(Identifier,x),(Identifier,y)))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_ternary_expression)
+    {
+        std::string sample { "(if a then b else c);" };
+
+        BOOST_TEST_MESSAGE("Parsing ternary operation " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(TernaryOp,(Identifier,a),(Identifier,b),(Identifier,c)))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_function_call_expressions)
+    {
+        std::string empty_args { "f();" };
+        std::string pos_args { "f(1,2);" };
+        std::string named_args { "f(a: 1, b: 2);" };
+
+        BOOST_TEST_MESSAGE("Parsing function call with empty arguments " << empty_args);
+        string_input<> in_empty(empty_args, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in_empty);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Call,(Identifier,f)))"));
+
+        BOOST_TEST_MESSAGE("Parsing function call with positional arguments " << pos_args);
+        string_input<> in_pos(pos_args, "test");
+
+        tree = tree_builder<gr::bare_expression>(in_pos);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Call,(Identifier,f),(Integral,1,0),(Integral,2,0)))"));
+
+        BOOST_TEST_MESSAGE("Parsing function call with named arguments " << named_args);
+        string_input<> in_named(named_args, "test");
+
+        tree = tree_builder<gr::bare_expression>(in_named);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() ==
+            "(BareExpression,(Call,(Identifier,f),(NamedArgument,a,(Integral,1,0)),(NamedArgument,b,(Integral,2,0))))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_variable_declaration)
     {
         std::string sample { "var x = y * z;" };
@@ -393,6 +476,36 @@ namespace {
 
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() == "(Block,(Break),(Continue))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_return_statement)
+    {
+        std::string sample { "return false;" };
+        
+        BOOST_TEST_MESSAGE("Parsing return statement " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(Return,(Boolean,false))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_extern_declaration)
+    {
+        std::string sample { "extern foo;" };
+
+        BOOST_TEST_MESSAGE("Parsing extern declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(Extern,foo)"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_typenames)
