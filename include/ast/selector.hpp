@@ -46,10 +46,9 @@ namespace rhea { namespace ast {
             character_string<'"'>,
             builtin_types,
             identifier,
+            function_name,
             function_suffix
             // and other rules that produce simple tokens
-
-            // These are here temporarily (note prefixing commas)
         >,
 
         /*
@@ -216,7 +215,6 @@ namespace rhea { namespace ast {
             exception_spec,
             statement,
             stmt_or_block,
-            function_name,
             predicate_name,
             operator_name,
             unchecked_name,
