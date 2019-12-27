@@ -94,7 +94,7 @@ namespace rhea { namespace ast {
         // Full function definition
         // TODO: Add simpler constructors that delegate to this one.
         Def(FunctionType t, std::string n, std::unique_ptr<TypePair> gt,
-            std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition> cs,
+            std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition>& cs,
             statement_ptr b);
 
         const FunctionType type;

@@ -522,6 +522,41 @@ namespace {
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,y),null,null))"));
+
+        // Add more complex typename expression tests here
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_simple_basic_function_def)
+    {
+        std::string sample { "def f = { return true; }" };
+
+        BOOST_TEST_MESSAGE("Parsing simple function definition " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Def,0,f,null,null,null,(Conditions),(Block,(Return,(Boolean,true))))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_basic_function_def_return_type)
+    {
+        std::string sample { "def f [boolean] = { return true; }" };
+
+        BOOST_TEST_MESSAGE("Parsing function definition with return type " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() ==
+            "(Def,0,f,null,(Typename,(Identifier,boolean),null,null),null,(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()

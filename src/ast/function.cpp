@@ -60,7 +60,7 @@ namespace rhea { namespace ast {
     }
 
     Def::Def(FunctionType t, std::string n, std::unique_ptr<TypePair> gt,
-        std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition> cs,
+        std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition>& cs,
         statement_ptr b)
         : type(t), name(n), generic_type(std::move(gt)), return_type(std::move(rt)),
           arguments_list(std::move(al)), body(std::move(b))
@@ -81,14 +81,14 @@ namespace rhea { namespace ast {
             s += c->to_string();
         }
 
-        auto cstr = fmt::format("(Conditions{0})");
+        auto cstr = fmt::format("(Conditions{0})", s);
 
         return fmt::format("(Def,{0},{1},{2},{3},{4},{5},{6})",
             static_cast<int>(type),
             name,
-            generic_type->to_string(),
-            return_type->to_string(),
-            arguments_list->to_string(),
+            generic_type != nullptr ? generic_type->to_string() : "null",
+            return_type != nullptr ? return_type->to_string() : "null",
+            arguments_list != nullptr ? arguments_list->to_string() : "null",
             cstr,
             body->to_string()
         );

@@ -110,6 +110,68 @@ namespace rhea { namespace ast {
             );
         }
 
+        // Builder helper for function definitions.
+        // Note that this takes the type so we don't have to scan through them again.
+        statement_ptr create_function_definition(parser_node* node, FunctionType type)
+        {
+            std::string name { "" };
+            std::unique_ptr<TypePair> generic_type = nullptr;
+            std::unique_ptr<Typename> return_type = nullptr;
+            std::unique_ptr<Arguments> arguments_list = nullptr;
+            child_vector<Condition> conditions;
+            statement_ptr body = nullptr;
+
+            // I don't like the idea of a for-switch, which is basically what this is.
+            // The way functions are defined in the grammar doesn't really leave us
+            // with many other options. If there's a better way, I'd like to know.
+            for (auto& c : node->children)
+            {
+                // Function names are simple strings.
+                if (c->is<gr::function_name>())
+                {
+                    name = c->string();
+                }
+                // Gneeric types are handled specially.
+                else if (c->is<gr::generic_function_type>())
+                {
+                    // We're not ready for this just yet.
+                    throw unimplemented_type(node->name());
+                }
+                // Return types are simple typenames.
+                else if (c->is<gr::return_type>())
+                {
+                    return_type = create_typename_node(c->children.front().get());
+                }
+                // Argument lists are in their own node.
+                else if (c->is<gr::arguments_list>())
+                {
+                    // We'll get to this later.
+                    throw unimplemented_type(node->name());
+                }
+                // Conditions are in a pointer vector, with the usual logic.
+                else if (c->is<gr::fn_with_block>())
+                {
+                    // We'll do it later.
+                    throw unimplemented_type(node->name());
+                }
+                // Anything else should be considered the function body.
+                else
+                {
+                    body = create_statement_node(c.get());
+                }
+            }
+
+            return make_statement<Def>(
+                type,
+                name,
+                std::move(generic_type),
+                std::move(return_type),
+                std::move(arguments_list),
+                conditions,
+                std::move(body)
+            );
+        }
+
         // Helper to map node types to the operator enum for compound assignments.
         AssignOperator assignment_operator_type(parser_node* node)
         {
@@ -661,6 +723,26 @@ namespace rhea { namespace ast {
             else if (node->is<gr::kw_continue>())
             {
                 stmt = make_statement<Continue>();
+            }
+
+            // Function definitions, of various kinds. The inner logic is handled
+            // in the `create_function_definition` helper above. Here, we only
+            // store the type of the function being declared.
+            else if (node->is<gr::basic_function_def>())
+            {
+                stmt = std::move(create_function_definition(node, FunctionType::Basic));
+            }
+            else if (node->is<gr::unchecked_function_def>())
+            {
+                stmt = std::move(create_function_definition(node, FunctionType::Unchecked));
+            }
+            else if (node->is<gr::predicate_function_def>())
+            {
+                stmt = std::move(create_function_definition(node, FunctionType::Predicate));
+            }
+            else if (node->is<gr::operator_function_def>())
+            {
+                stmt = std::move(create_function_definition(node, FunctionType::Operator));
             }
 
             // Return statement: `return false;`
