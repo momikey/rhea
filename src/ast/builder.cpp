@@ -82,6 +82,15 @@ namespace rhea { namespace ast {
             return tname;
         }
 
+        // Builder helper for name-type pairs, which are common throughout the AST.
+        std::unique_ptr<TypePair> create_typepair_node(parser_node* node)
+        {
+            return std::make_unique<TypePair>(
+                node->children.at(0)->string(),
+                std::move(create_typename_node(node->children.at(1).get()))
+            );
+        }
+
         // Builder helper for binary operators
         expression_ptr create_binop_node(parser_node* node, BinaryOperators op)
         {
@@ -122,7 +131,7 @@ namespace rhea { namespace ast {
             statement_ptr body = nullptr;
 
             // I don't like the idea of a for-switch, which is basically what this is.
-            // The way functions are defined in the grammar doesn't really leave us
+            // Alas, the way functions are defined in the grammar doesn't really leave us
             // with many other options. If there's a better way, I'd like to know.
             for (auto& c : node->children)
             {
@@ -145,8 +154,31 @@ namespace rhea { namespace ast {
                 // Argument lists are in their own node.
                 else if (c->is<gr::arguments_list>())
                 {
-                    // We'll get to this later.
-                    throw unimplemented_type(node->name());
+                    if (c->children.front()->is<gr::wildcard_argument>())
+                    {
+                        // We'll get to this later.
+                        throw unimplemented_type(node->name());
+                    }
+                    else
+                    {
+                        std::vector<std::unique_ptr<TypePair>> args;
+                        auto& ch = c->children;
+                        std::for_each(ch.begin(), ch.end(), 
+                            [&](std::unique_ptr<parser_node>& el)
+                            {
+                                if (el->is<gr::type_match>())
+                                {
+                                    args.emplace_back(std::move(create_typepair_node(el.get())));                                    
+                                }
+                                else
+                                {
+                                    throw unimplemented_type(el->name());
+                                }
+                            }
+                        );
+
+                        arguments_list = std::make_unique<Arguments>(args);
+                    }
                 }
                 // Conditions are in a pointer vector, with the usual logic.
                 else if (c->is<gr::fn_with_block>())
