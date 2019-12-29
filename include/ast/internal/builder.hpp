@@ -12,7 +12,10 @@
  * Internal detail for the AST builder.
  */
 namespace rhea { namespace ast {
-    namespace internal {        
+    namespace internal {
+        // Builder for programs and modules.
+        std::unique_ptr<ASTNode> create_top_level_node(parser_node* node);
+        
         // Builder for identifiers, for when a more general expression can't be used.
         std::unique_ptr<AnyIdentifier> create_identifier_node(parser_node* node);
 

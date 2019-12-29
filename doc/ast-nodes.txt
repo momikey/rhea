@@ -307,7 +307,7 @@ module_name             ; may be redundant
 module_definition
     module_statement
     <top_level_statement> +
-program_definition
+--program_definition
     <top_level_statement> +
 
 ## Containers

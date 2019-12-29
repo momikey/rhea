@@ -12,6 +12,7 @@
 #include "nodes/function.hpp"
 #include "nodes/identifiers.hpp"
 #include "nodes/literals.hpp"
+#include "nodes/module.hpp"
 #include "nodes/simple_statement.hpp"
 #include "nodes/structure_type.hpp"
 #include "nodes/ternary_operator.hpp"

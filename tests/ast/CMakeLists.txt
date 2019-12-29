@@ -8,6 +8,7 @@ set(TESTS_AST_SOURCES
     control_statement.cpp
     typenames.cpp
     function.cpp
+    module.cpp
     builder.cpp
 )
 

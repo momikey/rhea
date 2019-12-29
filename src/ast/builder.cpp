@@ -803,5 +803,33 @@ namespace rhea { namespace ast {
             return stmt;
         }
 
+        // Builder for top-level structures, i.e., modules and programs. This will be
+        // the main entry point to the AST builder in real situations, unless someone
+        // makes a REPL or something.
+        std::unique_ptr<ASTNode> create_top_level_node(parser_node* node)
+        {
+            std::unique_ptr<ASTNode> ast_node;
+
+            if (node->is<gr::program_definition>())
+            {
+                std::vector<statement_ptr> stmts;
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { stmts.emplace_back(std::move(create_statement_node(el.get()))); }
+                );
+
+                ast_node = std::make_unique<Program>(stmts);
+            }
+
+            else
+            {
+                throw unimplemented_type(node->name());
+            }
+
+            assert(ast_node != nullptr);
+            ast_node->position = node->begin();
+            return ast_node;
+        }
     }
 }}

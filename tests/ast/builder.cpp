@@ -573,5 +573,22 @@ namespace {
             "(Def,0,f,null,null,(Arguments,(TypePair,t,(Typename,(Identifier,T),null,null))),(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_simple_program_definition)
+    {
+        std::string sample { "def main = { return true; }" };
+
+        BOOST_TEST_MESSAGE("Parsing program definition " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::program_definition>(in);
+
+        auto node = ast::internal::create_top_level_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() ==
+            "(Program,(Def,0,main,null,null,null,(Conditions),(Block,(Return,(Boolean,true)))))"));
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

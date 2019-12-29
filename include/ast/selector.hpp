@@ -220,7 +220,8 @@ namespace rhea { namespace ast {
             unchecked_name,
             function_definition,
             simple_type_name,
-            concept_check
+            concept_check,
+            top_level_statement
 
             // These are temorarily placed here for debugging
         >,
