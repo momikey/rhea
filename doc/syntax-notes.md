@@ -1226,3 +1226,21 @@ Questions to answer:
 * How do we do parsing/AST/etc. for this?
 * Do we want hygienic macros, or something different?
 * Should we use this feature to rewrite parts of the Rhea base? (Probably not.)
+
+## Name mangling
+
+* Because we allow overloading, we must mangle the names of symbols to distinguish them.
+* Making this a standard part of the language will allow for better compatibility with alternate implementations, as well as access to and from other languages.
+
+Possible implementation:
+
+* Function type (`b` for "basic", `u` for unchecked, `o` for operator, `p` for predicate)
+* Name, which doesn't need any special handling
+* Argument types (basic types could be represented by a single character, `b` for boolean, `i` for integer, etc.)
+* Underscores between each part
+* `main` is handled specially, since it can't be overloaded.
+
+Questions to answer:
+
+* How do we do it?
+* How should structure types, etc., be encoded?

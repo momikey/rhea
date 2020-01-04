@@ -6,6 +6,7 @@ set(AST_SOURCES
     typenames.cpp
     module.cpp
     builder.cpp
+    visitor_impl.cpp
 )
 
 add_library(rhea_ast STATIC ${AST_SOURCES})

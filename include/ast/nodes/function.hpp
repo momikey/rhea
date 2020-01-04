@@ -28,7 +28,7 @@ namespace rhea { namespace ast {
     };
 
     // Convenience alias; functions can take either named or positional arguments.
-    using function_argument = variant<std::unique_ptr<Expression>, std::unique_ptr<NamedArgument>>;
+    using function_argument = util::variant<std::unique_ptr<Expression>, std::unique_ptr<NamedArgument>>;
 
     // AST for function calls.
     class Call : public Expression

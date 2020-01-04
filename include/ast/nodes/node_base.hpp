@@ -8,22 +8,9 @@
 
 #include <tao/pegtl.hpp>
 
-// Variants don't enter the standard library until C++17.
-// Boost.Variant2 fills the gap for C++14, which is the minimum
-// we require.
-#ifdef __cpp_lib_variant
-#include <variant>
-using std::variant;
-using std::visit;
-using std::monostate;
-#else
-#include <boost/variant2/variant.hpp>
-using boost::variant2::variant;
-using boost::variant2::visit;
-using boost::variant2::monostate;
-#endif
-
 #include "../parse_tree_node.hpp"
+#include "../../compat.hpp"
+#include "../../visitor/visitor_fwd.hpp"
 
 /*
  * The base node for the annotated AST. This is different from
@@ -52,6 +39,7 @@ namespace rhea { namespace ast {
         virtual ~ASTNode() {}
 
         virtual std::string to_string() = 0;
+        virtual void visit(visitor::Visitor* v);
 
         tao::pegtl::position position;
     };

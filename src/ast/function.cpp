@@ -31,7 +31,7 @@ namespace rhea { namespace ast {
         for (auto&& id : arguments)
         {
             s += ',';
-            s += visit([](auto const& v) {
+            s += util::visit([](auto const& v) {
                  return v->to_string(); }, id);
         }
 
