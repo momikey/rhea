@@ -20,6 +20,15 @@
 #include <boost/variant2/variant.hpp>
 #endif
 
+// The same is true for `any`: it's in the standard starting with C++17,
+// but the API is essentially the same as Boost.Any, so we can interchange
+// the two.
+#ifdef __cpp_lib_any
+#include <any>
+#else
+#include <boost/any.hpp>
+#endif
+
 namespace rhea { namespace util { 
 
 #ifdef __cpp_lib_variant
@@ -30,6 +39,16 @@ namespace rhea { namespace util {
     using boost::variant2::variant;
     using boost::variant2::visit;
     using boost::variant2::monostate;
+#endif
+
+#ifdef __cpp_lib_any
+    using std::any;
+    using std::any_cast;
+    using std::bad_any_cast;
+#else
+    using boost::any;
+    using boost::any_cast;
+    using boost::bad_any_cast;
 #endif
 
 }}

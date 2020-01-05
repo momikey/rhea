@@ -109,6 +109,7 @@ namespace rhea { namespace ast {
         const BasicType type = BasicType::Boolean;
 
         std::string to_string() { return fmt::format("(Boolean,{0})", value); }
+        util::any visit(visitor::Visitor* v) override;
     };
 
     // For the string literal class, we have to think about encodings.

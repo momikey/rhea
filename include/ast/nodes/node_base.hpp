@@ -39,7 +39,7 @@ namespace rhea { namespace ast {
         virtual ~ASTNode() {}
 
         virtual std::string to_string() = 0;
-        virtual void visit(visitor::Visitor* v);
+        virtual util::any visit(visitor::Visitor* v);
 
         tao::pegtl::position position;
     };
@@ -47,11 +47,12 @@ namespace rhea { namespace ast {
     // "Top-level" node types
     class Expression : public ASTNode
     {
-
+        util::any visit(visitor::Visitor* v) override;
     };
 
     class Statement : public ASTNode
     {
+        util::any visit(visitor::Visitor* v) override;
         // TODO: Some statements can declare symbols. If we make a quick
         // pass through some levels of the AST, we can pick these out,
         // which saves us from having to forward declare as in C/C++.

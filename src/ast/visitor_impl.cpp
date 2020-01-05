@@ -1,7 +1,32 @@
 #include "ast.hpp"
 #include "visitor/visitor.hpp"
 
+/*
+ * Each AST node class needs to have a visit method override, because
+ * the way this double dispatch method works requires the child class's
+ * `this`, even if we're calling through a pointer to base class. If we
+ * were using C++17, this would be easy: we could just make a mixin with
+ * a variadic using declaration. Alas, Rhea suuports C++14 at the moment,
+ * which means we have to do things the hard way. Thus, this file is just
+ * the various overrides for each class. They're all the same implementation.
+ * 
+ * Ref for the double dispatch method I'm using:
+ * https://gieseanw.wordpress.com/2018/12/29/stop-reimplementing-the-virtual-table-and-start-using-double-dispatch/
+ */
+
 namespace rhea { namespace ast {
-    void ASTNode::visit(visitor::Visitor* v)
-    { v->visit(this); }
+    using visitor::Visitor;
+    using util::any;
+
+    any ASTNode::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Expression::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Statement::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Boolean::visit(Visitor* v)
+    { return v->visit(this); }
 }}

@@ -10,6 +10,7 @@ set(TESTS_AST_SOURCES
     function.cpp
     module.cpp
     builder.cpp
+    visitor.cpp
 )
 
 add_library(tests_ast OBJECT ${TESTS_AST_SOURCES})
