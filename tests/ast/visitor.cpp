@@ -22,11 +22,8 @@ namespace {
     using rhea::util::any_cast;
     using rhea::util::bad_any_cast;
 
-    struct StringVisitor : rhea::visitor::Visitor
+    struct StringVisitor : rhea::visitor::DefaultVisitor
     {
-        any visit(ast::ASTNode* n) {}
-        any visit(ast::Expression* n) {}
-        any visit(ast::Statement* n) {}
         any visit(ast::Boolean* n) { return n->to_string(); }
     };
 
