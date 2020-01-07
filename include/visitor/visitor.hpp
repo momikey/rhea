@@ -30,6 +30,17 @@ namespace rhea { namespace visitor {
         virtual any visit(Expression*) = 0;
         virtual any visit(Statement*) = 0;
         virtual any visit(Boolean*) = 0;
+        virtual any visit(Integer*) = 0;
+        virtual any visit(Byte*) = 0;
+        virtual any visit(Long*) = 0;
+        virtual any visit(UnsignedInteger*) = 0;
+        virtual any visit(UnsignedByte*) = 0;
+        virtual any visit(UnsignedLong*) = 0;
+        virtual any visit(Float*) = 0;
+        virtual any visit(Double*) = 0;
+        virtual any visit(String*) = 0;
+        virtual any visit(Symbol*) = 0;
+        virtual any visit(Nothing*) = 0;
     };
 }}
 

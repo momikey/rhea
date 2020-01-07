@@ -50,8 +50,9 @@ namespace rhea { namespace ast {
     template<> inline BasicType numeric_type<uint8_t>()      { return BasicType::UnsignedByte; }
     template<> inline BasicType numeric_type<uint64_t>()     { return BasicType::UnsignedLong; }
 
-    // This node class represents any integral literal. We template it
-    // on the underlying value type.
+    // This node class represents any integral literal. It's templated on the
+    // underlying value type, in case we want to add other types in the future.
+    // Convenience declarations are provided below.
     template <typename Int>
     class Integral : public Expression
     {
@@ -67,6 +68,7 @@ namespace rhea { namespace ast {
 
         std::string to_string() override
             { return fmt::format("(Integral,{0},{1})", value, static_cast<int>(type)); }
+        util::any visit(visitor::Visitor* v) override;
     };
 
     // This node class represents floating-point types. Again, it's
@@ -86,6 +88,7 @@ namespace rhea { namespace ast {
 
         std::string to_string() override
             { return fmt::format("(FloatingPoint,{0},{1})", value, static_cast<int>(type)); }
+        util::any visit(visitor::Visitor* v) override;
     };
 
     // Convenience declarations for the defined types.
@@ -124,6 +127,7 @@ namespace rhea { namespace ast {
 
         std::string to_string() override
             { return fmt::format("(String,\"{0}\")", value); }
+        util::any visit(visitor::Visitor* v) override;
     };
 
     // The symbol node class stores the name of the symbol. We can use that
@@ -138,6 +142,7 @@ namespace rhea { namespace ast {
 
         std::string to_string() override
             { return fmt::format("(Symbol,{0})", value); }
+        util::any visit(visitor::Visitor* v) override;
     };
 
     // For the "nothing" node class, we don't have store do much of anything.
@@ -152,6 +157,7 @@ namespace rhea { namespace ast {
 
         std::string to_string() override
             { return fmt::format("(Nothing)"); }
+        util::any visit(visitor::Visitor* v) override;
     };
 }}
 

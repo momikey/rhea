@@ -29,4 +29,46 @@ namespace rhea { namespace ast {
 
     any Boolean::visit(Visitor* v)
     { return v->visit(this); }
+
+    template <>
+    any Integer::visit(Visitor* v)
+    { return v->visit(this); }
+
+    template <>
+    any Byte::visit(Visitor* v)
+    { return v->visit(this); }
+
+    template <>
+    any Long::visit(Visitor* v)
+    { return v->visit(this); }
+
+    template <>
+    any UnsignedInteger::visit(Visitor* v)
+    { return v->visit(this); }
+
+    template <>
+    any UnsignedByte::visit(Visitor* v)
+    { return v->visit(this); }
+
+    template <>
+    any UnsignedLong::visit(Visitor* v)
+    { return v->visit(this); }
+
+    template <>
+    any Float::visit(Visitor* v)
+    { return v->visit(this); }
+
+    template <>
+    any Double::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any String::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Symbol::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Nothing::visit(Visitor* v)
+    { return v->visit(this); }
+
 }}

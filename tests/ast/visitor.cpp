@@ -26,6 +26,8 @@ namespace {
     struct StringVisitor : rhea::visitor::DefaultVisitor
     {
         any visit(ast::Boolean* n) { return n->to_string(); }
+        any visit(ast::Integer* n) { return n->to_string(); }
+        any visit(ast::Double* n) { return n->to_string(); }
     };
 
     struct VisitorFixture
@@ -48,6 +50,26 @@ namespace {
 
         BOOST_TEST_MESSAGE("Visiting boolean AST node " << node->to_string());
         BOOST_TEST((any_cast<std::string>(result) == "(Boolean,true)"));
+    }
+
+    BOOST_AUTO_TEST_CASE (visit_integral_ast)
+    {
+        std::unique_ptr<ast::ASTNode> node = std::make_unique<ast::Integer>(42);
+
+        auto result = node->visit(&v);
+
+        BOOST_TEST_MESSAGE("Visiting integer AST node " << node->to_string());
+        BOOST_TEST((any_cast<std::string>(result) == "(Integral,42,0)"));
+    }
+
+    BOOST_AUTO_TEST_CASE (visit_floating_point_ast)
+    {
+        std::unique_ptr<ast::ASTNode> node = std::make_unique<ast::Double>(1e-6);
+
+        auto result = node->visit(&v);
+
+        BOOST_TEST_MESSAGE("Visiting integer AST node " << node->to_string());
+        BOOST_TEST((any_cast<std::string>(result) == "(FloatingPoint,1.0e-06,3)"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()

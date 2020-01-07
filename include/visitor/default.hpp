@@ -59,7 +59,18 @@ namespace rhea { namespace visitor {
         ASTNode,
         Expression,
         Statement,
-        Boolean
+        Boolean,
+        Integer,
+        Byte,
+        Long,
+        UnsignedInteger,
+        UnsignedByte,
+        UnsignedLong,
+        Float,
+        Double,
+        String,
+        Symbol,
+        Nothing
         /* All AST classes */
     >
     {};
