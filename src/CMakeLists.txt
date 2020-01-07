@@ -3,7 +3,8 @@ set(MAIN_SOURCES
 )
 
 add_subdirectory(ast)
+add_subdirectory(codegen)
 
 add_executable(rhea ${MAIN_SOURCES})
 target_include_directories(rhea PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(rhea rhea_ast ${llvm_libs} ${CONAN_LIBS})
+target_link_libraries(rhea rhea_ast rhea_codegen ${llvm_libs} ${CONAN_LIBS})

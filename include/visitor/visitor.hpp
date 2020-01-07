@@ -26,6 +26,8 @@ namespace rhea { namespace visitor {
      */
     struct Visitor
     {
+        virtual ~Visitor() {}
+
         virtual any visit(ASTNode*) = 0;
         virtual any visit(Expression*) = 0;
         virtual any visit(Statement*) = 0;
