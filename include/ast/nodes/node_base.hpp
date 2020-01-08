@@ -9,7 +9,7 @@
 #include <tao/pegtl.hpp>
 
 #include "../parse_tree_node.hpp"
-#include "../../compat.hpp"
+#include "../../util/compat.hpp"
 #include "../../visitor/visitor_fwd.hpp"
 
 /*

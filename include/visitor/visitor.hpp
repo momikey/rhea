@@ -1,7 +1,7 @@
 #ifndef RHEA_VISITOR_HPP
 #define RHEA_VISITOR_HPP
 
-#include "../compat.hpp"
+#include "../util/compat.hpp"
 #include "../ast.hpp"
 #include "../visitor/visitor.hpp"
 

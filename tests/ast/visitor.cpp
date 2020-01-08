@@ -10,7 +10,7 @@
 #include "../../include/ast.hpp"
 #include "../../include/visitor/visitor.hpp"
 #include "../../include/visitor/default.hpp"
-#include "../../include/compat.hpp"
+#include "../../include/util/compat.hpp"
 
 #include "test_setup.hpp"
 
