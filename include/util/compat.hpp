@@ -35,10 +35,12 @@ namespace rhea { namespace util {
     using std::variant;
     using std::visit;
     using std::monostate;
+    using std::get_if;
 #else
     using boost::variant2::variant;
     using boost::variant2::visit;
     using boost::variant2::monostate;
+    using boost::variant2::get_if;
 #endif
 
 #ifdef __cpp_lib_any

@@ -38,6 +38,7 @@ namespace rhea { namespace codegen {
         any visit(Double* n) override;
         any visit(Symbol* n) override;
         any visit(Nothing* n) override;
+        any visit(BinaryOp* n) override;
     };
 }}
 

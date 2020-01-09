@@ -32,12 +32,6 @@ namespace rhea { namespace types {
         Unknown = -1    // Error case
     };
 
-    template <typename L, typename R>
-    bool compatible(L lhs, R rhs)
-    {
-        return lhs.is_compatible(rhs);
-    }
-
     // An unknown type, which can go anywhere, but can't be compared. It's
     // basically a NULL type.
     struct UnknownType
@@ -50,7 +44,11 @@ namespace rhea { namespace types {
     struct SimpleType
     {
         SimpleType(BasicType t) : type(t) {}
+        SimpleType(BasicType t, bool n): type(t), is_numeric(n), is_integral(false) {}
+        SimpleType(BasicType t, bool n, bool i) : type(t), is_numeric(n), is_integral(i) {}
         BasicType type;
+        bool is_numeric;
+        bool is_integral;
 
         template <typename T>
         bool is_compatible(T other) { return false; }
@@ -83,6 +81,13 @@ namespace rhea { namespace types {
         SimpleType,
         NothingType
     >;
+
+    // Comparison function. This *only* checks for exact matches at this time.
+    inline bool compatible(TypeInfo& lhs, TypeInfo& rhs)
+    {
+        auto fn = [&](auto& l, auto& r) { return l.is_compatible(r); };
+        return util::visit(fn, lhs, rhs);
+    }
 }}
 
 #endif /* RHEA_TYPES_INFO_HPP */

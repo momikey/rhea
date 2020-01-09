@@ -2,6 +2,7 @@ set(TESTS_CODEGEN_SOURCES
     test_setup.cpp
     startup.cpp
     literals.cpp
+    binary_op.cpp
 )
 
 add_library(tests_codegen OBJECT ${TESTS_CODEGEN_SOURCES})

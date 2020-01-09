@@ -46,7 +46,7 @@ namespace rhea { namespace ast {
         const BasicType type;
 
         types::TypeInfo expression_type() override
-            { return types::SimpleType { numeric_type<template_type>() }; }
+            { return types::SimpleType { numeric_type<template_type>(), true, true }; }
         std::string to_string() override
             { return fmt::format("(Integral,{0},{1})", value, static_cast<int>(type)); }
         util::any visit(visitor::Visitor* v) override;
@@ -68,7 +68,7 @@ namespace rhea { namespace ast {
         const BasicType type;
 
         types::TypeInfo expression_type() override
-            { return types::SimpleType { numeric_type<template_type>() }; }
+            { return types::SimpleType { numeric_type<template_type>(), true, false }; }
         std::string to_string() override
             { return fmt::format("(FloatingPoint,{0},{1})", value, static_cast<int>(type)); }
         util::any visit(visitor::Visitor* v) override;
@@ -95,7 +95,7 @@ namespace rhea { namespace ast {
         const BasicType type = BasicType::Boolean;
 
         types::TypeInfo expression_type() override
-            { return types::SimpleType { BasicType::Boolean }; }
+            { return types::SimpleType { BasicType::Boolean, false }; }
         std::string to_string() { return fmt::format("(Boolean,{0})", value); }
         util::any visit(visitor::Visitor* v) override;
     };
@@ -111,7 +111,7 @@ namespace rhea { namespace ast {
         const BasicType type = BasicType::String;
 
         types::TypeInfo expression_type() override
-            { return types::SimpleType { BasicType::String }; }
+            { return types::SimpleType { BasicType::String, false }; }
         std::string to_string() override
             { return fmt::format("(String,\"{0}\")", value); }
         util::any visit(visitor::Visitor* v) override;
@@ -128,7 +128,7 @@ namespace rhea { namespace ast {
         const BasicType type = BasicType::Symbol;
 
         types::TypeInfo expression_type() override
-            { return types::SimpleType { BasicType::Symbol }; }
+            { return types::SimpleType { BasicType::Symbol, false }; }
         std::string to_string() override
             { return fmt::format("(Symbol,{0})", value); }
         util::any visit(visitor::Visitor* v) override;

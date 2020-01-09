@@ -48,6 +48,7 @@ namespace rhea { namespace ast {
     // "Top-level" node types
     class Expression : public ASTNode
     {
+        public:
         // All expressions have a type. This may be fixed or calculated,
         // so we make it a method.
         virtual types::TypeInfo expression_type() { return types::UnknownType{}; }
@@ -57,6 +58,7 @@ namespace rhea { namespace ast {
 
     class Statement : public ASTNode
     {
+        public:
         util::any visit(visitor::Visitor* v) override;
         // TODO: Some statements can declare symbols. If we make a quick
         // pass through some levels of the AST, we can pick these out,

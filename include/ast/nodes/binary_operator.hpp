@@ -7,6 +7,7 @@
 
 #include "node_base.hpp"
 #include "identifiers.hpp"
+#include "../../util/compat.hpp"
 
 /*
  * AST nodes for binary operators. These are all pretty much the
@@ -48,6 +49,8 @@ namespace rhea { namespace ast {
         const expression_ptr left;
         const expression_ptr right;
 
+        types::TypeInfo expression_type() override;
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string()
             { return fmt::format("(BinaryOp,{0},{1},{2})",
                 static_cast<int>(op), left->to_string(), right->to_string()); }
