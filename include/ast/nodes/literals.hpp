@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 
 #include "node_base.hpp"
+#include "types/types.hpp"
 
 /*
  * AST node classes for literal types, including integer and
@@ -15,29 +16,7 @@
  */
 
 namespace rhea { namespace ast {
-    // This enum holds all the basic literal types Rhea understands.
-    enum class BasicType
-    {
-        Integer,
-        Byte,
-        Float,
-        Double,
-        Long,
-        UnsignedInteger,
-        UnsignedByte,
-        UnsignedLong,
-
-        Boolean,
-        String,
-        Symbol,
-        Any,
-        Nothing,
-        
-        Other,          // Used for structures, user-defined types, generics, etc.
-        
-        Promoted,       // Used for the coercion opertor `^`
-        Unknown = -1    // Error case
-    };
+    using types::BasicType;
 
     // Get the proper enum member for a given ype. 
     template <typename T> BasicType numeric_type()    { return BasicType::Unknown; }
@@ -66,6 +45,8 @@ namespace rhea { namespace ast {
         const Int value;
         const BasicType type;
 
+        types::TypeInfo expression_type() override
+            { return types::SimpleType { numeric_type<template_type>() }; }
         std::string to_string() override
             { return fmt::format("(Integral,{0},{1})", value, static_cast<int>(type)); }
         util::any visit(visitor::Visitor* v) override;
@@ -86,6 +67,8 @@ namespace rhea { namespace ast {
         const Float value;
         const BasicType type;
 
+        types::TypeInfo expression_type() override
+            { return types::SimpleType { numeric_type<template_type>() }; }
         std::string to_string() override
             { return fmt::format("(FloatingPoint,{0},{1})", value, static_cast<int>(type)); }
         util::any visit(visitor::Visitor* v) override;
@@ -111,6 +94,8 @@ namespace rhea { namespace ast {
         const bool value;
         const BasicType type = BasicType::Boolean;
 
+        types::TypeInfo expression_type() override
+            { return types::SimpleType { BasicType::Boolean }; }
         std::string to_string() { return fmt::format("(Boolean,{0})", value); }
         util::any visit(visitor::Visitor* v) override;
     };
@@ -125,6 +110,8 @@ namespace rhea { namespace ast {
         const std::string value;
         const BasicType type = BasicType::String;
 
+        types::TypeInfo expression_type() override
+            { return types::SimpleType { BasicType::String }; }
         std::string to_string() override
             { return fmt::format("(String,\"{0}\")", value); }
         util::any visit(visitor::Visitor* v) override;
@@ -140,12 +127,14 @@ namespace rhea { namespace ast {
         const std::string value;
         const BasicType type = BasicType::Symbol;
 
+        types::TypeInfo expression_type() override
+            { return types::SimpleType { BasicType::Symbol }; }
         std::string to_string() override
             { return fmt::format("(Symbol,{0})", value); }
         util::any visit(visitor::Visitor* v) override;
     };
 
-    // For the "nothing" node class, we don't have store do much of anything.
+    // For the "nothing" node class, we don't have to store much of anything.
     class Nothing : public Expression
     {
         public:
@@ -155,6 +144,8 @@ namespace rhea { namespace ast {
         const void* value = nullptr;
         const BasicType type = BasicType::Nothing;
 
+        types::TypeInfo expression_type() override
+            { return types::NothingType(); }
         std::string to_string() override
             { return fmt::format("(Nothing)"); }
         util::any visit(visitor::Visitor* v) override;

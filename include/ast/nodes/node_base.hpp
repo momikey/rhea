@@ -9,6 +9,7 @@
 #include <tao/pegtl.hpp>
 
 #include "../parse_tree_node.hpp"
+#include "../../types/types.hpp"
 #include "../../util/compat.hpp"
 #include "../../visitor/visitor_fwd.hpp"
 
@@ -47,6 +48,10 @@ namespace rhea { namespace ast {
     // "Top-level" node types
     class Expression : public ASTNode
     {
+        // All expressions have a type. This may be fixed or calculated,
+        // so we make it a method.
+        virtual types::TypeInfo expression_type() { return types::UnknownType{}; }
+
         util::any visit(visitor::Visitor* v) override;
     };
 

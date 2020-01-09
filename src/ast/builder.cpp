@@ -7,6 +7,8 @@
 #include <cassert>
 
 namespace rhea { namespace ast {
+    using types::BasicType;
+    
     // Build a Rhea AST out of the PEGTL modified parse tree.
     std::unique_ptr<ASTNode> build_ast(parser_node* node)
     {
