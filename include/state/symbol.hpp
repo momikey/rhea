@@ -1,20 +1,15 @@
 #ifndef RHEA_STATE_SYMBOL_HPP
 #define RHEA_STATE_SYMBOL_HPP
 
+#include <algorithm>
+#include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-// Optionals aren't until C++17, but the Boost one works about the same.
-#ifdef __cpp_lib_optional
-#include <optional>
-using std::optional;
-#else
-#include <boost/optional/optional.hpp>
-using boost::optional;
-#endif
-
-#include "types.hpp"
+#include "../types/declaration.hpp"
+#include "../types/types.hpp"
+#include "../util/compat.hpp"
 
 /*
  * The definition for an entry in the compiler's symbol tables.
@@ -26,7 +21,8 @@ namespace rhea { namespace state {
     struct SymbolEntry
     {
         std::string name;
-        DeclarationType type;
+        types::DeclarationType declaration;
+        types::TypeInfo type_data;
         // more to add...
     };
 
@@ -39,6 +35,7 @@ namespace rhea { namespace state {
     // for type-checking and codegen.
     struct Scope
     {
+        std::string name;
         SymbolTable symbol_table;
         // more to add...
     };
@@ -47,7 +44,7 @@ namespace rhea { namespace state {
     // but inner scopes have to be able to access names from outer ones.
     // This class handles all that logic, as well as encapsulating all
     // the non-codegen aspects of symbols and scopes.
-    struct ScopeStack
+    struct ScopeManager
     {
         // Return the topmost (i.e., current) scope.
         Scope& current() { return m_stack.back(); }
@@ -55,14 +52,18 @@ namespace rhea { namespace state {
         // Add a new scope to the stack. Note that this doesn't do any
         // copying of values; the searcher will look in parent scopes.
         void push() { m_stack.push_back({}); }
+        void push(std::string name) { m_stack.push_back({name, {}}); }
 
         // Delete the current scope. This is done at the end of a scoping
         // block to prevent contamination of unrelated blocks.
         void pop() { m_stack.pop_back(); }
 
+        // Add a new entry to the current scope.
+        void add_symbol(SymbolEntry sym);
+
         // Find an entry in the symbol table. If it isn't in the most
         // local scope, then keep trying parent scopes.
-        optional<SymbolEntry&> find(std::string key);
+        util::optional<std::reference_wrapper<SymbolEntry>> find(std::string key);
 
         private:
         // We use a vector rather than a stack here, even though we call

@@ -1,4 +1,5 @@
 set(CODEGEN_SOURCES
+    generator.cpp
     code_visitor.cpp
 )
 

@@ -100,10 +100,10 @@ namespace rhea { namespace ast {
     class TypeDeclaration : public Statement
     {
         public:
-        TypeDeclaration(std::unique_ptr<AnyIdentifier> l, std::unique_ptr<Typename> r)
+        TypeDeclaration(std::unique_ptr<Identifier> l, std::unique_ptr<Typename> r)
             : lhs(std::move(l)), rhs(std::move(r)) {}
 
-        const std::unique_ptr<AnyIdentifier> lhs;
+        const std::unique_ptr<Identifier> lhs;
         const std::unique_ptr<Typename> rhs;
 
         std::string to_string() override

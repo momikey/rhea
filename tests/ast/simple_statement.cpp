@@ -76,7 +76,7 @@ namespace {
 
     BOOST_AUTO_TEST_CASE (type_declaration_ast)
     {
-        std::unique_ptr<ast::AnyIdentifier> lhs = ast::make_identifier<ast::Identifier>("foo");
+        auto lhs = std::make_unique<ast::Identifier>("foo");
         std::unique_ptr<ast::AnyIdentifier> tn = ast::make_identifier<ast::Identifier>("integer");
         auto rhs = std::make_unique<ast::Typename>(std::move(tn));
 

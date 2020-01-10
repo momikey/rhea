@@ -29,6 +29,14 @@
 #include <boost/any.hpp>
 #endif
 
+// Optionals aren't until C++17, but the Boost one works about the same.
+#ifdef __cpp_lib_optional
+#include <optional>
+using std::optional;
+#else
+#include <boost/optional/optional.hpp>
+using boost::optional;
+#endif
 namespace rhea { namespace util { 
 
 #ifdef __cpp_lib_variant
@@ -51,6 +59,12 @@ namespace rhea { namespace util {
     using boost::any;
     using boost::any_cast;
     using boost::bad_any_cast;
+#endif
+
+#ifdef __cpp_lib_optional
+    using std::optional;
+#else
+    using boost::optional;
 #endif
 
 }}

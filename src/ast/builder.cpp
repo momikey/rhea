@@ -648,7 +648,7 @@ namespace rhea { namespace ast {
             else if (node->is<gr::declaration_as_type>())
             {
                 stmt = make_statement<TypeDeclaration>(
-                    std::move(create_identifier_node(node->children.at(0).get())),
+                    std::move(std::make_unique<Identifier>(node->children.at(0)->string())),
                     std::move(create_typename_node(node->children.at(1).get()))
                 );
             }

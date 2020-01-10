@@ -1,10 +1,10 @@
-#ifndef RHEA_STATE_TYPES_HPP
-#define RHEA_STATE_TYPES_HPP
+#ifndef RHEA_STATE_DECLARATION_HPP
+#define RHEA_STATE_DECLARATION_HPP
 
 /*
  * Definitions needed to describe types as they are used by the compiler.
  */
-namespace rhea { namespace state {
+namespace rhea { namespace types {
 
     // The type of declaration for a given symbol.
     enum class DeclarationType
@@ -20,4 +20,4 @@ namespace rhea { namespace state {
     };
 }}
 
-#endif /* RHEA_STATE_TYPES_HPP */
+#endif /* RHEA_STATE_DECLARATION_HPP */

@@ -7,8 +7,11 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/PassManager.h>
+#include <llvm/Passes/PassBuilder.h>
 
 #include "../ast.hpp"
+#include "../state/symbol.hpp"
 #include "code_visitor.hpp"
 
 /*
@@ -20,25 +23,52 @@ namespace rhea { namespace codegen {
 
     struct CodeGenerator
     {
-        CodeGenerator() : context(), builder(context), 
-            module(std::make_unique<llvm::Module>("main", context)), visitor(this)
-        {}
-        CodeGenerator(std::string module) : context(), builder(context),
-            module(std::make_unique<llvm::Module>(module, context)), visitor(this)
-        {}
+        CodeGenerator();
+        CodeGenerator(std::string module);
 
-        llvm::LLVMContext context;
-        llvm::IRBuilder<> builder;
-        std::unique_ptr<llvm::Module> module;
+        ////
+        // Rhea-specific members: these can be public
+        ////
         CodeVisitor visitor;
+        state::ScopeManager scope_manager;
 
-        // Do we need this? This class probably won't have any private members,
-        // but we might want to keep it for clarity, if nothing else.
+        // Make our visitor a friend class, so it can access all the LLVM parts.
         friend CodeVisitor;
 
         // At present, this returns a std::any (C++17( or boost::any (C++14).
         // This may change in the future.
         auto generate(ast::ASTNode* tree) { return tree->visit(&visitor); }
+
+        // Run optimization passes over a section of IR code.
+        // TODO: Find some way to let callers determine which passes to use.
+        template <typename Code>
+        Code* optimize(Code* code);
+
+        ////
+        // Public LLVM members
+        ////
+
+        // The LLVM context
+        llvm::LLVMContext context;
+
+        // IR builder, for easier generation of most IR code
+        llvm::IRBuilder<> builder;
+
+        // Pointer to the LLVM module which will receive our code.
+        // Later on, we may need more than just one, but we can start small.
+        std::unique_ptr<llvm::Module> module;
+
+        private:
+        ////
+        // Private LLVM members
+        ////
+
+        // Set up our general optimization passes
+        void initialize_passes();
+
+        // Manager for function-level optimization
+        llvm::FunctionPassManager FPM;
+        llvm::FunctionAnalysisManager FAM;
     };
 }}
 

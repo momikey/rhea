@@ -231,10 +231,10 @@ namespace rhea { namespace codegen {
                     case BinaryOperators::Modulus:
                         ret = generator->builder.CreateFRem(lhs, rhs, "modtmp");
                     case BinaryOperators::Equals:
-                        ret = generator->builder.CreateFCmpEQ(lhs, rhs, "cmptmp");
+                        ret = generator->builder.CreateFCmpOEQ(lhs, rhs, "cmptmp");
                         break;
                     case BinaryOperators::NotEqual:
-                        ret = generator->builder.CreateFCmpNE(lhs, rhs, "cmptmp");
+                        ret = generator->builder.CreateFCmpONE(lhs, rhs, "cmptmp");
                         break;
                     // TODO: Others
                     default:
