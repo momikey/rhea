@@ -639,7 +639,7 @@ namespace rhea { namespace ast {
             else if (node->is<gr::variable_declaration>())
             {
                 stmt = make_statement<Variable>(
-                    std::move(create_identifier_node(node->children.at(0).get())),
+                    std::move(std::make_unique<Identifier>(node->children.at(0)->string())),
                     std::move(create_expression_node(node->children.at(1).get()))
                 );
             }
@@ -657,7 +657,7 @@ namespace rhea { namespace ast {
             else if (node->is<gr::constant_declaration>())
             {
                 stmt = make_statement<Constant>(
-                    std::move(create_identifier_node(node->children.at(0).get())),
+                    std::move(std::make_unique<Identifier>(node->children.at(0)->string())),
                     std::move(create_expression_node(node->children.at(1).get()))
                 );
             }

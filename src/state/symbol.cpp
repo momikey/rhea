@@ -12,6 +12,12 @@ namespace rhea { namespace state {
         m_stack.front().symbol_table[sym.name] = sym;
     }
 
+    bool ScopeManager::is_local(std::string s)
+    {
+        const auto local = m_stack.back();
+        return (local.symbol_table.find(s) != local.symbol_table.end());
+    }
+
     util::optional<std::reference_wrapper<SymbolEntry>> ScopeManager::find(std::string key)
     {
         util::optional<std::reference_wrapper<SymbolEntry>> opt({});

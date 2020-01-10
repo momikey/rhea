@@ -26,6 +26,31 @@ namespace rhea { namespace codegen {
                 llvm::APFloat(val)
             );
         }
+
+        llvm::AllocaInst* create_allocation(
+            llvm::Function* fn, std::string name, types::TypeInfo type, CodeGenerator* gen)
+        {
+            if (gen->scope_manager.is_local(name))
+            {
+                // The variable does exist in the local scope, so we can allocate
+                // stack space for it.
+
+                // Create a temporary IR builder at the beginning of the scope block
+                llvm::IRBuilder<> temp_builder(
+                    &fn->getEntryBlock(),
+                    fn->getEntryBlock().begin()
+                );
+
+                auto ai = temp_builder.CreateAlloca(gen->llvm_for_type(type), 0, name);
+
+                return ai;
+            }
+            else
+            {
+                // Throw an error or something here
+                return nullptr;
+            }
+        }
     }
 
     any CodeVisitor::visit(Boolean* n)
@@ -230,6 +255,7 @@ namespace rhea { namespace codegen {
                         break;
                     case BinaryOperators::Modulus:
                         ret = generator->builder.CreateFRem(lhs, rhs, "modtmp");
+                        break;
                     case BinaryOperators::Equals:
                         ret = generator->builder.CreateFCmpOEQ(lhs, rhs, "cmptmp");
                         break;
@@ -249,5 +275,63 @@ namespace rhea { namespace codegen {
         // TODO: Handle other types: structures, refs, pointers, etc.
 
         return ret;
+    }
+
+    any CodeVisitor::visit(BareExpression* n)
+    {
+        // Bare expressions aren't really statements, but expressions evaluated
+        // in a statement context. They're most useful for function calls, which
+        // may have side effects. In codegen, we don't need to do much with them,
+        // just pass them through.
+        return n->expression->visit(this);
+    }
+
+    any CodeVisitor::visit(TypeDeclaration* n)
+    {
+        // For a variable declaration (with no initialization), we only have to
+        // place an entry in the current scope's symbol table and allocate stack
+        // memory for the appropriate variable type.
+
+        // TODO
+        return {};        
+    }
+
+    any CodeVisitor::visit(Variable* n)
+    {
+        // For a variable definition (with initialization), we also have to store
+        // the RHS expression's value into the appropriate memory.
+
+        std::string vname = n->lhs->name;
+        auto vtype = n->rhs->expression_type();
+        Value* rhs = util::any_cast<Value*>(n->rhs->visit(this));
+
+        if (!generator->scope_manager.is_local(vname))
+        {
+            generator->scope_manager.add_symbol({
+                vname,
+                types::DeclarationType::Variable,
+                vtype
+            });
+
+            llvm::Function* entry = generator->builder.GetInsertBlock()->getParent();
+            llvm::AllocaInst* ai = internal::create_allocation(entry, vname, vtype, generator);
+
+            entry->print(llvm::outs(), nullptr, false, true);
+            generator->builder.CreateStore(rhs, ai);
+            generator->allocation_manager.add(vname, ai);
+        }
+        else
+        {
+            // Redefinition
+            throw syntax_error(fmt::format("Redefinition of variable {0}", vname));
+        }
+
+        return generator->builder.GetInsertBlock()->getParent();
+    }
+
+    any CodeVisitor::visit(Constant* n)
+    {
+        // TODO
+        return {};
     }
 }}

@@ -6,6 +6,8 @@
 #include <llvm/ADT/APInt.h>
 #include <llvm/ADT/APFloat.h>
 
+#include <fmt/format.h>
+
 #include "../ast.hpp"
 #include "../util/compat.hpp"
 #include "../util/symbol_hash.hpp"
@@ -39,6 +41,11 @@ namespace rhea { namespace codegen {
         any visit(Symbol* n) override;
         any visit(Nothing* n) override;
         any visit(BinaryOp* n) override;
+
+        any visit(BareExpression* n) override;
+        any visit(TypeDeclaration* n) override;
+        any visit(Variable* n) override;
+        any visit(Constant* n) override;
     };
 }}
 

@@ -77,7 +77,7 @@ namespace {
     BOOST_AUTO_TEST_CASE (type_declaration_ast)
     {
         auto lhs = std::make_unique<ast::Identifier>("foo");
-        std::unique_ptr<ast::AnyIdentifier> tn = ast::make_identifier<ast::Identifier>("integer");
+        std::unique_ptr<ast::Identifier> tn = std::make_unique<ast::Identifier>("integer");
         auto rhs = std::make_unique<ast::Typename>(std::move(tn));
 
         auto node = std::make_unique<ast::TypeDeclaration>(std::move(lhs), std::move(rhs));
@@ -90,7 +90,7 @@ namespace {
 
     BOOST_AUTO_TEST_CASE (variable_ast)
     {
-        std::unique_ptr<ast::AnyIdentifier> lhs = ast::make_identifier<ast::Identifier>("foo");
+        auto lhs = std::make_unique<ast::Identifier>("foo");
         ast::expression_ptr rhs = ast::make_expression<ast::Integer>(42);
 
         auto node = std::make_unique<ast::Variable>(std::move(lhs), std::move(rhs));
@@ -102,7 +102,7 @@ namespace {
 
     BOOST_AUTO_TEST_CASE (constant_ast)
     {
-        std::unique_ptr<ast::AnyIdentifier> lhs = ast::make_identifier<ast::Identifier>("foo");
+        auto lhs = std::make_unique<ast::Identifier>("foo");
         ast::expression_ptr rhs = ast::make_expression<ast::Integer>(42);
 
         auto node = std::make_unique<ast::Constant>(std::move(lhs), std::move(rhs));

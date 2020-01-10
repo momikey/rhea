@@ -106,6 +106,7 @@ namespace rhea { namespace ast {
         const std::unique_ptr<Identifier> lhs;
         const std::unique_ptr<Typename> rhs;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(TypeDeclaration,{0},{1})", lhs->to_string(), rhs->to_string()); }
     };
@@ -117,12 +118,13 @@ namespace rhea { namespace ast {
     class Variable : public Statement
     {
         public:
-        Variable(std::unique_ptr<AnyIdentifier> l, expression_ptr r)
+        Variable(std::unique_ptr<Identifier> l, expression_ptr r)
             : lhs(std::move(l)), rhs(std::move(r)) {}
 
-        const std::unique_ptr<AnyIdentifier> lhs;
+        const std::unique_ptr<Identifier> lhs;
         const expression_ptr rhs;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Variable,{0},{1})", lhs->to_string(), rhs->to_string()); }
     };
@@ -133,12 +135,13 @@ namespace rhea { namespace ast {
     class Constant : public Statement
     {
         public:
-        Constant(std::unique_ptr<AnyIdentifier> l, expression_ptr r)
+        Constant(std::unique_ptr<Identifier> l, expression_ptr r)
             : lhs(std::move(l)), rhs(std::move(r)) {}
 
         const std::unique_ptr<AnyIdentifier> lhs;
         const expression_ptr rhs;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Constant,{0},{1})", lhs->to_string(), rhs->to_string()); }
     };

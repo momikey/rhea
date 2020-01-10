@@ -71,7 +71,12 @@ namespace rhea { namespace visitor {
         String,
         Symbol,
         Nothing,
-        BinaryOp
+        BinaryOp,
+
+        BareExpression,
+        TypeDeclaration,
+        Variable,
+        Constant
         /* All AST classes */
     >
     {};

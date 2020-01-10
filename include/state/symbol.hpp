@@ -46,6 +46,8 @@ namespace rhea { namespace state {
     // the non-codegen aspects of symbols and scopes.
     struct ScopeManager
     {
+        ScopeManager() : m_stack({ {"$global", {}} }) {}
+
         // Return the topmost (i.e., current) scope.
         Scope& current() { return m_stack.back(); }
 
@@ -60,6 +62,9 @@ namespace rhea { namespace state {
 
         // Add a new entry to the current scope.
         void add_symbol(SymbolEntry sym);
+
+        // Check to see if a symbol is defined in the current scope.
+        bool is_local(std::string s);
 
         // Find an entry in the symbol table. If it isn't in the most
         // local scope, then keep trying parent scopes.

@@ -25,4 +25,38 @@ namespace rhea { namespace codegen {
             llvm::PassBuilder::ThinLTOPhase::None
         );
     }
+
+    llvm::Type* CodeGenerator::llvm_for_type(types::TypeInfo ti)
+    {
+        return util::visit(TypeBuilder{this}, ti);
+    }
+
+    // Specializations for the type converter
+    template <>
+    llvm::Type* TypeBuilder::operator()(types::SimpleType st)
+    {
+        using types::BasicType;
+    
+        switch (st.type)
+        {
+            // LLVM makes no distinction between signed/unsigned
+            case BasicType::Integer:
+            case BasicType::UnsignedInteger:
+                return llvm::Type::getInt32Ty(generator->context);
+            case BasicType::Byte:
+            case BasicType::UnsignedByte:
+                return llvm::Type::getInt8Ty(generator->context);
+            case BasicType::Long:
+            case BasicType::UnsignedLong:
+                return llvm::Type::getInt64Ty(generator->context);
+            case BasicType::Float:
+                return llvm::Type::getFloatTy(generator->context);
+            case BasicType::Double:
+                return llvm::Type::getDoubleTy(generator->context);
+
+            default:
+                // TODO: Handle other types
+                return nullptr;
+        }
+    }
 }}

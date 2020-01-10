@@ -12,7 +12,10 @@
 
 #include "../ast.hpp"
 #include "../state/symbol.hpp"
+#include "../types/types.hpp"
+#include "../util/compat.hpp"
 #include "code_visitor.hpp"
+#include "allocation_manager.hpp"
 
 /*
  * The core class for Rhea code generation using LLVM.
@@ -20,6 +23,9 @@
 namespace rhea { namespace codegen {
     using util::any;
     using namespace ast;
+
+    // Forward declaration for helper class.
+    struct TypeBuilder;
 
     struct CodeGenerator
     {
@@ -31,6 +37,7 @@ namespace rhea { namespace codegen {
         ////
         CodeVisitor visitor;
         state::ScopeManager scope_manager;
+        AllocationManager allocation_manager;
 
         // Make our visitor a friend class, so it can access all the LLVM parts.
         friend CodeVisitor;
@@ -58,6 +65,13 @@ namespace rhea { namespace codegen {
         // Later on, we may need more than just one, but we can start small.
         std::unique_ptr<llvm::Module> module;
 
+        ////
+        // Helper methods
+        ////
+
+        // Get the LLVM IR type for a Rhea type
+        llvm::Type* llvm_for_type(types::TypeInfo ti);
+
         private:
         ////
         // Private LLVM members
@@ -70,6 +84,17 @@ namespace rhea { namespace codegen {
         llvm::FunctionPassManager FPM;
         llvm::FunctionAnalysisManager FAM;
     };
+
+    // Helper class to map Rhea types to those used in LLVM IR.
+    struct TypeBuilder
+    {
+        CodeGenerator* generator;
+
+        // We use the "overloaded operator()" pattern for this one.
+        template <typename T>
+        llvm::Type* operator()(T t) { return nullptr; }
+    };
+
 }}
 
 #endif /* RHEA_CODEGEN_GENERATOR_HPP */

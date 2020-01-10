@@ -1,6 +1,7 @@
 set(CODEGEN_SOURCES
     generator.cpp
     code_visitor.cpp
+    allocation_manager.cpp
 )
 
 add_library(rhea_codegen STATIC ${CODEGEN_SOURCES})
