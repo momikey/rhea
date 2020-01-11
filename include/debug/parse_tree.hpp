@@ -18,11 +18,6 @@
 namespace rhea { namespace debug {
     namespace pt = tao::pegtl::parse_tree;
 
-    // TODO: Make selectors for all the right nodes
-    // (This will be in a separate AST namespace.)
-    template <typename Rule>
-    struct selector : std::true_type {};
-
     namespace internal {
         template <typename Node>
         std::ostream& print_node(std::ostream& os, const Node& n, int level)

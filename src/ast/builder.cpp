@@ -1,4 +1,5 @@
 #include "ast/internal/builder.hpp"
+#include "ast/builder.hpp"
 
 #include <map>
 #include <vector>
@@ -8,18 +9,6 @@
 
 namespace rhea { namespace ast {
     using types::BasicType;
-    
-    // Build a Rhea AST out of the PEGTL modified parse tree.
-    std::unique_ptr<ASTNode> build_ast(parser_node* node)
-    {
-        // PRGTL's parse tree builder always creates a root node that does nothing.
-        // Since our grammar guarantees that we only ever have a single root, we
-        // don't really need that, and we can just build our AST from the PEGTL root's
-        // only child.
-        // TODO: We have to determine whether we're dealing with a module or program.
-        // return create_program_node(node->children().back());
-        throw unimplemented_type("Root node");
-    }
 
     namespace internal {
         namespace gr = rhea::grammar;
@@ -832,6 +821,29 @@ namespace rhea { namespace ast {
             assert(ast_node != nullptr);
             ast_node->position = node->begin();
             return ast_node;
+        }
+    }
+
+    // Build a Rhea AST out of the PEGTL modified parse tree.
+    std::unique_ptr<ASTNode> build_ast(parser_node* node)
+    {
+        namespace gr = rhea::grammar;
+
+        // PRGTL's parse tree builder always creates a root node that does nothing.
+        // Since our grammar guarantees that we only ever have a single root, we
+        // don't really need that, and we can just build our AST from the PEGTL root's
+        // only child.
+        // TODO: We have to determine whether we're dealing with a module or program.
+
+        auto& top = node->children.back();
+
+        if (top->is<gr::program_definition>() || top->is<gr::module_definition>())
+        {
+            return internal::create_top_level_node(top.get());
+        }
+        else
+        {
+            return internal::create_statement_node(top.get());
         }
     }
 }}

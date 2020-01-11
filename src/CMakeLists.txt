@@ -7,6 +7,23 @@ add_subdirectory(codegen)
 add_subdirectory(state)
 add_subdirectory(util)
 
+set(RHEA_LIBS
+    rhea_ast
+    rhea_codegen
+    rhea_state
+    rhea_util
+    ${llvm_libs}
+    ${CONAN_LIBS}
+)
+
 add_executable(rhea ${MAIN_SOURCES})
 target_include_directories(rhea PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(rhea rhea_ast rhea_codegen rhea_state rhea_util ${llvm_libs} ${CONAN_LIBS})
+target_link_libraries(rhea ${RHEA_LIBS})
+
+add_executable(rhea_debug_parse debug/parse.cpp)
+target_include_directories(rhea_debug_parse PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(rhea_debug_parse ${RHEA_LIBS})
+
+add_executable(rhea_debug_ast debug/ast.cpp)
+target_include_directories(rhea_debug_ast PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(rhea_debug_ast ${RHEA_LIBS})
