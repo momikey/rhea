@@ -82,4 +82,7 @@ namespace rhea { namespace ast {
 
     any Constant::visit(Visitor* v)
     { return v->visit(this); }
+
+    any BareExpression::visit(Visitor* v)
+    { return v->visit(this); }
 }}

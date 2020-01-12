@@ -30,20 +30,20 @@ namespace {
 
         void setup()
         {
-            auto ft = llvm::FunctionType::get(
-                llvm::Type::getVoidTy(gen.context),
-                false
-            );
+            // auto ft = llvm::FunctionType::get(
+            //     llvm::Type::getVoidTy(gen.context),
+            //     false
+            // );
 
-            auto fn = llvm::Function::Create(
-                ft,
-                llvm::Function::ExternalLinkage,
-                "anonymous",
-                gen.module.get()
-            );
+            // auto fn = llvm::Function::Create(
+            //     ft,
+            //     llvm::Function::ExternalLinkage,
+            //     "anonymous",
+            //     gen.module.get()
+            // );
 
-            auto block = llvm::BasicBlock::Create(gen.context, "entry", fn);
-            gen.builder.SetInsertPoint(block);
+            // auto block = llvm::BasicBlock::Create(gen.context, "entry", fn);
+            // gen.builder.SetInsertPoint(block);
         }
 
         void teardown()
@@ -68,15 +68,15 @@ namespace {
 
         auto aresult = gen.generate(node.get());
 
-        auto result = util::any_cast<llvm::Function*>(aresult);
-        BOOST_TEST((result != nullptr));
+        // auto result = util::any_cast<llvm::Function*>(aresult);
+        // BOOST_TEST((result != nullptr));
         
         BOOST_TEST((gen.scope_manager.is_local("foo")));
-        BOOST_TEST((gen.allocation_manager.is_local("foo")));
+        // BOOST_TEST((gen.allocation_manager.is_local("foo")));
 
-        auto ai = gen.allocation_manager.find("foo");
-        BOOST_TEST((ai.has_value()));
-        BOOST_TEST((ai.value() != nullptr));
+        // auto ai = gen.allocation_manager.find("foo");
+        // BOOST_TEST((ai.has_value()));
+        // BOOST_TEST((ai.value() != nullptr));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()

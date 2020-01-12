@@ -20,11 +20,14 @@ namespace rhea { namespace ast {
 
         std::string to_string() override;
 
-        private:
         child_vector<Statement> children;
     };
 
     // TODO module stuff
+    class Module : public ASTNode
+    {
+
+    };
 }}
 
 #endif /* RHEA_NODES_MODULE_HPP */

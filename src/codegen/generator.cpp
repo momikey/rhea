@@ -6,6 +6,7 @@ namespace rhea { namespace codegen {
         FPM({}), FAM({})
     {
         initialize_passes();
+        initialize_module();
     }
 
     CodeGenerator::CodeGenerator(std::string module) : visitor(this), context(), builder(context),
@@ -13,6 +14,7 @@ namespace rhea { namespace codegen {
         FPM({}), FAM({})
     {
         initialize_passes();
+        initialize_module();
     }
 
     void CodeGenerator::initialize_passes()
@@ -24,6 +26,24 @@ namespace rhea { namespace codegen {
             llvm::PassBuilder::OptimizationLevel::O1,
             llvm::PassBuilder::ThinLTOPhase::None
         );
+    }
+
+    void CodeGenerator::initialize_module()
+    {
+        auto ft = llvm::FunctionType::get(
+            llvm::Type::getVoidTy(context),
+            false
+        );
+
+        auto fn = llvm::Function::Create(
+            ft,
+            llvm::Function::ExternalLinkage,
+            module->getModuleIdentifier() + "_init",
+            module.get()
+        );
+
+        auto block = llvm::BasicBlock::Create(context, "entry", fn);
+        builder.SetInsertPoint(block);
     }
 
     llvm::Type* CodeGenerator::llvm_for_type(types::TypeInfo ti)
@@ -53,6 +73,8 @@ namespace rhea { namespace codegen {
                 return llvm::Type::getFloatTy(generator->context);
             case BasicType::Double:
                 return llvm::Type::getDoubleTy(generator->context);
+            case BasicType::Boolean:
+                return llvm::Type::getInt1Ty(generator->context);
 
             default:
                 // TODO: Handle other types

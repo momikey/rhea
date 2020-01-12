@@ -281,9 +281,50 @@ namespace rhea { namespace codegen {
     {
         // Bare expressions aren't really statements, but expressions evaluated
         // in a statement context. They're most useful for function calls, which
-        // may have side effects. In codegen, we don't need to do much with them,
-        // just pass them through.
-        return n->expression->visit(this);
+        // may have side effects. In codegen, we don't need to do much with the
+        // statement itself, so we wrap it in what's basically an IIFE.
+
+        static unsigned int count = 0u;
+
+            // If we're at the top level of a module/program, we can't directly
+            // insert the expression, so we wrap it in an anonymous function.
+            llvm::Function* ret = nullptr;
+
+            auto value = util::any_cast<Value*>(n->expression->visit(this));
+            auto fntype = llvm::FunctionType::get(
+                value->getType(),
+                false
+            );
+
+            ret = llvm::Function::Create(
+                fntype,
+                llvm::Function::ExternalLinkage,
+                std::string("__anon_expr$") + std::to_string(count++),
+                generator->module.get()
+            );
+
+            auto block = llvm::BasicBlock::Create(generator->context, "entry", ret);
+
+            // Save position for later
+            auto old = generator->builder.GetInsertBlock();
+
+            // Move to new function
+            generator->builder.SetInsertPoint(block);
+
+            if (value != nullptr)
+            {
+                generator->builder.CreateRet(value);
+                llvm::verifyFunction(*ret);
+
+                generator->builder.SetInsertPoint(old);
+                generator->builder.CreateCall(ret, llvm::None, "callanon");
+                return ret;
+            }
+            else
+            {
+                ret->eraseFromParent();
+                return nullptr;
+            }
     }
 
     any CodeVisitor::visit(TypeDeclaration* n)
@@ -303,6 +344,7 @@ namespace rhea { namespace codegen {
 
         std::string vname = n->lhs->name;
         auto vtype = n->rhs->expression_type();
+        auto ltype = generator->llvm_for_type(vtype);
         Value* rhs = util::any_cast<Value*>(n->rhs->visit(this));
 
         if (!generator->scope_manager.is_local(vname))
@@ -313,12 +355,36 @@ namespace rhea { namespace codegen {
                 vtype
             });
 
-            llvm::Function* entry = generator->builder.GetInsertBlock()->getParent();
-            llvm::AllocaInst* ai = internal::create_allocation(entry, vname, vtype, generator);
+            if (generator->scope_manager.current().name != "$global")
+            {
+                // We're in some kind of a block, such as a function definition.
+                llvm::Function* entry = generator->builder.GetInsertBlock()->getParent();
+                auto ai = internal::create_allocation(entry, vname, vtype, generator);
 
-            entry->print(llvm::outs(), nullptr, false, true);
-            generator->builder.CreateStore(rhs, ai);
-            generator->allocation_manager.add(vname, ai);
+                generator->builder.CreateStore(rhs, ai);
+                generator->allocation_manager.add(vname, ai);
+
+                return generator->builder.GetInsertBlock()->getParent();
+            }
+            else
+            {
+                // This is a top-level variable definition, so treat it as a global.
+
+                // LLVM likes to take ownership of...well, everything. So we can't
+                // use a unique_ptr here, apparently.
+                auto gvar = new llvm::GlobalVariable(
+                    *(generator->module),
+                    ltype,
+                    false,
+                    llvm::GlobalVariable::LinkageTypes::InternalLinkage,
+                    llvm::Constant::getNullValue(ltype),
+                    vname                    
+                );
+
+                generator->builder.CreateStore(rhs, gvar);
+
+                // Don't really know what to return here, so hand off to the outer block.
+            }
         }
         else
         {
@@ -326,7 +392,7 @@ namespace rhea { namespace codegen {
             throw syntax_error(fmt::format("Redefinition of variable {0}", vname));
         }
 
-        return generator->builder.GetInsertBlock()->getParent();
+        return {};
     }
 
     any CodeVisitor::visit(Constant* n)

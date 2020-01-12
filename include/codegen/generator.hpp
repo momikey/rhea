@@ -80,6 +80,9 @@ namespace rhea { namespace codegen {
         // Set up our general optimization passes
         void initialize_passes();
 
+        // Do some module init stuff, like creating an initial function
+        void initialize_module();
+
         // Manager for function-level optimization
         llvm::FunctionPassManager FPM;
         llvm::FunctionAnalysisManager FAM;

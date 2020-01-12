@@ -1,8 +1,13 @@
 #ifndef RHEA_CODEGEN_VISITOR_HPP
 #define RHEA_CODEGEN_VISITOR_HPP
 
+#include <string>
+#include <memory>
+
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/Verifier.h>
+#include <llvm/IR/GlobalVariable.h>
 #include <llvm/ADT/APInt.h>
 #include <llvm/ADT/APFloat.h>
 

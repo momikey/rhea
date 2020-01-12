@@ -24,6 +24,7 @@ namespace rhea { namespace ast {
 
         const expression_ptr expression;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(BareExpression,{0})", expression->to_string()); }
     };
