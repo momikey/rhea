@@ -397,7 +397,59 @@ namespace rhea { namespace codegen {
 
     any CodeVisitor::visit(Constant* n)
     {
-        // TODO
+        // For now, we just use the same code for constants. Later, we might be able
+        // to optimize this. Remember that Rhea's var/const distinction is more like
+        // that of JavaScript. A constant doesn't have to be known at compile time.
+        std::string vname = n->lhs->name;
+        auto vtype = n->rhs->expression_type();
+        auto ltype = generator->llvm_for_type(vtype);
+        Value* rhs = util::any_cast<Value*>(n->rhs->visit(this));
+
+        if (!generator->scope_manager.is_local(vname))
+        {
+            generator->scope_manager.add_symbol({
+                vname,
+                types::DeclarationType::Constant,
+                vtype
+            });
+
+            if (generator->scope_manager.current().name != "$global")
+            {
+                // We're in some kind of a block, such as a function definition.
+                llvm::Function* entry = generator->builder.GetInsertBlock()->getParent();
+                auto ai = internal::create_allocation(entry, vname, vtype, generator);
+
+                generator->builder.CreateStore(rhs, ai);
+                generator->allocation_manager.add(vname, ai);
+
+                return generator->builder.GetInsertBlock()->getParent();
+            }
+            else
+            {
+                // This is a top-level variable definition, so treat it as a global.
+
+                // LLVM likes to take ownership of...well, everything. So we can't
+                // use a unique_ptr here, apparently.
+                auto gvar = new llvm::GlobalVariable(
+                    *(generator->module),
+                    ltype,
+                    false,
+                    llvm::GlobalVariable::LinkageTypes::InternalLinkage,
+                    llvm::Constant::getNullValue(ltype),
+                    vname                    
+                );
+
+                generator->builder.CreateStore(rhs, gvar);
+
+                // Don't really know what to return here, so hand off to the outer block.
+            }
+        }
+        else
+        {
+            // Redefinition
+            throw syntax_error(fmt::format("Redefinition of variable {0}", vname));
+        }
+
         return {};
     }
 }}

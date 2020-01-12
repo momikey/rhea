@@ -139,7 +139,7 @@ namespace rhea { namespace ast {
         Constant(std::unique_ptr<Identifier> l, expression_ptr r)
             : lhs(std::move(l)), rhs(std::move(r)) {}
 
-        const std::unique_ptr<AnyIdentifier> lhs;
+        const std::unique_ptr<Identifier> lhs;
         const expression_ptr rhs;
 
         util::any visit(visitor::Visitor* v) override;
