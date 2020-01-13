@@ -30,6 +30,31 @@ namespace rhea { namespace codegen {
 
     void CodeGenerator::initialize_module()
     {
+        llvm::InitializeNativeTarget();
+        // llvm::InitializeAllTargets();
+        // llvm::InitializeAllTargetMCs();
+        llvm::InitializeNativeTargetAsmParser();
+        llvm::InitializeNativeTargetAsmPrinter();
+
+        auto target_triple = llvm::sys::getDefaultTargetTriple();
+        std::string error;
+        auto target = llvm::TargetRegistry::lookupTarget(target_triple, error);
+        if (!target)
+        {
+            llvm::errs() << error;
+            throw std::invalid_argument(error);
+        }
+
+        auto cpu = "generic";
+        auto features = "";
+        llvm::TargetOptions opts;
+        auto reloc_model = llvm::Optional<llvm::Reloc::Model>();
+        target_machine = target->createTargetMachine(target_triple, cpu, features, opts, reloc_model);
+
+        module->setDataLayout(target_machine->createDataLayout());
+        module->setTargetTriple(target_triple);
+
+        // Set up a top-level function
         auto ft = llvm::FunctionType::get(
             llvm::Type::getVoidTy(context),
             false

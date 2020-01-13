@@ -13,9 +13,18 @@
 #include "../util/compat.hpp"
 
 namespace rhea { namespace debug {
+    namespace internal {
+        struct IRPrinter
+        {
+            IRPrinter() : generator("debug") {}
+            codegen::CodeGenerator generator;
+        };
+    }
+
     void print_ir(ast::ASTNode* tree)
     {
-        codegen::CodeGenerator generator("debug");
+        // codegen::CodeGenerator generator("debug");
+        static internal::IRPrinter irp {};
 
         auto root = dynamic_cast<ast::Program*>(tree);
 
@@ -28,8 +37,8 @@ namespace rhea { namespace debug {
         {
             node = root->children.front().get();
         }
-        auto result = generator.generate(node);
-        generator.module->print(llvm::outs(), nullptr, false, true);
+        auto result = irp.generator.generate(node);
+        irp.generator.module->print(llvm::outs(), nullptr, false, true);
     }
 }}
 

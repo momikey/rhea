@@ -71,6 +71,8 @@ namespace rhea { namespace visitor {
         String,
         Symbol,
         Nothing,
+        Identifier,
+
         BinaryOp,
 
         BareExpression,

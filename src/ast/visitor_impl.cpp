@@ -71,6 +71,9 @@ namespace rhea { namespace ast {
     any Nothing::visit(Visitor* v)
     { return v->visit(this); }
 
+    any Identifier::visit(Visitor* v)
+    { return v->visit(this); }
+
     any BinaryOp::visit(Visitor* v)
     { return v->visit(this); }
 

@@ -33,8 +33,18 @@ namespace rhea { namespace ast {
 
         const std::string name;
 
+        util::any visit(visitor::Visitor* v) override;
+        types::TypeInfo expression_type() override
+            { return m_expression_type; }
         std::string to_string() override
             { return fmt::format("(Identifier,{0})", name); }
+
+        // Variables (and other uses of identifiers) do not have known types at compile time,
+        // so we must have some way of identifying them.
+        void set_expression_type(types::TypeInfo et)
+            { m_expression_type = et; }
+        private:
+        types::TypeInfo m_expression_type;
     };
 
     // A fully-qualified identifier is used for accessing identifiers

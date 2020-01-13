@@ -32,7 +32,7 @@ conan_basic_setup()
 #message(STATUS "Conan libs: ${CONAN_LIBS}")
 
 #### LLVM linking
-llvm_map_components_to_libnames(llvm_libs core mcjit native passes)
+llvm_map_components_to_libnames(llvm_libs core mcjit native passes target asmparser asmprinter)
 #message(STATUS "LLVM libs: ${llvm_libs}")
 
 add_subdirectory(src)

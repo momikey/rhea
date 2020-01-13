@@ -172,15 +172,72 @@ namespace rhea { namespace codegen {
         return ret;
     }
 
+    any CodeVisitor::visit(Identifier* n)
+    {
+        // This visitor implements read access for identifiers. Assignment and
+        // variable definition handle write access in their own way.
+
+        Value* ret = nullptr;
+
+        // Note: this is an optional possibly holding a reference_wrapper.
+        auto varopt = generator->scope_manager.find(n->name);
+
+        if (varopt)
+        {
+            // Now we can actually unpack the reference.
+            auto var = varopt->get();
+
+            switch (var.declaration)
+            {
+                case types::DeclarationType::Variable:
+                case types::DeclarationType::Constant:
+                {
+                    if (generator->scope_manager.current().name == "$global")
+                    {
+                        // Global variables are accessed differently.
+                        auto gvar = generator->module->getGlobalVariable(var.name, true);
+                        ret = gvar;
+                    }
+                    else
+                    {
+                        // Local variables need a load instruction with the proper address.
+                        auto lvar = generator->allocation_manager.find(var.name);
+                        if (lvar)
+                        {
+                            ret = generator->builder.CreateLoad(*lvar, var.name);
+                        }
+                        else
+                        {
+                            throw std::invalid_argument("Variable " + var.name + " not in allocation table");
+                        }
+                    }
+
+                    n->set_expression_type(var.type_data);
+
+                    break;
+                }
+                default:
+                    throw unimplemented_type("Variable declaration " + std::to_string(static_cast<int>(var.declaration)));
+            }
+        }
+        else
+        {
+            // Variable is not defined
+            throw syntax_error("Identifier " + n->name + " is not defined");
+        }
+
+        return ret;
+    }
+
     any CodeVisitor::visit(BinaryOp* n)
     {
         using ast::BinaryOperators;
 
-        auto et = n->expression_type();
-        auto as_simple = util::get_if<types::SimpleType>(&et);
-
         Value* lhs = util::any_cast<Value*>(n->left->visit(this));
         Value* rhs = util::any_cast<Value*>(n->right->visit(this));
+
+        auto et = n->expression_type();
+        auto as_simple = util::get_if<types::SimpleType>(&et);
 
         Value* ret = nullptr;
 
@@ -286,45 +343,45 @@ namespace rhea { namespace codegen {
 
         static unsigned int count = 0u;
 
-            // If we're at the top level of a module/program, we can't directly
-            // insert the expression, so we wrap it in an anonymous function.
-            llvm::Function* ret = nullptr;
+        // If we're at the top level of a module/program, we can't directly
+        // insert the expression, so we wrap it in an anonymous function.
+        llvm::Function* ret = nullptr;
 
-            auto value = util::any_cast<Value*>(n->expression->visit(this));
-            auto fntype = llvm::FunctionType::get(
-                value->getType(),
-                false
-            );
+        auto value = util::any_cast<Value*>(n->expression->visit(this));
+        auto fntype = llvm::FunctionType::get(
+            value->getType(),
+            false
+        );
 
-            ret = llvm::Function::Create(
-                fntype,
-                llvm::Function::ExternalLinkage,
-                std::string("__anon_expr$") + std::to_string(count++),
-                generator->module.get()
-            );
+        ret = llvm::Function::Create(
+            fntype,
+            llvm::Function::ExternalLinkage,
+            std::string("__anon_expr$") + std::to_string(count++),
+            generator->module.get()
+        );
 
-            auto block = llvm::BasicBlock::Create(generator->context, "entry", ret);
+        auto block = llvm::BasicBlock::Create(generator->context, "entry", ret);
 
-            // Save position for later
-            auto old = generator->builder.GetInsertBlock();
+        // Save position for later
+        auto old = generator->builder.GetInsertBlock();
 
-            // Move to new function
-            generator->builder.SetInsertPoint(block);
+        // Move to new function
+        generator->builder.SetInsertPoint(block);
 
-            if (value != nullptr)
-            {
-                generator->builder.CreateRet(value);
-                llvm::verifyFunction(*ret);
+        if (value != nullptr)
+        {
+            generator->builder.CreateRet(value);
+            llvm::verifyFunction(*ret);
 
-                generator->builder.SetInsertPoint(old);
-                generator->builder.CreateCall(ret, llvm::None, "callanon");
-                return ret;
-            }
-            else
-            {
-                ret->eraseFromParent();
-                return nullptr;
-            }
+            generator->builder.SetInsertPoint(old);
+            generator->builder.CreateCall(ret, llvm::None, "callanon");
+            return ret;
+        }
+        else
+        {
+            ret->eraseFromParent();
+            return nullptr;
+        }
     }
 
     any CodeVisitor::visit(TypeDeclaration* n)
@@ -343,9 +400,10 @@ namespace rhea { namespace codegen {
         // the RHS expression's value into the appropriate memory.
 
         std::string vname = n->lhs->name;
+
+        Value* rhs = util::any_cast<Value*>(n->rhs->visit(this));
         auto vtype = n->rhs->expression_type();
         auto ltype = generator->llvm_for_type(vtype);
-        Value* rhs = util::any_cast<Value*>(n->rhs->visit(this));
 
         if (!generator->scope_manager.is_local(vname))
         {

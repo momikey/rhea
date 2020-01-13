@@ -43,6 +43,7 @@ namespace rhea { namespace visitor {
         virtual any visit(String*) = 0;
         virtual any visit(Symbol*) = 0;
         virtual any visit(Nothing*) = 0;
+        virtual any visit(Identifier*) = 0;
         virtual any visit(BinaryOp*) = 0;
 
         virtual any visit(BareExpression*) = 0;

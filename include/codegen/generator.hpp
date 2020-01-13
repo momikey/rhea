@@ -9,6 +9,10 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/PassManager.h>
 #include <llvm/Passes/PassBuilder.h>
+#include "llvm/Support/TargetRegistry.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
 
 #include "../ast.hpp"
 #include "../state/symbol.hpp"
@@ -64,6 +68,9 @@ namespace rhea { namespace codegen {
         // Pointer to the LLVM module which will receive our code.
         // Later on, we may need more than just one, but we can start small.
         std::unique_ptr<llvm::Module> module;
+
+        // The target machine
+        llvm::TargetMachine* target_machine;
 
         ////
         // Helper methods
