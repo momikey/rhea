@@ -15,9 +15,6 @@
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Function.h>
-#include <llvm/IR/LegacyPassManager.h>
-#include <llvm/Target/TargetMachine.h>
-#include <llvm/Support/raw_ostream.h>
 
 #include "test_setup.hpp"
 
@@ -53,24 +50,28 @@ namespace {
         {
             gen.module->print(llvm::outs(), nullptr, false, true);
 
-            std::string output;
+            // std::string output;
 
-            auto rsos = std::make_unique<llvm::raw_string_ostream>(output);
-            auto buf = std::make_unique<llvm::buffer_ostream>(*rsos);
+            // auto rsos = std::make_unique<llvm::raw_string_ostream>(output);
+            // auto buf = std::make_unique<llvm::buffer_ostream>(*rsos);
 
-            llvm::legacy::PassManager pm;
+            // llvm::legacy::PassManager pm;
 
-            if (gen.target_machine->addPassesToEmitFile(
-                pm,
-                *buf,
-                nullptr,
-                llvm::TargetMachine::CGFT_AssemblyFile
-            ))
-            {
-                std::cerr << "Unable to write assembly\n";
-            }
+            // if (gen.target_machine->addPassesToEmitFile(
+            //     pm,
+            //     *buf,
+            //     nullptr,
+            //     llvm::TargetMachine::CGFT_AssemblyFile
+            // ))
+            // {
+            //     std::cerr << "Unable to write assembly\n";
+            // }
+            // else
+            // {
+            //     pm.run(*(gen.module));
 
-            std::clog << "Output: " << output.length() << '\n' << output << '\n';
+            //     std::clog << "Output: " << output.length() << '\n' << output << '\n';
+            // }
         }
     };
 
