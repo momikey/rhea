@@ -9,6 +9,20 @@ namespace rhea { namespace codegen {
     // their own files in the future (which may be necessary), we'll need to
     // move these into their own source/header pair.
     namespace internal {
+        bool is_unsigned_type(types::BasicType t)
+        {
+            return
+                t == BasicType::UnsignedByte ||
+                t == BasicType::UnsignedInteger ||
+                t == BasicType::UnsignedLong
+            ;
+        }
+
+        bool is_floating_point_type(types::BasicType t)
+        {
+            return t == BasicType::Float || t == BasicType::Double;
+        }
+
         template <typename Int, int Width, bool Signed>
         Value* integral_value(Int val, CodeGenerator* gen)
         {
@@ -236,15 +250,22 @@ namespace rhea { namespace codegen {
         Value* lhs = util::any_cast<Value*>(n->left->visit(this));
         Value* rhs = util::any_cast<Value*>(n->right->visit(this));
 
+        // The type of the whole expression
         auto et = n->expression_type();
         auto as_simple = util::get_if<types::SimpleType>(&et);
+
+        // The type of the LHS, used for comparisons
+        auto lt = n->left->expression_type();
+        auto lt_simple = util::get_if<types::SimpleType>(&lt);
 
         Value* ret = nullptr;
 
         if (as_simple != nullptr)
         {
             // Operations on simple types
-            if (as_simple->is_integral)
+            if (as_simple->is_integral ||
+                (as_simple->type == BasicType::Boolean && lt_simple->is_integral)
+            )
             {
                 // Operations on integer types
                 switch (n->op)
@@ -259,9 +280,7 @@ namespace rhea { namespace codegen {
                         ret = generator->builder.CreateMul(lhs, rhs, "multmp");
                         break;
                     case BinaryOperators::Divide:
-                        if (as_simple->type == BasicType::UnsignedByte ||
-                            as_simple->type == BasicType::UnsignedInteger ||
-                            as_simple->type == BasicType::UnsignedLong)
+                        if (internal::is_unsigned_type(as_simple->type))
                         {
                             ret = generator->builder.CreateUDiv(lhs, rhs, "divtmp");
                         }
@@ -271,9 +290,7 @@ namespace rhea { namespace codegen {
                         }
                         break;
                     case BinaryOperators::Modulus:
-                        if (as_simple->type == BasicType::UnsignedByte ||
-                            as_simple->type == BasicType::UnsignedInteger ||
-                            as_simple->type == BasicType::UnsignedLong)
+                        if (internal::is_unsigned_type(as_simple->type))
                         {
                             ret = generator->builder.CreateURem(lhs, rhs, "modtmp");
                         }
@@ -288,12 +305,55 @@ namespace rhea { namespace codegen {
                     case BinaryOperators::NotEqual:
                         ret = generator->builder.CreateICmpNE(lhs, rhs, "cmptmp");
                         break;
+                    case BinaryOperators::LessThan:
+                        if (lt_simple != nullptr && internal::is_unsigned_type(lt_simple->type))
+                        {
+                            ret = generator->builder.CreateICmpULT(lhs, rhs, "cmptmp");
+                        }
+                        else
+                        {
+                            ret = generator->builder.CreateICmpSLT(lhs, rhs, "cmptmp");
+                        }
+                        break;
+                    case BinaryOperators::LessThanOrEqual:
+                        if (lt_simple != nullptr && internal::is_unsigned_type(lt_simple->type))
+                        {
+                            ret = generator->builder.CreateICmpULE(lhs, rhs, "cmptmp");
+                        }
+                        else
+                        {
+                            ret = generator->builder.CreateICmpSLE(lhs, rhs, "cmptmp");
+                        }
+                        break;
+                    case BinaryOperators::GreaterThan:
+                        if (lt_simple != nullptr && internal::is_unsigned_type(lt_simple->type))
+                        {
+                            ret = generator->builder.CreateICmpUGT(lhs, rhs, "cmptmp");
+                        }
+                        else
+                        {
+                            ret = generator->builder.CreateICmpSGT(lhs, rhs, "cmptmp");
+                        }
+                        break;
+                    case BinaryOperators::GreaterThanOrEqual:
+                        if (lt_simple != nullptr && internal::is_unsigned_type(lt_simple->type))
+                        {
+                            ret = generator->builder.CreateICmpUGE(lhs, rhs, "cmptmp");
+                        }
+                        else
+                        {
+                            ret = generator->builder.CreateICmpSGE(lhs, rhs, "cmptmp");
+                        }
+                        break;
+
                     // TODO: Others
                     default:
                         break;
                 }
             }
-            else if (as_simple->type == BasicType::Float || as_simple->type == BasicType::Double)
+            else if (internal::is_floating_point_type(as_simple->type) ||
+                (as_simple->type == BasicType::Boolean && internal::is_floating_point_type(lt_simple->type))
+            )
             {
                 // Operations on floating-point types
                 switch (n->op)
@@ -319,8 +379,38 @@ namespace rhea { namespace codegen {
                     case BinaryOperators::NotEqual:
                         ret = generator->builder.CreateFCmpONE(lhs, rhs, "cmptmp");
                         break;
+                    case BinaryOperators::LessThan:
+                        ret = generator->builder.CreateFCmpOLT(lhs, rhs, "cmptmp");
+                        break;
+                    case BinaryOperators::LessThanOrEqual:
+                        ret = generator->builder.CreateFCmpOLE(lhs, rhs, "cmptmp");
+                        break;
+                    case BinaryOperators::GreaterThan:
+                        ret = generator->builder.CreateFCmpOGT(lhs, rhs, "cmptmp");
+                        break;
+                    case BinaryOperators::GreaterThanOrEqual:
+                        ret = generator->builder.CreateFCmpOGE(lhs, rhs, "cmptmp");
+                        break;
                     // TODO: Others
                     default:
+                        break;
+                }
+            }
+            else if (as_simple->type == BasicType::Boolean && lt_simple->type == BasicType::Boolean)
+            {
+                // Boolean operations
+                switch (n->op)
+                {
+                    case BinaryOperators::BooleanAnd:
+                        ret = generator->builder.CreateAnd(lhs, rhs, "andtmp");
+                        break;
+                    case BinaryOperators::BooleanOr:
+                        ret = generator->builder.CreateOr(lhs, rhs, "ortmp");
+                        break;
+                    default:
+                        // Other operations are not defined on boolean values,
+                        // so should we throw an error here?
+                        // throw syntax_error("Invalid type for operation");
                         break;
                 }
             }

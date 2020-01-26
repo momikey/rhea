@@ -38,6 +38,10 @@ namespace rhea { namespace ast {
         BooleanOr
     };
 
+    // Comparison and boolean operators return a boolean, while all others should return
+    // a value of an appropriate type, usually that of one operand.
+    bool is_boolean_op(BinaryOperators op);
+
     // The base class
     class BinaryOp : public Expression
     {
