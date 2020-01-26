@@ -48,7 +48,7 @@ namespace rhea { namespace codegen {
 
         // At present, this returns a std::any (C++17( or boost::any (C++14).
         // This may change in the future.
-        auto generate(ast::ASTNode* tree) { return tree->visit(&visitor); }
+        util::any generate(ast::ASTNode* tree);
 
         // Run optimization passes over a section of IR code.
         // TODO: Find some way to let callers determine which passes to use.
@@ -89,6 +89,9 @@ namespace rhea { namespace codegen {
 
         // Do some module init stuff, like creating an initial function
         void initialize_module();
+
+        // Close out the initial function
+        void finalize_module();
 
         // Manager for function-level optimization
         llvm::FunctionPassManager FPM;

@@ -196,7 +196,7 @@ namespace rhea { namespace codegen {
                     {
                         // Global variables are accessed differently.
                         auto gvar = generator->module->getGlobalVariable(var.name, true);
-                        ret = gvar;
+                        ret = generator->builder.CreateLoad(gvar, var.name);
                     }
                     else
                     {
@@ -341,47 +341,55 @@ namespace rhea { namespace codegen {
         // may have side effects. In codegen, we don't need to do much with the
         // statement itself, so we wrap it in what's basically an IIFE.
 
-        static unsigned int count = 0u;
-
-        // If we're at the top level of a module/program, we can't directly
-        // insert the expression, so we wrap it in an anonymous function.
-        llvm::Function* ret = nullptr;
+        // static unsigned int count = 0u;
 
         auto value = util::any_cast<Value*>(n->expression->visit(this));
-        auto fntype = llvm::FunctionType::get(
-            value->getType(),
-            false
+
+        auto result = generator->builder.CreateSelect(
+            llvm::ConstantInt::getTrue(generator->context),
+            value,
+            llvm::UndefValue::get(value->getType())
         );
 
-        ret = llvm::Function::Create(
-            fntype,
-            llvm::Function::ExternalLinkage,
-            std::string("__anon_expr$") + std::to_string(count++),
-            generator->module.get()
-        );
+        return result;
+        // If we're at the top level of a module/program, we can't directly
+        // insert the expression, so we wrap it in an anonymous function.
+        // llvm::Function* ret = nullptr;
 
-        auto block = llvm::BasicBlock::Create(generator->context, "entry", ret);
+        // auto fntype = llvm::FunctionType::get(
+        //     value->getType(),
+        //     false
+        // );
 
-        // Save position for later
-        auto old = generator->builder.GetInsertBlock();
+        // ret = llvm::Function::Create(
+        //     fntype,
+        //     llvm::Function::ExternalLinkage,
+        //     std::string("__anon_expr$") + std::to_string(count++),
+        //     generator->module.get()
+        // );
 
-        // Move to new function
-        generator->builder.SetInsertPoint(block);
+        // auto block = llvm::BasicBlock::Create(generator->context, "entry", ret);
 
-        if (value != nullptr)
-        {
-            generator->builder.CreateRet(value);
-            llvm::verifyFunction(*ret);
+        // // Save position for later
+        // auto old = generator->builder.GetInsertBlock();
 
-            generator->builder.SetInsertPoint(old);
-            generator->builder.CreateCall(ret, llvm::None, "callanon");
-            return ret;
-        }
-        else
-        {
-            ret->eraseFromParent();
-            return nullptr;
-        }
+        // // Move to new function
+        // generator->builder.SetInsertPoint(block);
+
+        // if (value != nullptr)
+        // {
+        //     generator->builder.CreateRet(value);
+        //     llvm::verifyFunction(*ret);
+
+        //     generator->builder.SetInsertPoint(old);
+        //     generator->builder.CreateCall(ret, llvm::None, "callanon");
+        //     return ret;
+        // }
+        // else
+        // {
+        //     ret->eraseFromParent();
+        //     return nullptr;
+        // }
     }
 
     any CodeVisitor::visit(TypeDeclaration* n)

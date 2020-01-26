@@ -6,7 +6,6 @@ namespace rhea { namespace codegen {
         FPM({}), FAM({})
     {
         initialize_passes();
-        initialize_module();
     }
 
     CodeGenerator::CodeGenerator(std::string module) : visitor(this), context(), builder(context),
@@ -14,7 +13,17 @@ namespace rhea { namespace codegen {
         FPM({}), FAM({})
     {
         initialize_passes();
+    }
+
+    util::any CodeGenerator::generate(ast::ASTNode* tree)
+    {
         initialize_module();
+
+        auto result = tree->visit(&visitor);
+
+        finalize_module();
+
+        return result;
     }
 
     void CodeGenerator::initialize_passes()
@@ -69,6 +78,18 @@ namespace rhea { namespace codegen {
 
         auto block = llvm::BasicBlock::Create(context, "entry", fn);
         builder.SetInsertPoint(block);
+    }
+
+    void CodeGenerator::finalize_module()
+    {
+        auto fname = module->getModuleIdentifier() + "_init";
+
+        auto fn = module->getFunction(fname);
+        if (fn != nullptr)
+        {
+            builder.CreateRetVoid();
+            llvm::verifyFunction(*fn);
+        }
     }
 
     llvm::Type* CodeGenerator::llvm_for_type(types::TypeInfo ti)
