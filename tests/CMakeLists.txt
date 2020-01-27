@@ -1,11 +1,13 @@
 add_subdirectory(grammar)
 add_subdirectory(ast)
 add_subdirectory(codegen)
+add_subdirectory(types)
 
 set(TEST_LIBS
     tests_grammar
     tests_ast
     tests_codegen
+    tests_types
     ${CONAN_LIBS}
 )
 
