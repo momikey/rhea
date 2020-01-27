@@ -1,5 +1,6 @@
 set(AST_SOURCES
     binary_operator.cpp
+    unary_operator.cpp
     function.cpp
     identifiers.cpp
     simple_statement.cpp

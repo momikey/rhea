@@ -31,6 +31,8 @@ namespace rhea { namespace ast {
         const UnaryOperators op;
         const expression_ptr operand;
 
+        types::TypeInfo expression_type() override;
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(UnaryOp,{0},{1})", static_cast<int>(op), operand->to_string()); }
     };

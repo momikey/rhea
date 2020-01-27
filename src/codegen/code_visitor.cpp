@@ -424,6 +424,92 @@ namespace rhea { namespace codegen {
         return ret;
     }
 
+    any CodeVisitor::visit(UnaryOp* n)
+    {
+        using ast::UnaryOperators;
+
+        Value* operand = util::any_cast<Value*>(n->operand->visit(this));
+
+        // The type of the whole expression
+        auto et = n->expression_type();
+        auto as_simple = util::get_if<types::SimpleType>(&et);
+
+        // The type of the operand, which we will need for, e.g., promotion
+        auto ot = n->operand->expression_type();
+        auto ot_simple = util::get_if<types::SimpleType>(&ot);
+
+        Value* ret = nullptr;
+
+        if (as_simple != nullptr)
+        {
+            switch (n->op)
+            {
+                case UnaryOperators::Plus:
+                    if (as_simple->is_numeric)
+                    {
+                        // No need for code output, but we have to provide *something*
+                        // for basic block construction.
+                        ret = generator->builder.CreateSelect(
+                            llvm::ConstantInt::getTrue(generator->context),
+                            operand,
+                            llvm::UndefValue::get(operand->getType())
+                        );
+                    }
+                    else
+                    {
+                        // Can't use unary plus on non-numeric builtin types
+                        throw syntax_error("Invalid type for unary plus operator");
+                    }
+                case UnaryOperators::Minus:
+                    if (as_simple->is_numeric)
+                    {
+                        // LLVM IR doesn't have a basic negation instruction, AFAIK
+                        if (as_simple->is_integral)
+                        {
+                            ret = generator->builder.CreateSub(
+                                llvm::ConstantInt::get(operand->getType(), 0),
+                                operand
+                            );
+                        }
+                        else
+                        {
+                            ret = generator->builder.CreateFSub(
+                                llvm::ConstantFP::get(operand->getType(), 0),
+                                operand
+                            );
+                        }
+                    }
+                    else
+                    {
+                        // Can't use unary minus on non-numeric builtin types
+                        throw syntax_error("Invalid type for unary minus operator");
+                    }
+                case UnaryOperators::BooleanNot:
+                    if (as_simple->type == BasicType::Boolean)
+                    {
+                        // Again, no builtin "not" instruction for LLVM IR
+                        ret = generator->builder.CreateXor(
+                            llvm::ConstantInt::getTrue(generator->context),
+                            operand,
+                            "nottmp"
+                        );
+                    }
+                    else
+                    {
+                        throw syntax_error("Invalid type for not operator");
+                    }
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            // TODO: Operations on other types
+        }
+
+        return ret;
+    }
+
     any CodeVisitor::visit(BareExpression* n)
     {
         // Bare expressions aren't really statements, but expressions evaluated

@@ -77,6 +77,9 @@ namespace rhea { namespace ast {
     any BinaryOp::visit(Visitor* v)
     { return v->visit(this); }
 
+    any UnaryOp::visit(Visitor* v)
+    { return v->visit(this); }
+
     any TypeDeclaration::visit(Visitor* v)
     { return v->visit(this); }
 
