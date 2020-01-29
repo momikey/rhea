@@ -6,6 +6,7 @@
 #include <fmt/format.h>
 
 #include <llvm/IR/Value.h>
+#include <llvm/IR/Type.h>
 
 #include "generator.hpp"
 #include "../ast.hpp"
@@ -37,13 +38,27 @@ namespace rhea { namespace codegen {
      * cases where we really are making an explicit conversion. This includes the coercion
      * operator `^` and the `as` casting operator.
      */
-    Value* convert_type(Value* value, types::TypeInfo from, types::TypeInfo to, bool explicit_);
+    Value* convert_type(CodeGenerator* gen, Value* value, types::TypeInfo from, types::TypeInfo to, bool explicit_);
 
     /*
      * Private helper functions
      */
     namespace internal {
         bool can_implicitly_convert(types::TypeInfo from, types::TypeInfo to);
+
+        // Template for type conversion helpers. These are intended to be called by
+        // a variant visitor in `convert_type()` above. It may *look* like there will
+        // be N**2 possibilities, but most will end up being some variation on the
+        // "find a proper conversion function and call it" theme.
+        template <typename From, typename To>
+        Value* convert(CodeGenerator* gen, Value* value, From from, To to)
+        {
+            // TODO: Sensible default, calling a Rhea `to$` overload if possible.
+            throw unimplemented_type("Unable to convert types");
+        }
+
+        template <>
+        Value* convert(CodeGenerator* gen, Value* value, types::SimpleType from, types::SimpleType to);
     }
 }}
 
