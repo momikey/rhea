@@ -254,9 +254,33 @@ namespace rhea { namespace codegen {
         auto et = n->expression_type();
         auto as_simple = util::get_if<types::SimpleType>(&et);
 
-        // The type of the LHS, used for comparisons
+        // The types of the operands
         auto lt = n->left->expression_type();
         auto lt_simple = util::get_if<types::SimpleType>(&lt);
+
+        auto rt = n->right->expression_type();
+        auto rt_simple = util::get_if<types::SimpleType>(&rt);
+
+        // Not allowed to use the coercion operator on the LHS
+        if (lt_simple != nullptr && lt_simple->type == BasicType::Promoted)
+        {
+            throw syntax_error("Can't use the coercion operator on the left-hand side of an expression");
+        }
+
+        // Convert the type of the RHS, if necessary
+
+        // TODO: Handle casting operations
+        auto coerce = (rt_simple != nullptr && rt_simple->type == BasicType::Promoted);
+        if (!coerce)
+        {
+            rhs = convert_type(generator, rhs, rt, lt, false);
+        }
+        else
+        {
+            // If this is an explicit conversion from the coercion operator
+            auto ty = (dynamic_cast<ast::UnaryOp*>(n->right.get()))->operand->expression_type();
+            rhs = convert_type(generator, rhs, ty, lt, true);
+        }
 
         Value* ret = nullptr;
 
@@ -498,6 +522,10 @@ namespace rhea { namespace codegen {
                     {
                         throw syntax_error("Invalid type for not operator");
                     }
+                case UnaryOperators::Coerce:
+                    // Coercion operator doesn't actually generate code. All it does
+                    // is ensure type safety.
+                    ret = operand;
                 default:
                     break;
             }

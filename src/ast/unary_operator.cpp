@@ -39,6 +39,10 @@ namespace rhea { namespace ast {
                     }
                 case UnaryOperators::BooleanNot:
                     return types::SimpleType(BasicType::Boolean, false);
+                case UnaryOperators::Coerce:
+                    // Coercion operator always results in the "promoted" type.
+                    // Operations that depend on it will inspect.
+                    return types::SimpleType(BasicType::Promoted, false);
                 // TODO: Other operators
                 default:
                     throw unimplemented_type("Operation not implemented on type");

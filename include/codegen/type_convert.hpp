@@ -8,7 +8,7 @@
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Type.h>
 
-#include "generator.hpp"
+#include "generator_fwd.hpp"
 #include "../ast.hpp"
 #include "../types/types.hpp"
 #include "../types/to_string.hpp"
@@ -54,7 +54,7 @@ namespace rhea { namespace codegen {
         Value* convert(CodeGenerator* gen, Value* value, From from, To to)
         {
             // TODO: Sensible default, calling a Rhea `to$` overload if possible.
-            throw unimplemented_type("Unable to convert types");
+            throw ast::unimplemented_type("Unable to convert types");
         }
 
         template <>

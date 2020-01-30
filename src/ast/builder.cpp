@@ -267,26 +267,31 @@ namespace rhea { namespace ast {
                         {
                             int8_t i = std::stoi(lit);
                             expr = make_expression<Byte>(i);
+                            break;
                         }
                         case BasicType::Long:
                         {
                             int64_t i = std::stoll(lit);
                             expr = make_expression<Long>(i);
+                            break;
                         }
                         case BasicType::UnsignedInteger:
                         {
                             uint32_t i = std::stoi(lit);
                             expr = make_expression<UnsignedInteger>(i);
+                            break;
                         }
                         case BasicType::UnsignedByte:
                         {
                             uint8_t i = std::stoi(lit);
                             expr = make_expression<UnsignedByte>(i);
+                            break;
                         }
                         case BasicType::UnsignedLong:
                         {
                             uint64_t i = std::stoll(lit);
                             expr = make_expression<UnsignedLong>(i);
+                            break;
                         }
                         default:
                             throw unimplemented_type(node->name());

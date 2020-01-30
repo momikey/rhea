@@ -14,11 +14,13 @@
 #include <fmt/format.h>
 
 #include "../ast.hpp"
+#include "../types/to_string.hpp"
 #include "../util/compat.hpp"
 #include "../util/symbol_hash.hpp"
 #include "../visitor/visitor.hpp"
 #include "../visitor/default.hpp"
 #include "generator_fwd.hpp"
+#include "type_convert.hpp"
 
 /*
  * The AST visitor for the code generation pass of the Rhea compiler.

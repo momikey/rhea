@@ -20,11 +20,11 @@ namespace rhea { namespace ast {
     {
         auto lt = left->expression_type();
         auto rt = right->expression_type();
-        if (types::compatible(lt, rt))
-        {
+        // if (types::compatible(lt, rt))
+        // {
             return (is_boolean_op(op)) ? types::SimpleType(types::BasicType::Boolean, false) : lt;
-        }
+        // }
         
-        return types::UnknownType();
+        // return types::UnknownType();
     }
 }}

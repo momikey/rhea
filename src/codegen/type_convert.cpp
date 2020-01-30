@@ -1,16 +1,19 @@
 #include "codegen/type_convert.hpp"
+#include "codegen/generator.hpp"
 
 namespace rhea { namespace codegen {
     using llvm::Value;
+    using llvm::Type;
     using types::TypeInfo;
     using types::SimpleType;
+    using types::BasicType;
 
     Value* convert_type(CodeGenerator* gen, Value* value, TypeInfo from, TypeInfo to, bool explicit_ = false)
     {
         // Test to see if an implicit conversion is possible. If not, throw an error.
         if (!explicit_ && !internal::can_implicitly_convert(from, to))
         {
-            throw syntax_error(fmt::format("No implicit conversion between types {0} and {1}",
+            throw ast::syntax_error(fmt::format("No implicit conversion between types {0} and {1}",
                 types::to_string(from), types::to_string(to)
             ));
         }
@@ -39,24 +42,26 @@ namespace rhea { namespace codegen {
                 {
                     cvt = true;
                 }
-
-                // Otherwise, the only implicit conversions allowed are:
-                // (u)byte -> (u)integer or (u)long;
-                // float -> double
-                // (unsigned <-> signed is difficult because of overflow)
-                switch (from_simple->type)
+                else
                 {
-                    case BasicType::Byte:
-                        cvt = (to_simple->type == BasicType::Integer || to_simple->type == BasicType::Long) ;
-                        break;
-                    case BasicType::Integer:
-                        cvt = (to_simple->type == BasicType::Long);
-                        break;
-                    case BasicType::Float:
-                        cvt = (to_simple->type == BasicType::Double);
-                        break;
-                    default:
-                        break;
+                    // Otherwise, the only implicit conversions allowed are:
+                    // (u)byte -> (u)integer or (u)long;
+                    // float -> double
+                    // (unsigned <-> signed is difficult because of overflow)
+                    switch (from_simple->type)
+                    {
+                        case BasicType::Byte:
+                            cvt = (to_simple->type == BasicType::Integer || to_simple->type == BasicType::Long) ;
+                            break;
+                        case BasicType::Integer:
+                            cvt = (to_simple->type == BasicType::Long);
+                            break;
+                        case BasicType::Float:
+                            cvt = (to_simple->type == BasicType::Double);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
