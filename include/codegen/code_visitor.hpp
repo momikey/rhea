@@ -50,6 +50,7 @@ namespace rhea { namespace codegen {
         any visit(Identifier* n) override;
         any visit(BinaryOp* n) override;
         any visit(UnaryOp* n) override;
+        any visit(TernaryOp* n) override;
 
         any visit(BareExpression* n) override;
         any visit(TypeDeclaration* n) override;

@@ -23,6 +23,8 @@ namespace rhea { namespace ast {
         const expression_ptr true_branch;
         const expression_ptr false_branch;
 
+        types::TypeInfo expression_type() override { return true_branch->expression_type(); }
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string()
          { return fmt::format("(TernaryOp,{0},{1},{2})",
             condition->to_string(), true_branch->to_string(), false_branch->to_string()); }

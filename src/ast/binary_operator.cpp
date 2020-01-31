@@ -19,7 +19,7 @@ namespace rhea { namespace ast {
     types::TypeInfo BinaryOp::expression_type()
     {
         auto lt = left->expression_type();
-        auto rt = right->expression_type();
+        // auto rt = right->expression_type();
         // if (types::compatible(lt, rt))
         // {
             return (is_boolean_op(op)) ? types::SimpleType(types::BasicType::Boolean, false) : lt;

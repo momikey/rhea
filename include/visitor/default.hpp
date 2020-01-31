@@ -75,6 +75,7 @@ namespace rhea { namespace visitor {
 
         BinaryOp,
         UnaryOp,
+        TernaryOp,
 
         BareExpression,
         TypeDeclaration,

@@ -538,6 +538,46 @@ namespace rhea { namespace codegen {
         return ret;
     }
 
+    any CodeVisitor::visit(TernaryOp* n)
+    {
+        // The ternary operator in Rhea is an expression. Luckily for us,
+        // LLVM provides a `select` instruction that does pretty much exactly
+        // what we want.
+
+        // First get the condition expression as a boolean
+        Value* cond = util::any_cast<Value*>(n->condition->visit(this));
+        cond = convert_type(generator, cond, n->condition->expression_type(), BasicType::Boolean, false);
+
+        Value* t_branch = util::any_cast<Value*>(n->true_branch->visit(this));
+        Value* f_branch = util::any_cast<Value*>(n->false_branch->visit(this));
+
+        auto tbt = n->true_branch->expression_type();
+        auto fbt = n->false_branch->expression_type();
+        auto fbt_simple = util::get_if<types::SimpleType>(&fbt);
+
+        // Implicit conversion of the false branch, because the true branch
+        // controls the result type.
+
+        auto coerce = (fbt_simple != nullptr && fbt_simple->type == BasicType::Promoted);
+        if (!coerce)
+        {
+            f_branch = convert_type(generator, f_branch, fbt, tbt, false);
+        }
+        else
+        {
+            // Explicit conversion from the coercion operator
+            auto ty = (dynamic_cast<ast::UnaryOp*>(n->false_branch.get()))->operand->expression_type();
+            f_branch = convert_type(generator, f_branch, ty, tbt, true);
+        }
+
+        Value* ret = generator->builder.CreateSelect(
+            cond, t_branch, f_branch, "ternaryop"
+        );
+
+        // TODO Anything else?
+        return ret;
+    }
+
     any CodeVisitor::visit(BareExpression* n)
     {
         // Bare expressions aren't really statements, but expressions evaluated
