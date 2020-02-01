@@ -36,6 +36,8 @@ namespace rhea { namespace ast {
     {
         public:
         Array(child_vector<Expression>& es) : Container(es) {}
+
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return to_string_base("Array"); }
     };
 
@@ -43,6 +45,8 @@ namespace rhea { namespace ast {
     {
         public:
         List(child_vector<Expression>& es) : Container(es) {}
+
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return to_string_base("List"); }
     };
 
@@ -50,6 +54,8 @@ namespace rhea { namespace ast {
     {
         public:
         Tuple(child_vector<Expression>& es) : Container(es) {}
+
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return to_string_base("Tuple"); }
     };
 
@@ -63,6 +69,7 @@ namespace rhea { namespace ast {
         const std::unique_ptr<Identifier> name;
         child_vector<TypePair> fields;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
     };
 }}

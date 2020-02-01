@@ -184,15 +184,32 @@ namespace rhea { namespace ast {
                 }
             }
 
-            return make_statement<Def>(
-                type,
-                name,
-                std::move(generic_type),
-                std::move(return_type),
-                std::move(arguments_list),
-                conditions,
-                std::move(body)
-            );
+            // TODO: Handle generic definitions as a separate type (GenericDef)
+            if (generic_type == nullptr)
+            {
+                // Concrete definition
+                return make_statement<Def>(
+                    type,
+                    name,
+                    std::move(return_type),
+                    std::move(arguments_list),
+                    conditions,
+                    std::move(body)
+                );
+            }
+            else
+            {
+                // Generic definition
+                return make_statement<GenericDef>(
+                    type,
+                    name,
+                    std::move(generic_type),
+                    std::move(return_type),
+                    std::move(arguments_list),
+                    conditions,
+                    std::move(body)
+                );
+            }
         }
 
         // Helper to map node types to the operator enum for compound assignments.

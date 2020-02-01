@@ -12,7 +12,7 @@ namespace rhea { namespace ast {
         std::move(ds.begin(), ds.end(), std::back_inserter(declarations));
     }
 
-    With::to_string()
+    std::string With::to_string()
     {
         // Mostly the same as in e.g., FullyQualified, but we also
         // have to account for the body in the final string.

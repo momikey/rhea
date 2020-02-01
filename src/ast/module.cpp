@@ -12,7 +12,7 @@ namespace rhea { namespace ast {
 
     std::string Program::to_string()
     {
-        // Same logic as in FyllyQualified (identifiers.cpp)
+        // Same logic as in FullyQualified (identifiers.cpp)
         std::string s;
         s.reserve(children.size()*32);    // profile this to find a nice default
 

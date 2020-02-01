@@ -44,14 +44,53 @@ namespace rhea { namespace visitor {
         virtual any visit(Symbol*) = 0;
         virtual any visit(Nothing*) = 0;
         virtual any visit(Identifier*) = 0;
+        virtual any visit(FullyQualified*) = 0;
+        virtual any visit(RelativeIdentifier*) = 0;
         virtual any visit(BinaryOp*) = 0;
         virtual any visit(UnaryOp*) = 0;
         virtual any visit(TernaryOp*) = 0;
+        virtual any visit(Member*) = 0;
+        virtual any visit(Subscript*) = 0;
+        virtual any visit(GenericTypename*) = 0;
+        virtual any visit(Typename*) = 0;
+        virtual any visit(Variant*) = 0;
+        virtual any visit(Optional*) = 0;
+        virtual any visit(Cast*) = 0;
+        virtual any visit(TypeCheck*) = 0;
+        virtual any visit(Alias*) = 0;
+        virtual any visit(Enum*) = 0;
+        virtual any visit(SymbolList*) = 0;
+        virtual any visit(TypePair*) = 0;
 
         virtual any visit(BareExpression*) = 0;
+        virtual any visit(If*) = 0;
+        virtual any visit(While*) = 0;
+        virtual any visit(For*) = 0;
+        virtual any visit(With*) = 0;
+        virtual any visit(Break*) = 0;
+        virtual any visit(Continue*) = 0;
+        virtual any visit(NamedArgument*) = 0;
+        virtual any visit(Call*) = 0;
+        virtual any visit(Arguments*) = 0;
+        virtual any visit(Condition*) = 0;
+        virtual any visit(Def*) = 0;
+        virtual any visit(GenericDef*) = 0;
+        virtual any visit(Return*) = 0;
+        virtual any visit(Extern*) = 0;
         virtual any visit(TypeDeclaration*) = 0;
         virtual any visit(Variable* n) = 0;
         virtual any visit(Constant* n) = 0;
+        virtual any visit(Block* n) = 0;
+        virtual any visit(Assign* n) = 0;
+        virtual any visit(CompoundAssign* n) = 0;
+        virtual any visit(Do* n) = 0;
+        virtual any visit(Array* n) = 0;
+        virtual any visit(List* n) = 0;
+        virtual any visit(Tuple* n) = 0;
+        virtual any visit(Structure* n) = 0;
+
+        virtual any visit(Program* n) = 0;
+        virtual any visit(Module* n) = 0;
     };
 }}
 

@@ -4,6 +4,7 @@ set(AST_SOURCES
     function.cpp
     identifiers.cpp
     simple_statement.cpp
+    control_statement.cpp
     structure_type.cpp
     typenames.cpp
     module.cpp

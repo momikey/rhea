@@ -8,16 +8,16 @@ namespace rhea { namespace ast {
     // Definitions for generic types
     GenericTypename::GenericTypename(child_vector<Typename>& c)
     {
-        std::move(c.begin(), c.end(), std::back_inserter(m_children));
+        std::move(c.begin(), c.end(), std::back_inserter(children));
     }
 
     std::string GenericTypename::to_string()
     {
-        // Same logic as in FyllyQualified (identifiers.cpp)
+        // Same logic as in FullyQualified (identifiers.cpp)
         std::string s;
-        s.reserve(m_children.size()*16);    // profile this to find a nice default
+        s.reserve(children.size()*16);    // profile this to find a nice default
 
-        for (auto&& id : m_children)
+        for (auto&& id : children)
         {
             s += ',';
             s += id->to_string();
@@ -29,16 +29,16 @@ namespace rhea { namespace ast {
     // Definition for variants
     Variant::Variant(child_vector<Typename>& ts)
     {
-        std::move(ts.begin(), ts.end(), std::back_inserter(m_children));
+        std::move(ts.begin(), ts.end(), std::back_inserter(children));
     }
 
     std::string Variant::to_string()
     {
-        // Same logic as in FyllyQualified (identifiers.cpp)
+        // Same logic as in FullyQualified (identifiers.cpp)
         std::string s;
-        s.reserve(m_children.size()*16);    // profile this to find a nice default
+        s.reserve(children.size()*16);    // profile this to find a nice default
 
-        for (auto&& id : m_children)
+        for (auto&& id : children)
         {
             s += ',';
             s += id->to_string();

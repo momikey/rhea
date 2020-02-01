@@ -41,7 +41,7 @@ namespace {
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
-        BOOST_TEST(node.children().size() == ids.size());
+        BOOST_TEST(node.children.size() == ids.size());
     }
 
     BOOST_DATA_TEST_CASE(fully_qualified_ast_2, data::make(fully_qualified_samples))
@@ -60,10 +60,10 @@ namespace {
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
-        BOOST_TEST(node.children().size() == ids.size());
-        for (auto i = 0u; i < node.children().size(); ++i)
+        BOOST_TEST(node.children.size() == ids.size());
+        for (auto i = 0u; i < node.children.size(); ++i)
         {
-            BOOST_TEST(node.children()[i]->name == ids[i]);
+            BOOST_TEST(node.children[i]->name == ids[i]);
         }
     }
 

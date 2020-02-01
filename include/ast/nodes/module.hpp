@@ -21,12 +21,15 @@ namespace rhea { namespace ast {
         std::string to_string() override;
 
         child_vector<Statement> children;
+        
+        util::any visit(visitor::Visitor* v) override;
     };
 
     // TODO module stuff
     class Module : public ASTNode
     {
 
+        util::any visit(visitor::Visitor* v) override;
     };
 }}
 

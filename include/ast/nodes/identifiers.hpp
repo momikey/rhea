@@ -55,12 +55,19 @@ namespace rhea { namespace ast {
         FullyQualified(std::vector<std::string>& ns);
         FullyQualified(child_vector<Identifier>& ids);
 
-        child_vector<Identifier> const& children() const { return m_children; }
+        child_vector<Identifier> children;
 
+        util::any visit(visitor::Visitor* v) override;
+        types::TypeInfo expression_type() override
+            { return m_expression_type; }
         std::string to_string() override;
 
+        // Variables (and other uses of identifiers) do not have known types at compile time,
+        // so we must have some way of identifying them.
+        void set_expression_type(types::TypeInfo et)
+            { m_expression_type = et; }
         private:
-        child_vector<Identifier> m_children;
+        types::TypeInfo m_expression_type;
     };
 
     // A relative identifier is a qualified identifier relative to the
@@ -73,8 +80,18 @@ namespace rhea { namespace ast {
 
         const std::unique_ptr<AnyIdentifier> identifier;
 
+        util::any visit(visitor::Visitor* v) override;
+        types::TypeInfo expression_type() override
+            { return m_expression_type; }
         std::string to_string() override
             { return fmt::format("(RelativeIdentifier,{0})", identifier->to_string()); }
+            
+        // Variables (and other uses of identifiers) do not have known types at compile time,
+        // so we must have some way of identifying them.
+        void set_expression_type(types::TypeInfo et)
+            { m_expression_type = et; }
+        private:
+        types::TypeInfo m_expression_type;
     };
 }}
 

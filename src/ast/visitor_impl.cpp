@@ -74,6 +74,12 @@ namespace rhea { namespace ast {
     any Identifier::visit(Visitor* v)
     { return v->visit(this); }
 
+    any FullyQualified::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any RelativeIdentifier::visit(Visitor* v)
+    { return v->visit(this); }
+
     any BinaryOp::visit(Visitor* v)
     { return v->visit(this); }
 
@@ -81,6 +87,42 @@ namespace rhea { namespace ast {
     { return v->visit(this); }
 
     any TernaryOp::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Member::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Subscript::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any GenericTypename::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Typename::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Variant::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Optional::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Cast::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any TypeCheck::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Alias::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Enum::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any SymbolList::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any TypePair::visit(Visitor* v)
     { return v->visit(this); }
 
     any TypeDeclaration::visit(Visitor* v)
@@ -92,6 +134,78 @@ namespace rhea { namespace ast {
     any Constant::visit(Visitor* v)
     { return v->visit(this); }
 
+    any Block::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Assign::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any CompoundAssign::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Do::visit(Visitor* v)
+    { return v->visit(this); }
+
     any BareExpression::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any If::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any While::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any For::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any With::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Break::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Continue::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any NamedArgument::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Call::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Arguments::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Condition::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Def::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any GenericDef::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Return::visit(Visitor* v)
+    { return v->visit(this); }
+    
+    any Extern::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Array::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any List::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Tuple::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Structure::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Program::visit(Visitor* v)
+    { return v->visit(this); }
+    
+    any Module::visit(Visitor* v)
     { return v->visit(this); }
 }}

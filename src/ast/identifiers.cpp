@@ -10,7 +10,7 @@ namespace rhea { namespace ast {
         std::for_each(ns.begin(), ns.end(),
             [this] (const std::string& elem)
             {
-                this->m_children.emplace_back(std::move(std::make_unique<Identifier>(elem)));
+                this->children.emplace_back(std::move(std::make_unique<Identifier>(elem)));
             }
         );
     }
@@ -18,7 +18,7 @@ namespace rhea { namespace ast {
     // Create a FullyQualified node from a vector of Identifier nodes
     FullyQualified::FullyQualified(child_vector<Identifier>& ns)
     {
-        std::move(ns.begin(), ns.end(), std::back_inserter(m_children));
+        std::move(ns.begin(), ns.end(), std::back_inserter(children));
     }
 
     // Serialize a FullyQualified node
@@ -27,9 +27,9 @@ namespace rhea { namespace ast {
         // The child identifiers always follow the node's name.
         // We can use this to simplify the logic.
         std::string s;
-        s.reserve(m_children.size()*16);    // profile this to find a nice default
+        s.reserve(children.size()*16);    // profile this to find a nice default
 
-        for (auto&& id : m_children)
+        for (auto&& id : children)
         {
             s += ',';
             s += id->name;

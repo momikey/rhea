@@ -27,4 +27,16 @@ namespace rhea { namespace ast {
         
         // return types::UnknownType();
     }
+
+    types::TypeInfo Member::expression_type()
+    {
+        // TODO
+        throw unimplemented_type("TODO: Implement expression type for this AST node");
+    }
+
+    types::TypeInfo Subscript::expression_type()
+    {
+        // TODO
+        throw unimplemented_type("TODO: Implement expression type for this AST node");
+    }
 }}

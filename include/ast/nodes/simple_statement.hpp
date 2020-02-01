@@ -37,10 +37,10 @@ namespace rhea { namespace ast {
         public:
         Block(child_vector<Statement>& ss);
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
 
-        private:
-        child_vector<Statement> m_children;
+        child_vector<Statement> children;
     };
 
     // Not all operators are available for use in compound assignments.
@@ -72,6 +72,7 @@ namespace rhea { namespace ast {
         const expression_ptr lhs;
         const expression_ptr rhs;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Assign,{0},{1})", lhs->to_string(), rhs->to_string()); }
     };
@@ -88,6 +89,7 @@ namespace rhea { namespace ast {
         const AssignOperator op;
         const expression_ptr rhs;
 
+        util::any visit(visitor::Visitor* v) override;
         // Note reordering of members in the string representation.
         // String version is (LHS, RHS, OP).
         std::string to_string() override
@@ -157,6 +159,7 @@ namespace rhea { namespace ast {
 
         const expression_ptr expression;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return fmt::format("(Do,{0})", expression->to_string()); }
     };
 }}

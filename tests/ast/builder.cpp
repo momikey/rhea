@@ -537,7 +537,7 @@ namespace {
         auto node = ast::internal::create_statement_node(tree->children.front().get());
 
         BOOST_TEST_MESSAGE((node->position));
-        BOOST_TEST((node->to_string() == "(Def,0,f,null,null,null,(Conditions),(Block,(Return,(Boolean,true))))"));
+        BOOST_TEST((node->to_string() == "(Def,0,f,null,null,(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_basic_function_def_return_type)
@@ -553,7 +553,7 @@ namespace {
 
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() ==
-            "(Def,0,f,null,(Typename,(Identifier,boolean),null,null),null,(Conditions),(Block,(Return,(Boolean,true))))"));
+            "(Def,0,f,(Typename,(Identifier,boolean),null,null),null,(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_basic_function_def_with_args)
@@ -570,7 +570,7 @@ namespace {
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() ==
-            "(Def,0,f,null,null,(Arguments,(TypePair,t,(Typename,(Identifier,T),null,null))),(Conditions),(Block,(Return,(Boolean,true))))"));
+            "(Def,0,f,null,(Arguments,(TypePair,t,(Typename,(Identifier,T),null,null))),(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_simple_program_definition)
@@ -587,7 +587,7 @@ namespace {
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() ==
-            "(Program,(Def,0,main,null,null,null,(Conditions),(Block,(Return,(Boolean,true)))))"));
+            "(Program,(Def,0,main,null,null,(Conditions),(Block,(Return,(Boolean,true)))))"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()

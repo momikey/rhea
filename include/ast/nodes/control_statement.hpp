@@ -28,6 +28,7 @@ namespace rhea { namespace ast {
         const statement_ptr then_case;
         const statement_ptr else_case;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return fmt::format("(If,{0},{1},{2})", condition->to_string(),
             then_case != nullptr ? then_case->to_string() : "null",
             else_case != nullptr ? else_case->to_string() : "null"); }
@@ -43,6 +44,7 @@ namespace rhea { namespace ast {
         const expression_ptr condition;
         const statement_ptr body;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(While,{0},{1})", condition->to_string(), body->to_string()); }
     };
@@ -60,6 +62,7 @@ namespace rhea { namespace ast {
         const expression_ptr range;
         const statement_ptr body;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(For,{0},{1},{2})", index, range->to_string(), body->to_string()); }
     };
@@ -67,6 +70,8 @@ namespace rhea { namespace ast {
     // With statement. This creates a new scope, prepopulating it with
     // an arbitrary number of default-initialized variables. From the AST's
     // perspective, that's just a bunch of type pairs.
+    // TODO: Change the semantics of `with` to take one or more predicates
+    // (in a list) that are used as loop/scope invariants.
     class With : public Statement
     {
         public:
@@ -75,8 +80,8 @@ namespace rhea { namespace ast {
         const statement_ptr body;
         child_vector<TypePair> declarations;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
-
     };
 
     // Break and continue are relatively easy (and very similar).
@@ -85,6 +90,7 @@ namespace rhea { namespace ast {
         public:
         Break() {}
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return "(Break)"; }
     };
 
@@ -93,6 +99,7 @@ namespace rhea { namespace ast {
         public:
         Continue() {}
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() { return "(Continue)"; }
     };
 }}

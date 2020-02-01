@@ -72,15 +72,58 @@ namespace rhea { namespace visitor {
         Symbol,
         Nothing,
         Identifier,
+        FullyQualified,
+        RelativeIdentifier,
 
         BinaryOp,
         UnaryOp,
         TernaryOp,
+        Member,
+        Subscript,
+
+        GenericTypename,
+        Typename,
+        Variant,
+        Optional,
+        Cast,
+        TypeCheck,
+        Alias,
+        SymbolList,
+        Enum,
+        TypePair,
 
         BareExpression,
+        If,
+        While,
+        For,
+        With,
+        Break,
+        Continue,
+
+        NamedArgument,
+        Call,
+        Arguments,
+        Condition,
+        Def,
+        GenericDef,
+        Return,
+        Extern,
+
+        Block,
+        Assign,
+        CompoundAssign,
         TypeDeclaration,
         Variable,
-        Constant
+        Constant,
+        Do,
+        
+        Array,
+        List,
+        Tuple,
+        Structure,
+
+        Program,
+        Module
         /* All AST classes */
     >
     {};

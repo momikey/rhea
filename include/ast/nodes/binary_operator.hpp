@@ -74,6 +74,8 @@ namespace rhea { namespace ast {
         const std::unique_ptr<Identifier> member;
         const expression_ptr object;
 
+        types::TypeInfo expression_type() override;
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Member,{0},{1})", member->to_string(), object->to_string()); }
     };
@@ -88,6 +90,8 @@ namespace rhea { namespace ast {
         const expression_ptr container;
         const expression_ptr index;
 
+        types::TypeInfo expression_type() override;
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Subscript,{0},{1})", container->to_string(), index->to_string()); }
     };

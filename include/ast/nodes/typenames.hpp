@@ -23,10 +23,10 @@ namespace rhea { namespace ast {
         public:
         GenericTypename(child_vector<Typename>& c);
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
 
-        private:
-        child_vector<Typename> m_children;
+        child_vector<Typename> children;
     };
 
     // Base class for type names
@@ -53,6 +53,7 @@ namespace rhea { namespace ast {
         const std::unique_ptr<GenericTypename> generic_part;
         const expression_ptr array_part;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Typename,{0},{1},{2})",
                 name->to_string(),
@@ -68,10 +69,10 @@ namespace rhea { namespace ast {
         public:
         Variant(child_vector<Typename>& ts);
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
 
-        private:
-        child_vector<Typename> m_children;
+        child_vector<Typename> children;
     };
 
     // An optional has only one possible type (besides nothing, which is implied).
@@ -82,6 +83,7 @@ namespace rhea { namespace ast {
 
         const std::unique_ptr<Typename> type;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Optional,{0})", type->to_string()); }
     };
@@ -98,6 +100,7 @@ namespace rhea { namespace ast {
         const expression_ptr left;
         const std::unique_ptr<Typename> right;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Cast,{0},{1})", left->to_string(), right->to_string()); }
     };
@@ -112,6 +115,7 @@ namespace rhea { namespace ast {
         const expression_ptr left;
         const std::unique_ptr<Typename> right;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(TypeCheck,{0},{1})", left->to_string(), right->to_string()); }
     };
@@ -128,6 +132,7 @@ namespace rhea { namespace ast {
         const std::unique_ptr<Identifier> alias;
         const std::unique_ptr<AnyIdentifier> original;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Alias,{0},{1})", alias->to_string(), original->to_string()); }
     };
@@ -143,6 +148,7 @@ namespace rhea { namespace ast {
 
         child_vector<Symbol> symbols;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
     };
 
@@ -158,6 +164,7 @@ namespace rhea { namespace ast {
         const std::unique_ptr<Identifier> name;
         const std::unique_ptr<SymbolList> values;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Enum,{0},{1})", name->to_string(), values->to_string()); }
     };
@@ -177,6 +184,7 @@ namespace rhea { namespace ast {
         std::string name;
         std::unique_ptr<Typename> value;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(TypePair,{0},{1})", name, value->to_string()); }
     };

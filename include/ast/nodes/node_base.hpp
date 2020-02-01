@@ -63,7 +63,8 @@ namespace rhea { namespace ast {
         // TODO: Some statements can declare symbols. If we make a quick
         // pass through some levels of the AST, we can pick these out,
         // which saves us from having to forward declare as in C/C++.
-        // virtual <SomeScopeType>& declare(<SomeScopeType>& scope) = 0;
+        // (We can implement this as a second visitor pass, done before
+        // the "main" one.)
     };
 
     // A lot of nodes need to store lists of children. These will

@@ -23,6 +23,7 @@ namespace rhea { namespace ast {
         const std::string name;
         const expression_ptr value;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(NamedArgument,{0},{1})", name, value->to_string()); }
     };
@@ -44,6 +45,7 @@ namespace rhea { namespace ast {
         const expression_ptr target;
         std::vector<function_argument> arguments;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
     };
 
@@ -60,6 +62,7 @@ namespace rhea { namespace ast {
 
         child_vector<TypePair> arguments;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
     };
 
@@ -73,6 +76,7 @@ namespace rhea { namespace ast {
         const std::string target;
         const expression_ptr predicate;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Condition,{0},{1}", target, predicate->to_string()); }
     };
@@ -93,19 +97,43 @@ namespace rhea { namespace ast {
         public:
         // Full function definition
         // TODO: Add simpler constructors that delegate to this one.
-        Def(FunctionType t, std::string n, std::unique_ptr<TypePair> gt,
-            std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition>& cs,
-            statement_ptr b);
+        Def(FunctionType t, std::string n, std::unique_ptr<Typename> rt,
+            std::unique_ptr<Arguments> al, child_vector<Condition>& cs, statement_ptr b);
 
         const FunctionType type;
         const std::string name;
         // TODO: Change this to variant of type pair and concept match.
-        const std::unique_ptr<TypePair> generic_type;
+        // const std::unique_ptr<TypePair> generic_type;
         const std::unique_ptr<Typename> return_type;
         const std::unique_ptr<Arguments> arguments_list;
         child_vector<Condition> conditions;
         const statement_ptr body;
 
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
+    };
+
+    // AST for generic function definitions. This is a separate node type because
+    // a generic function definition doesn't actually contribute to codegen unless
+    // it's instantiated, whereas a "concrete" definition *does*.
+    class GenericDef : public Def
+    {
+        public:
+        GenericDef(FunctionType t, std::string n, std::unique_ptr<TypePair> gt,
+            std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition>& cs,
+            statement_ptr b) : Def(
+                t,
+                n,
+                std::move(rt),
+                std::move(al),
+                cs,
+                std::move(b)),
+            generic_type(std::move(gt)) {}
+
+        // TODO: Change this to variant of type pair and concept match.
+        const std::unique_ptr<TypePair> generic_type;
+
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
     };
 
@@ -118,6 +146,7 @@ namespace rhea { namespace ast {
 
         const expression_ptr value;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return fmt::format("(Return,{0})", value->to_string()); }
     };
 
@@ -131,6 +160,7 @@ namespace rhea { namespace ast {
 
         const std::string name;
 
+        util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return fmt::format("(Extern,{0})", name); }
     };
 }}
