@@ -512,7 +512,7 @@ namespace rhea { namespace codegen {
                     if (as_simple->type == BasicType::Boolean)
                     {
                         // Again, no builtin "not" instruction for LLVM IR
-                        ret = generator->builder.CreateXor(
+                        ret = generator->builder.CreateSub(
                             llvm::ConstantInt::getTrue(generator->context),
                             operand,
                             "nottmp"
