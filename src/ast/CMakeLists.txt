@@ -6,6 +6,7 @@ set(AST_SOURCES
     simple_statement.cpp
     control_statement.cpp
     structure_type.cpp
+    exception.cpp
     typenames.cpp
     module.cpp
     builder.cpp

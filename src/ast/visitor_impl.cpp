@@ -209,6 +209,15 @@ namespace rhea { namespace ast {
     any Structure::visit(Visitor* v)
     { return v->visit(this); }
 
+    any Try::visit(Visitor* v)
+    { return v->visit(this); }
+    any Catch::visit(Visitor* v)
+    { return v->visit(this); }
+    any Throw::visit(Visitor* v)
+    { return v->visit(this); }
+    any Finally::visit(Visitor* v)
+    { return v->visit(this); }
+
     any Program::visit(Visitor* v)
     { return v->visit(this); }
     

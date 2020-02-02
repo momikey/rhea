@@ -6,6 +6,7 @@ set(TESTS_AST_SOURCES
     simple_statement.cpp
     structure_type.cpp
     control_statement.cpp
+    exception.cpp
     typenames.cpp
     function.cpp
     module.cpp

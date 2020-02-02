@@ -90,6 +90,10 @@ namespace rhea { namespace visitor {
         virtual any visit(DictionaryEntry* n) = 0;
         virtual any visit(Dictionary* n) = 0;
         virtual any visit(Structure* n) = 0;
+        virtual any visit(Try* n) = 0;
+        virtual any visit(Catch* n) = 0;
+        virtual any visit(Throw* n) = 0;
+        virtual any visit(Finally* n) = 0;
 
         virtual any visit(Program* n) = 0;
         virtual any visit(Module* n) = 0;

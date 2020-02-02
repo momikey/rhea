@@ -25,15 +25,15 @@
     floating_point_number
 --symbol_name
     identifier
-named_argument_list
+--named_argument_list
     named_argument +
-unnamed_argument_list
+--unnamed_argument_list
     <expression> +
-empty_argument_list
-dictionary_entry
+--empty_argument_list
+--dictionary_entry
     integer_literal | string_literal | symbol_name
     <expression>
-dictionary_expression
+--dictionary_expression
     dictionary_entry +
 --tuple_expression
     <expression> +
@@ -177,18 +177,18 @@ match_type_statement
 --type_alias
     identifier          ; alias
     <any_identifier>    ; original
-try_statement
+--try_statement
     <stmt_or_block>     ; body
     catch_statement *   ; catch clauses
     finally_statement ? ; finally clause
-catch_statement
+--catch_statement
     type_pair
         identifier      ; exception name
         <type_name>     ; exception type
     <stmt_or_block>     ; catch body
-throw_statement
+--throw_statement
     <expression>
-finally_statement
+--finally_statement
     <stmt_or_block>
 --break_statement
 --continue_statement

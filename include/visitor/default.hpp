@@ -124,6 +124,11 @@ namespace rhea { namespace visitor {
         Dictionary,
         Structure,
 
+        Try,
+        Catch,
+        Throw,
+        Finally,
+
         Program,
         Module
         /* All AST classes */
