@@ -9,6 +9,7 @@
 #include "identifiers.hpp"
 #include "literals.hpp"
 #include "typenames.hpp"
+#include "../../util/compat.hpp"
 
 /*
  * AST nodes for types representing data structures. In Rhea,
@@ -22,6 +23,7 @@ namespace rhea { namespace ast {
     class Container : public Expression
     {
         public:
+        Container() = default;
         Container(child_vector<Expression>& es);
 
         child_vector<Expression> items;
@@ -57,6 +59,44 @@ namespace rhea { namespace ast {
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override { return to_string_base("Tuple"); }
+    };
+
+    // Dictionary entry AST. This pretty much requires a variant, because
+    // it can be an integer or string literal *or* a symbol.
+    using DictionaryKey = util::variant<
+        std::unique_ptr<Integer>,
+        std::unique_ptr<Byte>,
+        std::unique_ptr<Long>,
+        std::unique_ptr<UnsignedInteger>,
+        std::unique_ptr<UnsignedByte>,
+        std::unique_ptr<UnsignedLong>,
+        std::unique_ptr<String>,
+        std::unique_ptr<Symbol>
+    >;
+    
+    class DictionaryEntry : public ASTNode
+    {
+        public:
+        template <typename Key>
+        DictionaryEntry(Key k, expression_ptr e) : key(std::move(k)), value(std::move(e)) {}
+
+        DictionaryKey key;
+        expression_ptr value;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
+    };
+
+    // Dictionary AST. This uses the entry class above.
+    class Dictionary : public Expression
+    {
+        public:
+        Dictionary(child_vector<DictionaryEntry>& es);
+
+        child_vector<DictionaryEntry> items;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
     };
 
     // Structure declaration AST. This uses the TypePair node, defined

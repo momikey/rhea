@@ -87,6 +87,8 @@ namespace rhea { namespace visitor {
         virtual any visit(Array* n) = 0;
         virtual any visit(List* n) = 0;
         virtual any visit(Tuple* n) = 0;
+        virtual any visit(DictionaryEntry* n) = 0;
+        virtual any visit(Dictionary* n) = 0;
         virtual any visit(Structure* n) = 0;
 
         virtual any visit(Program* n) = 0;

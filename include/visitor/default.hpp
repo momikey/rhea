@@ -120,6 +120,8 @@ namespace rhea { namespace visitor {
         Array,
         List,
         Tuple,
+        DictionaryEntry,
+        Dictionary,
         Structure,
 
         Program,

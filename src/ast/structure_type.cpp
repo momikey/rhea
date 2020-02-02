@@ -50,4 +50,32 @@ namespace rhea { namespace ast {
 
         return fmt::format("(Structure,{0}{1})", name->to_string(), s); 
     }
+
+    std::string DictionaryEntry::to_string()
+    {
+        auto ks = util::visit([&](auto const& v) { return v->to_string(); }, key);
+
+        return fmt::format("(DictionaryEntry,{0},{1})", ks, value->to_string());
+    }
+
+    Dictionary::Dictionary(child_vector<DictionaryEntry>& es)
+    {
+        // The usual vector move operation, but we can't inherit it from Container
+        // because of the differing item types.
+        std::move(es.begin(), es.end(), std::back_inserter(items));
+    }
+
+    std::string Dictionary::to_string()
+    {
+        std::string s;
+        s.reserve(items.size()*20);    // profile this to find a nice default
+
+        for (auto&& id : items)
+        {
+            s += ',';
+            s += id->to_string();
+        }
+
+        return fmt::format("(Dictionary{0})", s);
+    }
 }}

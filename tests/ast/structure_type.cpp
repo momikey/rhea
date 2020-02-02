@@ -81,6 +81,44 @@ namespace {
         BOOST_TEST((node->to_string() == result));
     }
 
+    BOOST_AUTO_TEST_CASE (dictionary_entry_ast)
+    {
+        auto key = std::make_unique<ast::Symbol>("foo");
+        auto value = ast::make_expression<ast::Boolean>(true);
+
+        auto node = std::make_unique<ast::DictionaryEntry>(std::move(key), std::move(value));
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+
+        // Boost.Test uses macros, which don't like escaped quotes.
+        const std::string result = "(DictionaryEntry,(Symbol,foo),(Boolean,true))";
+        BOOST_TEST_MESSAGE("Target " << result);
+
+        BOOST_TEST((node->to_string() == result));
+    }
+
+    BOOST_AUTO_TEST_CASE (dictionary_ast)
+    {
+        auto k1 = std::make_unique<ast::Symbol>("foo");
+        auto v1 = ast::make_expression<ast::Boolean>(true);
+
+        auto k2 = std::make_unique<ast::String>("bar");
+        auto v2 = ast::make_expression<ast::Boolean>(false);
+
+        ast::child_vector<ast::DictionaryEntry> entries;
+        entries.push_back(std::move(std::make_unique<ast::DictionaryEntry>(std::move(k1), std::move(v1))));
+        entries.push_back(std::move(std::make_unique<ast::DictionaryEntry>(std::move(k2), std::move(v2))));
+
+        auto node = std::make_unique<ast::Dictionary>(entries);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        // Boost.Test uses macros, which don't like escaped quotes.
+        const std::string result = "(Dictionary,(DictionaryEntry,(Symbol,foo),(Boolean,true)),(DictionaryEntry,(String,\"bar\"),(Boolean,false)))";
+        BOOST_TEST_MESSAGE("Target " << result);
+
+        BOOST_TEST((node->to_string() == result));
+    }
+
     BOOST_AUTO_TEST_CASE (structure_declaration_ast)
     {
         std::vector<std::string> ns = { "foo", "bar" };

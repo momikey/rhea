@@ -200,6 +200,12 @@ namespace rhea { namespace ast {
     any Tuple::visit(Visitor* v)
     { return v->visit(this); }
 
+    any DictionaryEntry::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Dictionary::visit(Visitor* v)
+    { return v->visit(this); }
+
     any Structure::visit(Visitor* v)
     { return v->visit(this); }
 
