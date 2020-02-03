@@ -143,27 +143,27 @@
     <stmt_or_block>
 --with_declaration
     declaration_as_type
-on_case
+--on_case
     <constant_expression>   ; case
     <stmt_or_block>         ; body
-predicate_call
+--predicate_call
     <any_identifier>        ; name without "?"
     <expression> *          ; arguments
-when_case
+--when_case
     predicate_call          ; case
     <stmt_or_block>         ; body
-default_case
+--default_case
     <stmt_or_block>
-type_case
+--type_case
     type_assertion          ; redundant?
         <type_name>
-match_on_statement
+--match_on_statement
     <expression>
     on_case *
-match_when_statement
+--match_when_statement
     <expression>
     when_case *
-match_type_statement
+--match_type_statement
     <expression>
     type_case *
 --enum_declaration

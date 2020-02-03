@@ -67,6 +67,23 @@ namespace rhea { namespace ast {
             { return fmt::format("(For,{0},{1},{2})", index, range->to_string(), body->to_string()); }
     };
 
+    // Helper node class for calls to predicates. These are slightly different from
+    // regular function calls, as some of them can be evaluated at compile time,
+    // and all involve only functions defined as predicates.
+    class PredicateCall : public Expression
+    {
+        public:
+        PredicateCall(expression_ptr t, child_vector<Expression>& as);
+
+        expression_ptr target;
+        child_vector<Expression> arguments;
+        
+        types::TypeInfo expression_type() override 
+            { return types::SimpleType(types::BasicType::Boolean); }
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string();
+    };
+
     // With statement. This creates a new scope, prepopulating it with
     // an arbitrary number of default-initialized variables. From the AST's
     // perspective, that's just a bunch of type pairs.
@@ -100,7 +117,82 @@ namespace rhea { namespace ast {
         Continue() {}
 
         util::any visit(visitor::Visitor* v) override;
-        std::string to_string() { return "(Continue)"; }
+        std::string to_string() override { return "(Continue)"; }
+    };
+
+    // The `match` statement needs a lot of helper nodes, so here they are.
+
+    // Base class for all the different case types.
+    class Case : public ASTNode {};
+
+    // "On" cases are like traditional C-style switch cases, but they can be
+    // any constant expression.
+    class On : public Case
+    {
+        public:
+        On(expression_ptr c, statement_ptr b) : case_expr(std::move(c)), body(std::move(b)) {}
+
+        expression_ptr case_expr;
+        statement_ptr body;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override
+            { return fmt::format("(On,{0},{1})", case_expr->to_string(), body->to_string()); }
+    };
+
+    // "When" cases are predicate-based.
+    class When : public Case
+    {
+        public:
+        When(std::unique_ptr<PredicateCall> p, statement_ptr b)
+            : predicate(std::move(p)), body(std::move(b)) {}
+
+        std::unique_ptr<PredicateCall> predicate;
+        statement_ptr body;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override
+            { return fmt::format("(When,{0},{1})", predicate->to_string(), body->to_string()); }
+    };
+
+    // "Type" cases are always type assertions or concept checks.
+    class TypeCase : public Case
+    {
+        public:
+        TypeCase(std::unique_ptr<Typename> tn) : type_name(std::move(tn)) {}
+
+        std::unique_ptr<Typename> type_name;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override
+            { return fmt::format("(TypeCase,{0})", type_name->to_string()); }
+    };
+
+    // The default case works just like in C/C++.
+    class Default : public Case
+    {
+        public:
+        Default(statement_ptr b) : body(std::move(b)) {}
+
+        statement_ptr body;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override
+            { return fmt::format("(Default,{0})", body->to_string()); }
+    };
+
+    // The `match` statement, which can have multiple `on`, `when`, or `type`
+    // cases, but can't mix them. Also, we can have at most one `default`.
+    class Match : public Statement
+    {
+        public:
+        Match(expression_ptr e, child_vector<Case>& cs);
+
+        expression_ptr expression;
+        child_vector<Case> cases;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
     };
 }}
 

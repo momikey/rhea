@@ -167,6 +167,24 @@ namespace rhea { namespace ast {
     any Continue::visit(Visitor* v)
     { return v->visit(this); }
 
+    any Match::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any On::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any When::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any TypeCase::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Default::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any PredicateCall::visit(Visitor* v)
+    { return v->visit(this); }
+
     any NamedArgument::visit(Visitor* v)
     { return v->visit(this); }
 
@@ -211,10 +229,13 @@ namespace rhea { namespace ast {
 
     any Try::visit(Visitor* v)
     { return v->visit(this); }
+
     any Catch::visit(Visitor* v)
     { return v->visit(this); }
+
     any Throw::visit(Visitor* v)
     { return v->visit(this); }
+
     any Finally::visit(Visitor* v)
     { return v->visit(this); }
 

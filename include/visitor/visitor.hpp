@@ -69,6 +69,12 @@ namespace rhea { namespace visitor {
         virtual any visit(With*) = 0;
         virtual any visit(Break*) = 0;
         virtual any visit(Continue*) = 0;
+        virtual any visit(Match*) = 0;
+        virtual any visit(On*) = 0;
+        virtual any visit(When*) = 0;
+        virtual any visit(TypeCase*) = 0;
+        virtual any visit(Default*) = 0;
+        virtual any visit(PredicateCall*) = 0;
         virtual any visit(NamedArgument*) = 0;
         virtual any visit(Call*) = 0;
         virtual any visit(Arguments*) = 0;

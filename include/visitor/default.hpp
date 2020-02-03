@@ -99,7 +99,12 @@ namespace rhea { namespace visitor {
         With,
         Break,
         Continue,
-
+        Match,
+        On,
+        When,
+        TypeCase,
+        Default,
+        PredicateCall,
         NamedArgument,
         Call,
         Arguments,
