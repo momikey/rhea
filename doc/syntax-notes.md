@@ -266,7 +266,39 @@ Rhea does not have a "do-while" or "until" loop.
 
 The `break` and `continue` statements can be used for finer flow control. {TBD: Example.}
 
-## With (block scoping statement)
+## With (invariant declaration)
+
+The `with` keyword defines a new scope with any number of *invariants*. These are predicates that will be evaluated at the beginning of the scope's execution. If the predicates do not hold, an error will be raised in debug mode, while an exception will be thrown in other modes.
+
+Preconditions can be combined with constructs such as `for` and `while` for natural syntax:
+
+```
+	# Sum of reciprocals (a contrived example, but useful)
+
+	var total = 0.0;
+
+	# Before each iteration of the loop, `x` will be checked.
+	for x in list_of_numbers with (x.nonzero?)
+	{
+		total += 1.0 / x;
+	}
+```
+
+Postconditions are a little different, in that they go inside the loop. Idiomatically, one possible syntax uses an empty statement block, as so:
+
+```
+	# Read through a list, acting on each value, but error on a null result.
+	for value in list_of_optionals
+	{
+		var result = do_something_with(value);
+		
+		with (result.not_nothing?) {}
+	}
+```
+
+Functions can also take a `with` block, but theirs works in a different manner, as you'll see below.
+
+### Old
 
 The `with` keyword introduces a new scope with any number of temporary variables. These are uninitialized (rather, default-initialized for their type), and are inaccessible outside the scope.
 

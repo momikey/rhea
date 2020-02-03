@@ -2,4 +2,5 @@
 build/
 .directory
 *~
+*.swo
 *.swp
