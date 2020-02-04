@@ -73,10 +73,14 @@ namespace {
         "do some_function # without parens"
     };
 
+    // std::string with_statement_samples[] = {
+    //     "with (s as string) {}",
+    //     "with (s as string, b as byte) {}",
+    //     "with n as integer n = 42;"
+    // };
     std::string with_statement_samples[] = {
-        "with (s as string) {}",
-        "with (s as string, b as byte) {}",
-        "with n as integer n = 42;"
+        "with (s.not_empty?) {}",
+        "with (a.nonzero?, b.nonzero?) { c = a * b; }"
     };
 
     std::string on_case_samples[] = {

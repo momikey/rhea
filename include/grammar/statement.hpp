@@ -154,14 +154,36 @@ namespace rhea { namespace grammar {
         expression
     > {};
 
-    struct with_declaration :  if_must_else <
-        one <'('>,
-        seq <
-            list <declaration_as_type, one <','>, ignored>,
+    // A call to a predicate function, with optional arguments
+    struct predicate_call : seq <
+        any_identifier,
+        separator,
+        opt <
+            one <'.'>,
+            identifier,
+            separator
+        >,
+        opt_must <
+            seq <
+                one <'('>,
+                opt <
+                    pad <expression_list, ignored>
+                >
+            >,
             one <')'>
         >,
-        declaration_as_type
+        separator,
+        one <'?'>
     > {};
+
+    // "New" with-statement: defines loop or block invariants
+    struct with_declaration : if_must <
+        one <'('>,
+        seq <
+            list <predicate_call, one <','>, ignored>,
+            one <')'>
+        >
+    >{};
 
     struct with_statement : seq <
         kw_with,
@@ -176,23 +198,6 @@ namespace rhea { namespace grammar {
         constant_expression,
         pad <one <':'>, ignored>,
         stmt_or_block
-    > {};
-
-    // A call to a predicate function, with optional arguments
-    struct predicate_call : seq <
-        any_identifier,
-        separator,
-        opt_must <
-            seq <
-                one <'('>,
-                opt <
-                    pad <expression_list, ignored>
-                >
-            >,
-            one <')'>
-        >,
-        separator,
-        one <'?'>
     > {};
 
     // A single case in a match-when statement
