@@ -154,24 +154,20 @@ namespace rhea { namespace grammar {
         expression
     > {};
 
+    // Forward declaration for predicate arguments (definition is with function stuff below)
+    struct predicate_arguments_list;
     // A call to a predicate function, with optional arguments
+
     struct predicate_call : seq <
         any_identifier,
         separator,
         opt <
-            one <'.'>,
-            identifier,
-            separator
+            member_expr
+            // one <'.'>,
+            // identifier,
+            // separator
         >,
-        opt_must <
-            seq <
-                one <'('>,
-                opt <
-                    pad <expression_list, ignored>
-                >
-            >,
-            one <')'>
-        >,
+        opt <predicate_arguments_list>,
         separator,
         one <'?'>
     > {};

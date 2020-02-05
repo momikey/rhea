@@ -84,18 +84,15 @@ namespace rhea { namespace ast {
         std::string to_string();
     };
 
-    // With statement. This creates a new scope, prepopulating it with
-    // an arbitrary number of default-initialized variables. From the AST's
-    // perspective, that's just a bunch of type pairs.
-    // TODO: Change the semantics of `with` to take one or more predicates
+    // With statement. This takes one or more predicates
     // (in a list) that are used as loop/scope invariants.
     class With : public Statement
     {
         public:
-        With(child_vector<TypePair>& ds, statement_ptr b);
+        With(child_vector<PredicateCall>& ds, statement_ptr b);
 
         const statement_ptr body;
-        child_vector<TypePair> declarations;
+        child_vector<PredicateCall> predicates;
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;

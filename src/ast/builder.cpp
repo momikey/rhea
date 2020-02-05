@@ -110,6 +110,65 @@ namespace rhea { namespace ast {
             );
         }
 
+        // Builder helper for predicate calls
+        std::unique_ptr<PredicateCall> create_predicate_call(parser_node* node)
+        {
+            // Just in case we get passed the wrong node type.
+            assert(node->is<gr::predicate_call>());
+
+            // Predicate calls have an interesting concrete/abstract change, in that
+            // they have to account for the usual "method call" syntax of Rhea, but
+            // in a slightly different way.
+            //
+            // The first child will always end up as an argument, unless it's the only one.
+            child_vector<Expression> arguments;
+
+            // The target is the function to be called. It will usually be the RHS
+            // of a member expression, as with other Rhea method calls.
+            expression_ptr target;
+
+            if (node->children.size() > 1)
+            {
+                // The target will be wrapped in a member_expr node as the second child
+                // unless the call is of the form `x(arg1, arg2)?`, in which case the first
+                // child is the target instead.
+                auto& second_child = node->children.at(1);
+                if (second_child->is<gr::member_expr>())
+                {
+                    arguments.emplace_back(std::move(create_expression_node(node->children.at(0).get())));
+
+                    target = std::move(create_expression_node(second_child->children.front().get()));
+                }
+                else
+                {
+                    target = std::move(create_expression_node(node->children.at(0).get()));
+                }
+
+                // The argument list comes last, and we have to add it to the first child.
+                auto& last_child = node->children.at(node->children.size() - 1);
+                if (last_child->is<gr::predicate_arguments_list>())
+                {
+                    auto& ch = last_child->children;
+                    std::for_each(ch.begin(), ch.end(), 
+                        [&](std::unique_ptr<parser_node>& el)
+                        { arguments.emplace_back(std::move(create_expression_node(el.get()))); }
+                    );
+                }
+            }
+            else
+            {
+                // In the case that we only have one child, it's the target, and
+                // there are no arguments.
+                target = std::move(create_expression_node(node->children.at(0).get()));
+            }
+
+            // TODO
+            return std::make_unique<PredicateCall>(
+                std::move(target),
+                arguments
+            );
+        }
+
         // Builder helper for function definitions.
         // Note that this takes the type so we don't have to scan through them again.
         statement_ptr create_function_definition(parser_node* node, FunctionType type)
@@ -768,6 +827,22 @@ namespace rhea { namespace ast {
             else if (node->is<gr::kw_continue>())
             {
                 stmt = make_statement<Continue>();
+            }
+
+            // With statement: `with (foo.is_bar?) { do baz; }
+            else if (node->is<gr::with_statement>())
+            {
+                child_vector<PredicateCall> predicates;
+                auto& ch = node->children.at(0)->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { predicates.emplace_back(std::move(create_predicate_call(el.get()))); }
+                );
+
+                stmt = make_statement<With>(
+                    predicates,
+                    std::move(create_statement_node(node->children.at(1).get()))
+                );
             }
 
             // Function definitions, of various kinds. The inner logic is handled
