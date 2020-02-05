@@ -156,13 +156,15 @@ namespace rhea { namespace ast {
     class TypeCase : public Case
     {
         public:
-        TypeCase(std::unique_ptr<Typename> tn) : type_name(std::move(tn)) {}
+        TypeCase(std::unique_ptr<Typename> tn, statement_ptr b)
+         : type_name(std::move(tn)), body(std::move(b)) {}
 
         std::unique_ptr<Typename> type_name;
+        statement_ptr body;
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
-            { return fmt::format("(TypeCase,{0})", type_name->to_string()); }
+            { return fmt::format("(TypeCase,{0},{1})", type_name->to_string(), body->to_string()); }
     };
 
     // The default case works just like in C/C++.

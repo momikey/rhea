@@ -65,6 +65,7 @@ namespace rhea { namespace ast {
 
             else
             {
+                // TODO: Handle complex typenames
                 throw unimplemented_type(node->name());
             }
 
@@ -162,11 +163,57 @@ namespace rhea { namespace ast {
                 target = std::move(create_expression_node(node->children.at(0).get()));
             }
 
-            // TODO
             return std::make_unique<PredicateCall>(
                 std::move(target),
                 arguments
             );
+        }
+
+        // Builder helper for case-match constructs.
+        // These come in four different types: on, when, type, and default.
+        std::unique_ptr<Case> create_case_node(parser_node* node)
+        {
+            std::unique_ptr<Case> result;
+
+            if (node->is<gr::default_case>())
+            {
+                // Default case is easy, as it just carries a statement as its only child.
+                result = std::make_unique<Default>(
+                    std::move(create_statement_node(node->children.at(0).get()))
+                );
+            }
+            else if (node->is<gr::on_case>())
+            {
+                // On case has a simple constant expression and the body.
+                result = std::make_unique<On>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    std::move(create_statement_node(node->children.at(1).get()))
+                );
+            }
+            else if (node->is<gr::when_case>())
+            {
+                // When case is a predicate call and the body.
+                result = std::make_unique<When>(
+                    std::move(create_predicate_call(node->children.at(0).get())),
+                    std::move(create_statement_node(node->children.at(1).get()))
+                );
+            }
+            else if (node->is<gr::type_case>())
+            {
+                // Type case is a type assertion and the body.
+
+                auto& ta = node->children.front();
+                result = std::make_unique<TypeCase>(
+                    std::move(create_typename_node(ta->children.at(0).get())),
+                    std::move(create_statement_node(node->children.at(1).get()))
+                );
+            }
+            else
+            {
+                throw unimplemented_type("Unknown case type " + node->name());
+            }
+
+            return result;
         }
 
         // Builder helper for function definitions.
@@ -842,6 +889,30 @@ namespace rhea { namespace ast {
                 stmt = make_statement<With>(
                     predicates,
                     std::move(create_statement_node(node->children.at(1).get()))
+                );
+            }
+
+            // Match statement, with different kinds of case
+            else if (
+                node->is<gr::match_on_statement>() ||
+                node->is<gr::match_when_statement>() ||
+                node->is<gr::match_type_statement>()
+            )
+            {
+                // The expression to match against is the first child.
+                auto target = create_expression_node(node->children.at(0).get());
+                
+                // Next is the list of cases.
+                child_vector<Case> cases;
+                auto& ch = node->children;
+                std::for_each(ch.begin()+1, ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { cases.emplace_back(std::move(create_case_node(el.get()))); }
+                );
+
+                stmt = make_statement<Match>(
+                    std::move(target),
+                    cases
                 );
             }
 

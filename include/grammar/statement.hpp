@@ -234,7 +234,7 @@ namespace rhea { namespace grammar {
     struct match_on_statement : seq <
         kw_match,
         separator,
-        any_identifier,
+        expression,
         separator,
         match_block <on_case>
     > {};
@@ -242,7 +242,7 @@ namespace rhea { namespace grammar {
     struct match_when_statement : seq <
         kw_match,
         separator,
-        any_identifier,
+        expression,
         separator,
         match_block <when_case>
     > {};
@@ -250,7 +250,7 @@ namespace rhea { namespace grammar {
     struct match_type_statement : seq <
         kw_match,
         separator,
-        any_identifier,
+        expression,
         separator,
         match_block <type_case>
     > {};
