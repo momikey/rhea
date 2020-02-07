@@ -76,8 +76,14 @@ namespace rhea { namespace codegen {
         // Helper methods
         ////
 
-        // Get the LLVM IR type for a Rhea type
+        // Get the LLVM IR type for a Rhea type.
         llvm::Type* llvm_for_type(types::TypeInfo ti);
+
+        // Push a new declaration and allocation scope.
+        void create_scope(std::string name);
+
+        // Destroy the current scope.
+        void destroy_scope();
 
         private:
         ////

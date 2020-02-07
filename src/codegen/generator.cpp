@@ -92,6 +92,18 @@ namespace rhea { namespace codegen {
         }
     }
 
+    void CodeGenerator::create_scope(std::string name)
+    {
+        scope_manager.push(name);
+        allocation_manager.push(name);
+    }
+
+    void CodeGenerator::destroy_scope()
+    {
+        scope_manager.pop();
+        allocation_manager.pop();
+    }
+
     llvm::Type* CodeGenerator::llvm_for_type(types::TypeInfo ti)
     {
         return util::visit(TypeBuilder{this}, ti);

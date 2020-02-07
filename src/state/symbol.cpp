@@ -9,7 +9,7 @@ namespace rhea { namespace state {
             push();
         }
 
-        m_stack.front().symbol_table[sym.name] = sym;
+        m_stack.back().symbol_table[sym.name] = sym;
     }
 
     bool ScopeManager::is_local(std::string s)
@@ -18,9 +18,9 @@ namespace rhea { namespace state {
         return (local.symbol_table.find(s) != local.symbol_table.end());
     }
 
-    util::optional<std::reference_wrapper<SymbolEntry>> ScopeManager::find(std::string key)
+    SymbolSearchResult ScopeManager::find(std::string key)
     {
-        util::optional<std::reference_wrapper<SymbolEntry>> opt({});
+        SymbolSearchResult opt {};
 
         // We search backwards through the scope stack to find the latest declaration
         // of the desired symbol.
@@ -30,7 +30,7 @@ namespace rhea { namespace state {
 
             if (sym != s->symbol_table.end())
             {
-                opt = sym->second;
+                opt = std::make_pair(std::ref(sym->second), s->name);
                 break;
             }
         }

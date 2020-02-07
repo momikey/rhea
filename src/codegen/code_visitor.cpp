@@ -198,15 +198,17 @@ namespace rhea { namespace codegen {
 
         if (varopt)
         {
-            // Now we can actually unpack the reference.
-            auto var = varopt->get();
+            // Now we can actually unpack the search result.
+            state::SymbolEntry var;
+            std::string scope;
+            std::tie(var, scope) = varopt.value();
 
             switch (var.declaration)
             {
                 case types::DeclarationType::Variable:
                 case types::DeclarationType::Constant:
                 {
-                    if (generator->scope_manager.current().name == "$global")
+                    if (scope == "$global")
                     {
                         // Global variables are accessed differently.
                         auto gvar = generator->module->getGlobalVariable(var.name, true);
@@ -636,6 +638,101 @@ namespace rhea { namespace codegen {
         // }
     }
 
+    any CodeVisitor::visit(Block* n)
+    {
+        // Blocks do not produce IR basic blocks, but they do introduce a new declaration scope.
+        
+        // First get a name for the scope. We create it from the name of the parent IR block.
+        llvm::Function* parent_fn = generator->builder.GetInsertBlock()->getParent();
+        std::string scope_name = parent_fn->getName().str() + "_block";
+        generator->create_scope(scope_name);
+
+        // Blocks have no real return values, but we'll do like a lot of other languages
+        // and keep the value of the last statement in the block.
+        util::any ret;
+
+        // Codegen for the block is easy: loop through all the statements.
+        for (auto& statement : n->children)
+        {
+            ret = statement->visit(this);
+        }
+
+        // Destroy the scope at the end.
+        generator->destroy_scope();
+
+        return ret;
+    }
+
+    any CodeVisitor::visit(If* n)
+    {
+        util::any ret;
+
+        // Get the condition expression as a boolean (no implicit conversion in Rhea)
+        auto cond = util::any_cast<Value*>(n->condition->visit(this));
+        cond = convert_type(generator, cond, n->condition->expression_type(), BasicType::Boolean, false);
+
+        // Create blocks for the cases, then the "merge" block at the end
+        llvm::Function* parent_fn = generator->builder.GetInsertBlock()->getParent();
+
+        llvm::BasicBlock* then_block = llvm::BasicBlock::Create(generator->context, "then", parent_fn);
+        llvm::BasicBlock* else_block = llvm::BasicBlock::Create(generator->context, "else");
+        llvm::BasicBlock* merge_block = llvm::BasicBlock::Create(generator->context, "ifmerge");
+
+        generator->builder.CreateCondBr(cond, then_block, else_block);
+
+        // Codegen for the "then" case
+        generator->builder.SetInsertPoint(then_block);
+
+        // "Unless" statements won't have a then case, and it's possible that
+        // normal ifs won't, either.
+        if (n->then_case != nullptr)
+        {
+            util::any then_result = n->then_case->visit(this);
+            if (then_result.empty())    // Change to !has_value() for C++17 any
+            {
+                // Something went wrong with codegen, but not enough to throw an error
+                return nullptr;
+            }
+
+            ret = then_result;
+        }
+
+        generator->builder.CreateBr(merge_block);
+        // Restore the insert block if the then condition changed it
+        then_block = generator->builder.GetInsertBlock();
+
+        // Now set up for the "else" case
+        parent_fn->getBasicBlockList().push_back(else_block);
+        generator->builder.SetInsertPoint(else_block);
+
+        // Not all ifs will have elses.
+        if (n->else_case != nullptr)
+        {
+            util::any else_result = n->else_case->visit(this);
+            if (else_result.empty())    // Change to !has_value() for C++17 any
+            {
+                // Something went wrong with codegen, but not enough to throw an error
+                return nullptr;
+            }
+
+            ret = else_result;
+        }
+
+        // Same as above...
+        generator->builder.CreateBr(merge_block);
+        // Restore the insert block if the else condition changed it
+        else_block = generator->builder.GetInsertBlock();
+
+        // Now merge the two code paths
+        parent_fn->getBasicBlockList().push_back(merge_block);
+        generator->builder.SetInsertPoint(merge_block);
+
+        // Note that we don't need an explicit Phi node, because Rhea if/else
+        // doesn't return a value.
+
+        return ret;
+    }
+
     any CodeVisitor::visit(TypeDeclaration* n)
     {
         // For a variable declaration (with no initialization), we only have to
@@ -669,6 +766,12 @@ namespace rhea { namespace codegen {
             {
                 // We're in some kind of a block, such as a function definition.
                 llvm::Function* entry = generator->builder.GetInsertBlock()->getParent();
+
+                // if (entry == nullptr)
+                // {
+                //     // This is possibly some kind of top-level block.
+                // }
+
                 auto ai = internal::create_allocation(entry, vname, vtype, generator);
 
                 generator->builder.CreateStore(rhs, ai);

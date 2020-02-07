@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <utility>
+#include <tuple>
 
 #include "../types/declaration.hpp"
 #include "../types/types.hpp"
@@ -30,6 +32,16 @@ namespace rhea { namespace state {
     // The keys are the "in-scope" names of the symbols, while the
     // entries themselves will hold "canonical" names.
     using SymbolTable = std::unordered_map<std::string, SymbolEntry>;
+
+    // This is a helper declaration for the result of a search through
+    // the scope list. It's an optional pair of a symbol entry and the
+    // string name of the scope in which it was found.
+    using SymbolSearchResult = util::optional<
+        std::pair<
+            std::reference_wrapper<SymbolEntry>,
+            std::string
+        >
+    >;
 
     // A scope holds a symbol table and any extra information needed
     // for type-checking and codegen.
@@ -68,7 +80,7 @@ namespace rhea { namespace state {
 
         // Find an entry in the symbol table. If it isn't in the most
         // local scope, then keep trying parent scopes.
-        util::optional<std::reference_wrapper<SymbolEntry>> find(std::string key);
+        SymbolSearchResult find(std::string key);
 
         private:
         // We use a vector rather than a stack here, even though we call
