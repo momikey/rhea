@@ -22,9 +22,9 @@ namespace rhea { namespace types {
 
         type_map["string"]      = SimpleType(BasicType::String, true, true);
         type_map["symbol"]      = SimpleType(BasicType::Symbol, true, true);
-        type_map["any"]         = SimpleType(BasicType::Any, true, true);
 
-        type_map["ulong"]       = NothingType();
+        type_map["any"]         = AnyType();
+        type_map["nothing"]     = NothingType();
     }
 
     bool TypeMapper::add_type_definition(std::string s, TypeInfo ti)

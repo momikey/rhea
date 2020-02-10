@@ -95,5 +95,94 @@ namespace {
         }
     }
 
+    BOOST_AUTO_TEST_CASE (insert_function_type)
+    {
+        BOOST_TEST_MESSAGE("Inserting a function type definitino, taking an integer 'i' and returning nothing");
+
+        auto fn_type = types::FunctionType {
+            { { "i", std::make_shared<types::TypeInfo>(types::SimpleType(types::BasicType::Integer, true, true)) } },
+            std::make_shared<types::TypeInfo>(types::NothingType())
+        };
+
+        auto result = mapper.add_type_definition("f <integer> -> nothing", fn_type);
+
+        if (result)
+        {
+            auto inserted = mapper.get_type_for("f <integer> -> nothing").type();
+            BOOST_TEST((util::get_if<types::FunctionType>(&inserted) != nullptr));
+        }
+        else
+        {
+            // This shouldn't happen
+            throw std::invalid_argument("Mapper did not add new type to map");
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE (insert_optional_type)
+    {
+        BOOST_TEST_MESSAGE("Inserting an optional type holding an integer");
+
+        auto opt_type = types::OptionalType { std::make_shared<types::TypeInfo>(mapper.get_type_for("integer")) };
+
+        auto result = mapper.add_type_definition("integer?", opt_type);
+
+        if (result)
+        {
+            auto inserted = mapper.get_type_for("integer?").type();
+            BOOST_TEST((util::get_if<types::OptionalType>(&inserted) != nullptr));
+        }
+        else
+        {
+            // This shouldn't happen
+            throw std::invalid_argument("Mapper did not add new type to map");
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE (insert_variant_type)
+    {
+        BOOST_TEST_MESSAGE("Inserting a variant over integer and string");
+
+        auto var_type = types::VariantType {{
+            std::make_shared<types::TypeInfo>(mapper.get_type_for("integer")),
+            std::make_shared<types::TypeInfo>(mapper.get_type_for("string"))
+        }};
+
+        auto result = mapper.add_type_definition("|integer, string|", var_type);
+
+        if (result)
+        {
+            auto inserted = mapper.get_type_for("|integer, string|").type();
+            BOOST_TEST((util::get_if<types::VariantType>(&inserted) != nullptr));
+        }
+        else
+        {
+            // This shouldn't happen
+            throw std::invalid_argument("Mapper did not add new type to map");
+        } 
+    }
+
+    BOOST_AUTO_TEST_CASE (insert_structure_type)
+    {
+        BOOST_TEST_MESSAGE("Inserting a structure St with fields i (integer) and s (string)");
+
+        auto struct_type = types::StructureType {{
+            { "i", std::make_shared<types::TypeInfo>(mapper.get_type_for("integer"))},
+            { "s", std::make_shared<types::TypeInfo>(mapper.get_type_for("string"))}
+        }};
+
+        auto result = mapper.add_type_definition("St", struct_type);
+
+        if (result)
+        {
+            auto inserted = mapper.get_type_for("St").type();
+            BOOST_TEST((util::get_if<types::StructureType>(&inserted) != nullptr));
+        }
+        else
+        {
+            // This shouldn't happen
+            throw std::invalid_argument("Mapper did not add new type to map");
+        } 
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

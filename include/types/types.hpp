@@ -2,7 +2,9 @@
 #define RHEA_TYPES_INFO_HPP
 
 #include <map>
+#include <vector>
 #include <string>
+#include <memory>
 
 #include "../util/compat.hpp"
 
@@ -37,13 +39,14 @@ namespace rhea { namespace types {
 
     // Forward definition for our main type info container class
     struct TypeInfo;
+    bool compatible(TypeInfo& lhs, TypeInfo& rhs);
 
     // An unknown type, which can go anywhere, but can't be compared. It's
     // basically a NULL type.
     struct UnknownType
     {
         template <typename T>
-        bool is_compatible(T other) { return false; }
+        bool is_compatible(T& other) { return false; }
     };
 
     // Simple types are those of literals, such as integers, doubles, strings, etc.
@@ -57,7 +60,7 @@ namespace rhea { namespace types {
         bool is_integral;
 
         template <typename T>
-        bool is_compatible(T other) { return false; }
+        bool is_compatible(T& other) { return false; }
     };
 
     // The nothing type is special, because it can't be converted to/from, but it can
@@ -65,27 +68,67 @@ namespace rhea { namespace types {
     struct NothingType
     {
         template <typename T>
-        bool is_compatible(T other) { return false; }
+        bool is_compatible(T& other) { return false; }
     };
 
-    ////
-    // Specializations for type classes
-    ////
+    // Function types need a map of strings to argument types, plus a return type.
+    struct FunctionType
+    {
+        // We have to use pointers here because of the circular dependency. Using shared
+        // instead of unique pointers lets us avoid a lot of messy move stuff that would
+        // require some serious rewriting throughout the compiler.
+        std::map<std::string, std::shared_ptr<TypeInfo>> argument_types;
+        std::shared_ptr<TypeInfo> return_type;
 
-    // Scalar types are only compatible with themselves. (We can do things like promotion
-    // elsewhere in the compiler.)
-    template <>
-    inline bool SimpleType::is_compatible(SimpleType other) { return type == other.type; }
+        template <typename T>
+        bool is_compatible(T& other) { return false; }
+    };
 
-    // The nothing type is only compatible with itself.
-    template <>
-    inline bool NothingType::is_compatible(NothingType other) { return true; }
+    // An optional type just needs the contained type.
+    struct OptionalType
+    {
+        std::shared_ptr<TypeInfo> contained_type;
+
+        template <typename T>
+        bool is_compatible(T& other);
+    };
+
+    // A variant needs multiple types.
+    struct VariantType
+    {
+        std::vector<std::shared_ptr<TypeInfo>> types;
+
+        template <typename T>
+        bool is_compatible(T& other) { return false; }
+    };
+
+    // A structure keeps a map of strings to field types.
+    struct StructureType
+    {
+        std::map<std::string, std::shared_ptr<TypeInfo>> fields;
+
+        template <typename T>
+        bool is_compatible(T& other) { return false; }
+    };
+
+    // The "any" type can hold anything, but what it actually holds is an implemenation detail.
+    struct AnyType
+    {
+        // Any is technically compatible with any other type, but only if it's the LHS.
+        template <typename T>
+        bool is_compatible(T& other) { return true; }
+    };
 
     // The "base" for all types. This is a variant covering all defined structs.
     using TypeInfoVariant = util::variant<
         UnknownType,
         SimpleType,
-        NothingType
+        NothingType,
+        FunctionType,
+        OptionalType,
+        VariantType,
+        StructureType,
+        AnyType
     >;
 
     // The type info container just holds an instance of the variant, and provides
@@ -102,13 +145,6 @@ namespace rhea { namespace types {
         private:
         TypeInfoVariant type_info_v;
     };
-
-    // Comparison function. This *only* checks for exact matches at this time.
-    inline bool compatible(TypeInfo& lhs, TypeInfo& rhs)
-    {
-        auto fn = [&](auto& l, auto& r) { return l.is_compatible(r); };
-        return util::visit(fn, lhs.type(), rhs.type());
-    }
 }}
 
 #endif /* RHEA_TYPES_INFO_HPP */
