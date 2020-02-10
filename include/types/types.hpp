@@ -1,6 +1,9 @@
 #ifndef RHEA_TYPES_INFO_HPP
 #define RHEA_TYPES_INFO_HPP
 
+#include <map>
+#include <string>
+
 #include "../util/compat.hpp"
 
 /*

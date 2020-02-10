@@ -5,6 +5,7 @@ set(MAIN_SOURCES
 add_subdirectory(ast)
 add_subdirectory(codegen)
 add_subdirectory(state)
+add_subdirectory(types)
 add_subdirectory(util)
 
 set(RHEA_LIBS
