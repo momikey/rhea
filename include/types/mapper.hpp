@@ -20,7 +20,8 @@ namespace rhea { namespace types {
         // Get the typeinfo object for a given typename string. If one hasn't been
         // declared, we return an unknown type rather than throwing an exception,
         // because this is technically a problem in the Rhea code, not the compiler.
-        TypeInfo get_type_for(std::string s) { return is_type_defined(s) ? type_map[s] : UnknownType(); }
+        TypeInfo get_type_for(std::string s)
+            { return is_type_defined(s) ? type_map[s] : TypeInfo(UnknownType()); }
 
         // Add a new type to the map of known types. This returns true if the
         // insertion succeeded.

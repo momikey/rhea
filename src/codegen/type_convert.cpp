@@ -20,16 +20,16 @@ namespace rhea { namespace codegen {
 
         return util::visit(
             [&] (auto& f, auto& t) { return internal::convert(gen, value, f, t); },
-            from,
-            to
+            from.type(),
+            to.type()
         );
     }
 
     namespace internal {
         bool can_implicitly_convert(TypeInfo from, TypeInfo to)
         {
-            auto from_simple = util::get_if<SimpleType>(&from);
-            auto to_simple = util::get_if<SimpleType>(&to);
+            auto from_simple = util::get_if<SimpleType>(&(from.type()));
+            auto to_simple = util::get_if<SimpleType>(&(to.type()));
 
             // Implicit conversion is a no-go by default.
             auto cvt = false;

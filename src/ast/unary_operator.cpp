@@ -5,7 +5,7 @@ namespace rhea { namespace ast {
     types::TypeInfo UnaryOp::expression_type()
     {
         auto etype = operand->expression_type();
-        auto etype_simple = util::get_if<types::SimpleType>(&etype);
+        auto etype_simple = util::get_if<types::SimpleType>(&(etype.type()));
 
         auto is_unsigned = (etype_simple != nullptr) &&
             (etype_simple->type == BasicType::UnsignedInteger ||

@@ -35,7 +35,7 @@ namespace {
 
     BOOST_AUTO_TEST_CASE (builtin_type)
     {
-        auto integer_type = mapper.get_type_for("integer");
+        auto integer_type = mapper.get_type_for("integer").type();
 
         auto as_simple = util::get_if<types::SimpleType>(&integer_type);
 
@@ -46,7 +46,7 @@ namespace {
 
     BOOST_AUTO_TEST_CASE (bad_type)
     {
-        auto bad_type = mapper.get_type_for("bad");
+        auto bad_type = mapper.get_type_for("bad").type();
 
         BOOST_TEST_MESSAGE("Checking bad typename");
         BOOST_TEST((util::get_if<types::UnknownType>(&bad_type) != nullptr));
@@ -65,7 +65,7 @@ namespace {
         BOOST_TEST(result);
 
         // Now ensure that it was added
-        auto added = mapper.get_type_for("myint");
+        auto added = mapper.get_type_for("myint").type();
         auto as_simple = util::get_if<types::SimpleType>(&added);
 
         BOOST_TEST(as_simple != nullptr);
@@ -85,7 +85,7 @@ namespace {
             auto removed = mapper.remove_type_definition("myint");
             BOOST_TEST(removed.has_value());
 
-            auto after = mapper.get_type_for("myint");
+            auto after = mapper.get_type_for("myint").type();
             BOOST_TEST((util::get_if<types::UnknownType>(&after) != nullptr));
         }
         else

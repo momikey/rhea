@@ -47,7 +47,7 @@ namespace rhea { namespace types {
 
     inline std::string to_string(TypeInfo tinfo) { return util::visit(
         [&](auto const& t){ return internal::to_string(t); }
-        , tinfo); }
+        , tinfo.type()); }
 }}
 
 #endif /* RHEA_TYPES_TO_STRING_HPP */

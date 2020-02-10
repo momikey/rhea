@@ -253,14 +253,14 @@ namespace rhea { namespace codegen {
         Value* rhs = util::any_cast<Value*>(n->right->visit(this));
 
         // The type of the whole expression
-        auto et = n->expression_type();
+        auto et = n->expression_type().type();
         auto as_simple = util::get_if<types::SimpleType>(&et);
 
         // The types of the operands
-        auto lt = n->left->expression_type();
+        auto lt = n->left->expression_type().type();
         auto lt_simple = util::get_if<types::SimpleType>(&lt);
 
-        auto rt = n->right->expression_type();
+        auto rt = n->right->expression_type().type();
         auto rt_simple = util::get_if<types::SimpleType>(&rt);
 
         // Not allowed to use the coercion operator on the LHS
@@ -457,11 +457,11 @@ namespace rhea { namespace codegen {
         Value* operand = util::any_cast<Value*>(n->operand->visit(this));
 
         // The type of the whole expression
-        auto et = n->expression_type();
+        auto et = n->expression_type().type();
         auto as_simple = util::get_if<types::SimpleType>(&et);
 
         // The type of the operand, which we will need for, e.g., promotion
-        auto ot = n->operand->expression_type();
+        auto ot = n->operand->expression_type().type();
         auto ot_simple = util::get_if<types::SimpleType>(&ot);
 
         Value* ret = nullptr;
@@ -555,7 +555,7 @@ namespace rhea { namespace codegen {
 
         auto tbt = n->true_branch->expression_type();
         auto fbt = n->false_branch->expression_type();
-        auto fbt_simple = util::get_if<types::SimpleType>(&fbt);
+        auto fbt_simple = util::get_if<types::SimpleType>(&(fbt.type()));
 
         // Implicit conversion of the false branch, because the true branch
         // controls the result type.

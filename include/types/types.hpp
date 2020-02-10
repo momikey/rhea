@@ -35,6 +35,9 @@ namespace rhea { namespace types {
         Unknown = -1    // Error case
     };
 
+    // Forward definition for our main type info container class
+    struct TypeInfo;
+
     // An unknown type, which can go anywhere, but can't be compared. It's
     // basically a NULL type.
     struct UnknownType
@@ -79,17 +82,32 @@ namespace rhea { namespace types {
     inline bool NothingType::is_compatible(NothingType other) { return true; }
 
     // The "base" for all types. This is a variant covering all defined structs.
-    using TypeInfo = util::variant<
+    using TypeInfoVariant = util::variant<
         UnknownType,
         SimpleType,
         NothingType
     >;
 
+    // The type info container just holds an instance of the variant, and provides
+    // a few helper methods to access it.
+    struct TypeInfo
+    {
+        TypeInfo() : type_info_v(UnknownType()) {}
+
+        template<typename T>
+        TypeInfo(T t) : type_info_v(t) {}
+
+        TypeInfoVariant& type() { return type_info_v; }
+
+        private:
+        TypeInfoVariant type_info_v;
+    };
+
     // Comparison function. This *only* checks for exact matches at this time.
     inline bool compatible(TypeInfo& lhs, TypeInfo& rhs)
     {
         auto fn = [&](auto& l, auto& r) { return l.is_compatible(r); };
-        return util::visit(fn, lhs, rhs);
+        return util::visit(fn, lhs.type(), rhs.type());
     }
 }}
 

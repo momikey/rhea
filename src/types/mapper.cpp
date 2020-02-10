@@ -8,23 +8,23 @@ namespace rhea { namespace types {
 
     void TypeMapper::insert_builtin_types()
     {
-        type_map["integer"] = SimpleType(BasicType::Integer, true, true);
-        type_map["byte"] = SimpleType(BasicType::Byte, true, true);
-        type_map["long"] = SimpleType(BasicType::Long, true, true);
-        type_map["uinteger"] = SimpleType(BasicType::UnsignedInteger, true, true);
-        type_map["ubyte"] = SimpleType(BasicType::UnsignedByte, true, true);
-        type_map["ulong"] = SimpleType(BasicType::UnsignedLong, true, true);
+        type_map["integer"]     = SimpleType(BasicType::Integer, true, true);
+        type_map["byte"]        = SimpleType(BasicType::Byte, true, true);
+        type_map["long"]        = SimpleType(BasicType::Long, true, true);
+        type_map["uinteger"]    = SimpleType(BasicType::UnsignedInteger, true, true);
+        type_map["ubyte"]       = SimpleType(BasicType::UnsignedByte, true, true);
+        type_map["ulong"]       = SimpleType(BasicType::UnsignedLong, true, true);
 
-        type_map["float"] = SimpleType(BasicType::Float, true, false);
-        type_map["double"] = SimpleType(BasicType::Double, true, false);
+        type_map["float"]       = SimpleType(BasicType::Float, true, false);
+        type_map["double"]      = SimpleType(BasicType::Double, true, false);
         
-        type_map["boolean"] = SimpleType(BasicType::Boolean, false, false);
+        type_map["boolean"]     = SimpleType(BasicType::Boolean, false, false);
 
-        type_map["string"] = SimpleType(BasicType::String, true, true);
-        type_map["symbol"] = SimpleType(BasicType::Symbol, true, true);
-        type_map["any"] = SimpleType(BasicType::Any, true, true);
+        type_map["string"]      = SimpleType(BasicType::String, true, true);
+        type_map["symbol"]      = SimpleType(BasicType::Symbol, true, true);
+        type_map["any"]         = SimpleType(BasicType::Any, true, true);
 
-        type_map["ulong"] = NothingType();
+        type_map["ulong"]       = NothingType();
     }
 
     bool TypeMapper::add_type_definition(std::string s, TypeInfo ti)

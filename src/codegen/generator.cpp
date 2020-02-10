@@ -106,7 +106,7 @@ namespace rhea { namespace codegen {
 
     llvm::Type* CodeGenerator::llvm_for_type(types::TypeInfo ti)
     {
-        return util::visit(TypeBuilder{this}, ti);
+        return util::visit(TypeBuilder{this}, ti.type());
     }
 
     // Specializations for the type converter
