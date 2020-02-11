@@ -74,4 +74,60 @@ namespace rhea { namespace ast {
 
         return fmt::format("(SymbolList{0})", s); 
     }
+
+    // Canonical name representations. These are intended for internal use, and
+    // possibly for compiler output.
+    std::string Typename::canonical_name() const
+    {
+        std::string result = name->canonical_name();
+
+        if (generic_part != nullptr)
+        {
+            result += '<';
+
+            for (auto&& ch : generic_part->children)
+            {
+                result += ch->canonical_name();
+                result += ',';
+            }
+
+            auto& gb = result.back();
+            gb = '>';
+        }
+
+        if (array_part != nullptr)
+        {
+            result += '[';
+
+            // TODO: The array part is an arbitrary expression, but it should evaluate
+            // to *something* integral. Working out exactly what is nontrivial, though.
+
+            auto& ab = result.back();
+            ab = ']';
+        }
+
+        return result;
+    }
+
+    // Canonical representation for variants.
+    std::string Variant::canonical_name() const
+    {
+        std::string result { "Variant(" };
+
+        for (auto&& ch : children)
+        {
+            result += ch->canonical_name() + ',';
+        }
+
+        auto& back = result.back();
+        back = ')';
+
+        return result;
+    }
+
+    // Canonical representation for optionals.
+    std::string Optional::canonical_name() const
+    {
+        return fmt::format("Optional({0})", type->canonical_name());
+    }
 }}

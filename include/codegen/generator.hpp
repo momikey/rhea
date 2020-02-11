@@ -17,6 +17,7 @@
 #include "../ast.hpp"
 #include "../state/symbol.hpp"
 #include "../types/types.hpp"
+#include "../types/mapper.hpp"
 #include "../util/compat.hpp"
 #include "code_visitor.hpp"
 #include "allocation_manager.hpp"
@@ -42,6 +43,7 @@ namespace rhea { namespace codegen {
         CodeVisitor visitor;
         state::ScopeManager scope_manager;
         AllocationManager allocation_manager;
+        types::TypeMapper type_mapper;
 
         // Make our visitor a friend class, so it can access all the LLVM parts.
         friend CodeVisitor;

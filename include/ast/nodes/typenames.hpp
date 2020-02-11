@@ -53,6 +53,8 @@ namespace rhea { namespace ast {
         const std::unique_ptr<GenericTypename> generic_part;
         const expression_ptr array_part;
 
+        virtual std::string canonical_name() const;
+
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(Typename,{0},{1},{2})",
@@ -69,6 +71,8 @@ namespace rhea { namespace ast {
         public:
         Variant(child_vector<Typename>& ts);
 
+        std::string canonical_name() const override;
+
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
 
@@ -80,6 +84,8 @@ namespace rhea { namespace ast {
     {
         public:
         Optional(std::unique_ptr<Typename> t): type(std::move(t)) {}
+
+        std::string canonical_name() const override;
 
         const std::unique_ptr<Typename> type;
 

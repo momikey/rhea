@@ -37,11 +37,12 @@ namespace rhea { namespace ast {
             std::unique_ptr<AnyIdentifier> ident;
 
             // Simple identifiers
-            if (node->is<gr::identifier>())
+            if (node->is<gr::identifier>() || node->is<gr::builtin_types>())
             {
                 ident = std::make_unique<Identifier>(node->string());
             }
 
+            // TODO: Handle more complex type names
             else
             {
                 throw unimplemented_type(node->name());
@@ -57,11 +58,12 @@ namespace rhea { namespace ast {
         {
             std::unique_ptr<Typename> tname;
 
-            // Simple identifiers
-            if (node->is<gr::identifier>())
+            // Simple identifiers or builtin types as typenames
+            if (node->is<gr::identifier>() || node->is<gr::builtin_types>())
             {
                 tname = std::make_unique<Typename>(std::move(create_identifier_node(node)));
             }
+
 
             else
             {

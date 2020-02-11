@@ -16,7 +16,10 @@
 namespace rhea { namespace ast {
     // The base for all identifier node types
     class AnyIdentifier : public Expression
-    {};
+    {
+        public:
+        virtual std::string canonical_name() const = 0;
+    };
 
     // Maker function for identifiers.
     template <typename Id, typename... Args>
@@ -32,6 +35,8 @@ namespace rhea { namespace ast {
         Identifier(std::string n): name(n) {}
 
         const std::string name;
+
+        std::string canonical_name() const override { return name; }
 
         util::any visit(visitor::Visitor* v) override;
         types::TypeInfo expression_type() override
@@ -57,6 +62,8 @@ namespace rhea { namespace ast {
 
         child_vector<Identifier> children;
 
+        std::string canonical_name() const override;
+
         util::any visit(visitor::Visitor* v) override;
         types::TypeInfo expression_type() override
             { return m_expression_type; }
@@ -78,7 +85,15 @@ namespace rhea { namespace ast {
         RelativeIdentifier(std::unique_ptr<Identifier> id): identifier(std::move(id)) {}
         RelativeIdentifier(std::unique_ptr<FullyQualified> id): identifier(std::move(id)) {}
 
+        RelativeIdentifier(std::unique_ptr<Identifier> id, std::string mn)
+            : identifier(std::move(id)), module_name(mn) {}
+        RelativeIdentifier(std::unique_ptr<FullyQualified> id, std::string mn)
+            : identifier(std::move(id)), module_name(mn) {}
+
         const std::unique_ptr<AnyIdentifier> identifier;
+        std::string module_name;
+
+        std::string canonical_name() const override;
 
         util::any visit(visitor::Visitor* v) override;
         types::TypeInfo expression_type() override

@@ -30,6 +30,9 @@ namespace {
         BOOST_TEST((node->name->to_string() == "(Identifier,Foo)"));
         BOOST_TEST((node->generic_part == nullptr));
         BOOST_TEST((node->array_part == nullptr));
+
+        BOOST_TEST_MESSAGE("Testing canonical representation " << node->canonical_name());
+        BOOST_TEST((node->canonical_name() == "Foo"));
     }
 
     BOOST_AUTO_TEST_CASE (generic_typenames)
@@ -46,6 +49,9 @@ namespace {
         BOOST_TEST((node->name->to_string() == "(Identifier,Foo)"));
         BOOST_TEST((node->generic_part->to_string() == "(GenericTypename,(Typename,(Identifier,Ty),null,null))"));
         BOOST_TEST((node->array_part == nullptr));
+
+        BOOST_TEST_MESSAGE("Testing canonical representation " << node->canonical_name());
+        BOOST_TEST((node->canonical_name() == "Foo<Ty>"));
     }
 
     BOOST_AUTO_TEST_CASE (array_typenames)
@@ -70,6 +76,9 @@ namespace {
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
         BOOST_TEST((node->to_string() == "(Optional,(Typename,(Identifier,Foo),null,null))"));
+
+        BOOST_TEST_MESSAGE("Testing canonical representation " << node->canonical_name());
+        BOOST_TEST((node->canonical_name() == "Optional(Foo)"));
     }
 
     BOOST_AUTO_TEST_CASE (variant_typename)
@@ -88,6 +97,9 @@ namespace {
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
         BOOST_TEST((node->to_string() == "(Variant,(Typename,(Identifier,Foo),null,null),(Typename,(Identifier,Bar),null,null))"));
+
+        BOOST_TEST_MESSAGE("Testing canonical representation " << node->canonical_name());
+        BOOST_TEST((node->canonical_name() == "Variant(Foo,Bar)"));
     }
 
     BOOST_AUTO_TEST_CASE (cast_operator)
@@ -147,6 +159,6 @@ namespace {
         BOOST_TEST((node->to_string() ==
             "(Enum,(Identifier,En),(SymbolList,(Symbol,foo),(Symbol,bar),(Symbol,baz)))"));
     }
-    
+   
     BOOST_AUTO_TEST_SUITE_END ()
 }

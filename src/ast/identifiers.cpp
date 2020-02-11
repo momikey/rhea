@@ -37,4 +37,31 @@ namespace rhea { namespace ast {
 
         return fmt::format("(FullyQualified{0})", s);
     }
+
+    // Get the canonical name of a FullyQualified node
+    std::string FullyQualified::canonical_name() const
+    {
+        std::string s;
+        for (auto&& id : children)
+        {
+            s += id->name;
+            s += ':';
+        }
+
+        // Remove trailing colon
+        if (s.back() == ':')
+        {
+            s.pop_back();
+        }
+
+        return s;
+    }
+
+    // Getting the canonical name of a relative identifier requires us to know the
+    // current module. If we don't for whatever reason, then we'll just let the
+    // caller deal with it.
+    std::string RelativeIdentifier::canonical_name() const
+    {
+        return fmt::format("{0}:{1}", module_name, identifier->canonical_name());
+    }
 }}

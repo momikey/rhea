@@ -739,8 +739,62 @@ namespace rhea { namespace codegen {
         // place an entry in the current scope's symbol table and allocate stack
         // memory for the appropriate variable type.
 
-        // TODO
-        return {};        
+        std::string var_name = n->lhs->name;
+        std::string type_name = n->rhs->canonical_name();
+
+        if (!generator->type_mapper.is_type_defined(type_name))
+        {
+            throw syntax_error(fmt::format("Undefined type '{0}' in declaration", type_name));
+        }
+
+        auto vtype = generator->type_mapper.get_type_for(type_name);
+        auto ltype = generator->llvm_for_type(vtype);
+
+        Value* result = nullptr;
+
+        // Only declare the new variable if one doesn't exist in the current scope.
+        if (!generator->scope_manager.is_local(var_name))
+        {
+            generator->scope_manager.add_symbol({
+                var_name,
+                types::DeclarationType::Variable,
+                vtype
+            });
+
+            if (generator->scope_manager.current().name != "$global")
+            {
+                // We're in some kind of a block, such as a function definition.
+                llvm::Function* entry = generator->builder.GetInsertBlock()->getParent();
+
+                auto ai = internal::create_allocation(entry, var_name, vtype, generator);
+                generator->allocation_manager.add(var_name, ai);
+
+                result = generator->builder.GetInsertBlock()->getParent();
+            }
+            else
+            {
+                // This is a top-level variable definition, so treat it as a global.
+
+                // LLVM likes to take ownership of...well, everything. So we can't
+                // use a unique_ptr here, apparently.
+                auto gvar = new llvm::GlobalVariable(
+                    *(generator->module),
+                    ltype,
+                    false,
+                    llvm::GlobalVariable::LinkageTypes::InternalLinkage,
+                    llvm::Constant::getNullValue(ltype),
+                    var_name                    
+                );
+
+                result = gvar;
+            }
+        }
+        else
+        {
+            throw syntax_error(fmt::format("Redeclaration of variable {0} with type '{1}'", var_name, type_name));
+        }
+
+        return result;
     }
 
     any CodeVisitor::visit(Variable* n)

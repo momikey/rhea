@@ -12,6 +12,7 @@ set(RHEA_LIBS
     rhea_ast
     rhea_codegen
     rhea_state
+    rhea_types
     rhea_util
     ${llvm_libs}
     ${CONAN_LIBS}
