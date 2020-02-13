@@ -11,6 +11,7 @@
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/ADT/SmallString.h>
 
 #include "../ast.hpp"
 #include "../codegen/generator.hpp"
@@ -43,31 +44,6 @@ namespace rhea { namespace debug {
         }
         auto result = irp.generator.generate(node);
         irp.generator.module->print(llvm::outs(), nullptr, false, true);
-
-
-        // std::string output;
-
-        // auto rsos = std::make_unique<llvm::raw_string_ostream>(output);
-        // auto buf = std::make_unique<llvm::buffer_ostream>(*rsos);
-
-        // llvm::legacy::PassManager pm;
-
-        // if (irp.generator.target_machine->addPassesToEmitFile(
-        //     pm,
-        //     *buf,
-        //     nullptr,
-        //     llvm::TargetMachine::CGFT_AssemblyFile,
-        //     false
-        // ))
-        // {
-        //     std::cerr << "Unable to write assembly\n";
-        // }
-        // else
-        // {
-        //     pm.run(*(irp.generator.module));
-
-        //     std::clog << "Output: " << output.length() << '\n' << output << '\n';
-        // }
     }
 }}
 

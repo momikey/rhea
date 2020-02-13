@@ -33,3 +33,7 @@ target_link_libraries(rhea_debug_ast ${RHEA_LIBS})
 add_executable(rhea_debug_ir debug/ir.cpp)
 target_include_directories(rhea_debug_ir PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(rhea_debug_ir ${RHEA_LIBS})
+
+add_executable(rhea_debug_asm debug/asm.cpp)
+target_include_directories(rhea_debug_asm PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(rhea_debug_asm ${RHEA_LIBS})
