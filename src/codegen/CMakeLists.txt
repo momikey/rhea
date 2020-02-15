@@ -3,6 +3,7 @@ set(CODEGEN_SOURCES
     code_visitor.cpp
     allocation_manager.cpp
     type_convert.cpp
+    function_visitor.cpp
 )
 
 add_library(rhea_codegen STATIC ${CODEGEN_SOURCES})
