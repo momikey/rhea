@@ -4,6 +4,7 @@ set(MAIN_SOURCES
 
 add_subdirectory(ast)
 add_subdirectory(codegen)
+add_subdirectory(inference)
 add_subdirectory(state)
 add_subdirectory(types)
 add_subdirectory(util)
@@ -11,6 +12,7 @@ add_subdirectory(util)
 set(RHEA_LIBS
     rhea_ast
     rhea_codegen
+    rhea_inference
     rhea_state
     rhea_types
     rhea_util
