@@ -97,7 +97,7 @@ namespace {
 
     BOOST_AUTO_TEST_CASE (insert_function_type)
     {
-        BOOST_TEST_MESSAGE("Inserting a function type definitino, taking an integer 'i' and returning nothing");
+        BOOST_TEST_MESSAGE("Inserting a function type definition, taking an integer 'i' and returning nothing");
 
         auto fn_type = types::FunctionType {
             { { "i", std::make_shared<types::TypeInfo>(types::SimpleType(types::BasicType::Integer, true, true)) } },
