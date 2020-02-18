@@ -5,6 +5,8 @@
 #include <functional>
 
 #include "../types/types.hpp"
+#include "../ast.hpp"
+#include "engine_fwd.hpp"
 
 /*
  * We define a "lazy" type inference using a lambda. This way,
@@ -14,19 +16,23 @@
  * One small problem is that lambdas with captures can't be stored
  * as map values, because they don't have an implicit conversion
  * to function pointer. So we'll make an object that holds a lambda
- * without captures, plus an argument vector. (Variadic templates
- * create new types which again prevents us from directly using the map.)
+ * without captures, as well as pointers to the type engine and the
+ * node we're evaluating.
  */
 namespace rhea { namespace inference {
+    using namespace rhea::ast;
+
     struct InferredType
     {
         // A function object representing how to create the type.
-        using function_type = std::function<types::TypeInfo(std::vector<types::TypeInfo>)>;
+        using function_type = std::function<types::TypeInfo(TypeEngine*, ASTNode*)>;
 
-        function_type function = [](std::vector<types::TypeInfo> ti){ return types::UnknownType(); };
-        std::vector<types::TypeInfo> type_arguments;
+        function_type function = [](TypeEngine*, ASTNode*){ return types::UnknownType(); };
 
-        types::TypeInfo operator()() { return function(type_arguments); }
+        TypeEngine* engine;
+        ASTNode* node;
+
+        types::TypeInfo operator()() { return function(engine, node); }
     };
 }}
 

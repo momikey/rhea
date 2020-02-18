@@ -44,11 +44,13 @@ namespace rhea { namespace util {
     using std::visit;
     using std::monostate;
     using std::get_if;
+    using std::get;
 #else
     using boost::variant2::variant;
     using boost::variant2::visit;
     using boost::variant2::monostate;
     using boost::variant2::get_if;
+    using boost::variant2::get;
 #endif
 
 #ifdef __cpp_lib_any
