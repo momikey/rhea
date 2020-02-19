@@ -41,9 +41,29 @@ namespace rhea { namespace inference {
         any visit(UnaryOp* n) override;
         any visit(TernaryOp* n) override;
 
+        any visit(Typename*) override;
+        any visit(Variant*) override;
+        any visit(Optional*) override;
+        any visit(Cast*) override;
+        any visit(TypeCheck*) override;
+        any visit(Alias*) override;
+        any visit(Enum*) override;
+        any visit(SymbolList*) override;
+        
         any visit(If* n) override;
         any visit(BareExpression* n) override;
         any visit(Block* n) override;
+        any visit(While*) override;
+        any visit(For*) override;
+        any visit(With*) override;
+        any visit(Break*) override;
+        any visit(Continue*) override;
+        any visit(Match*) override;
+        any visit(On*) override;
+        any visit(When*) override;
+        any visit(TypeCase*) override;
+        any visit(Default*) override;
+        any visit(PredicateCall*) override;
         any visit(TypeDeclaration* n) override;
         any visit(Variable* n) override;
         any visit(Constant* n) override;

@@ -109,7 +109,7 @@ namespace rhea { namespace inference {
 
                     if (is_boolean_op(derived->op))
                     {
-                        return TypeInfo {SimpleType(BasicType::Boolean)};
+                        return TypeInfo {SimpleType(BasicType::Boolean, false)};
                     }
                     else if (lhs == rhs)
                     {
@@ -182,6 +182,121 @@ namespace rhea { namespace inference {
         return {};
     }
 
+    any InferenceVisitor::visit(Typename* n)
+    {
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<Typename*>(node);
+
+                    return e->mapper.get_type_for(derived->canonical_name());
+                },
+                engine, n
+            };
+        return {};
+    }
+
+    any InferenceVisitor::visit(Variant* n)
+    {
+        for (auto&& ch : n->children)
+        {
+            ch->visit(this);
+        }
+        
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<Variant*>(node);
+
+                    return e->mapper.get_type_for(derived->canonical_name());
+                },
+                engine, n
+            };
+        return {};
+    }
+
+    any InferenceVisitor::visit(Optional* n)
+    {
+        n->type->visit(this);
+
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<Optional*>(node);
+
+                    return e->mapper.get_type_for(derived->canonical_name());
+                },
+                engine, n
+            };
+        return {};
+    }
+
+    any InferenceVisitor::visit(Cast* n)
+    {
+        n->left->visit(this);
+        n->right->visit(this);
+
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<Cast*>(node);
+
+                    return e->mapper.get_type_for(derived->right->canonical_name());
+                },
+                engine, n
+            };
+        return {};
+    }
+
+    any InferenceVisitor::visit(TypeCheck* n)
+    {
+        n->left->visit(this);
+        n->right->visit(this);
+
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    return SimpleType(BasicType::Boolean);
+                },
+                engine, n
+            };
+
+        return {};
+    }
+
+    any InferenceVisitor::visit(Alias* n)
+    {
+        // TODO
+        return {};
+    }
+
+    any InferenceVisitor::visit(Enum* n)
+    {
+        n->name->visit(this);
+        n->values->visit(this);
+        
+        // TODO: Anything else? Add to mapper or something?
+
+        return {};
+    }
+
+    any InferenceVisitor::visit(SymbolList* n)
+    {
+        for (auto&& ch : n->symbols)
+        {
+            ch->visit(this);
+        }
+
+        // TODO: Anything else?
+
+        return {};
+    }
+
     // Most statements don't have types themselves, but they'll still need to descend
     // into their child nodes for the expressions.
     any InferenceVisitor::visit(If* n)
@@ -210,9 +325,135 @@ namespace rhea { namespace inference {
         return {};
     }
 
+    any InferenceVisitor::visit(While* n)
+    {
+        n->condition->visit(this);
+        n->body->visit(this);
+        return {};
+    }
+
+    any InferenceVisitor::visit(For* n)
+    {
+        n->range->visit(this);
+        n->body->visit(this);
+
+        // For loops introduce a loop variable, so we have to account for that.
+        // As it's stored as a string rather than a node pointer, we'll use this
+        // node's pointer as the index into the map.
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<For*>(node);
+
+                    return e->inferred_types[derived->body.get()]();
+                },
+                engine, n
+            };
+
+        return {};
+    }
+
+    any InferenceVisitor::visit(With* n)
+    {
+        n->body->visit(this);
+
+        for (auto&& ch : n->predicates)
+        {
+            ch->visit(this);
+        }
+
+        return {};
+    }
+
+    any InferenceVisitor::visit(Break* n)
+    {
+        // Breaks need no type inference
+        return {};
+    }
+
+    any InferenceVisitor::visit(Continue* n)
+    {
+        // Continues need no type inference
+        return {};
+    }
+
+    any InferenceVisitor::visit(Match* n)
+    {
+        n->expression->visit(this);
+
+        for (auto&& ch : n->cases)
+        {
+            ch->visit(this);
+        }
+
+        return {};
+    }
+
+    any InferenceVisitor::visit(On* n)
+    {
+        n->case_expr->visit(this);
+        n->body->visit(this);
+        return {};
+    }
+
+    any InferenceVisitor::visit(When* n)
+    {
+        n->predicate->visit(this);
+        n->body->visit(this);
+        return {};
+    }
+
+    any InferenceVisitor::visit(TypeCase* n)
+    {
+        n->type_name->visit(this);
+        n->body->visit(this);
+        return {};
+    }
+
+    any InferenceVisitor::visit(Default* n)
+    {
+        // Defaults need no type inference
+        return {};
+    }
+
+    any InferenceVisitor::visit(PredicateCall* n)
+    {
+        n->target->visit(this);
+
+        for (auto&& ch : n->arguments)
+        {
+            ch->visit(this);
+        }
+
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    return SimpleType(BasicType::Boolean);
+                },
+                engine, n
+            };
+
+        return {};
+    }
+
     any InferenceVisitor::visit(TypeDeclaration* n)
     {
-        // TODO
+        n->lhs->visit(this);
+        n->rhs->visit(this);
+
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<TypeDeclaration*>(node);
+
+                    return e->mapper.get_type_for(derived->rhs->canonical_name());
+                },
+                engine, n
+            };
+
         return {};
     }
 
@@ -240,7 +481,6 @@ namespace rhea { namespace inference {
                 },
                 engine, n
             };
-            
         return {};
     }
 
