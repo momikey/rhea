@@ -1,6 +1,8 @@
 #ifndef RHEA_INFERENCE_VISITOR_HPP
 #define RHEA_INFERENCE_VISITOR_HPP
 
+#include <vector>
+
 #include "ast.hpp"
 #include "visitor/visitor.hpp"
 #include "visitor/default.hpp"
@@ -23,6 +25,11 @@ namespace rhea { namespace inference {
         InferenceVisitor(TypeEngine* e) : engine(e) {}
 
         TypeEngine* engine = nullptr;
+
+        // Visitor state; the engine itself doesn't care about this
+
+        // A vector we'll use as a definition stack
+        std::vector<ASTNode*> definitions;
 
         // We'll eventually override pretty much all the node-specific methods.
         any visit(Boolean* n) override;
