@@ -14,12 +14,24 @@
 namespace rhea { namespace state {
     struct ModuleScopeNode
     {
-        ModuleScopeNode();
+        ModuleScopeNode(std::string n, ModuleScopeNode* p);
         
+        ModuleScopeNode();
+        ModuleScopeNode(ModuleScopeNode* p);
+        ModuleScopeNode(std::string n);
+        
+        // The name of this scope. Most scopes will be unnamed, but something such as
+        // a function definition will have its name here.
         std::string name;
+
+        // The symbol table for this scope, linking identifier names defined in the
+        // scope with the AST nodes that define them.
         std::unordered_map<std::string, ast::ASTNode*> symbol_table;
 
+        // Non-owning pointer to this scope node's parent.
         ModuleScopeNode* parent;
+
+        // Owning pointers to this scope node's children.
         std::vector<std::unique_ptr<ModuleScopeNode>> children;
     };
 }}
