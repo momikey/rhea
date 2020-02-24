@@ -8,11 +8,10 @@
 #include "types.hpp"
 #include "../util/compat.hpp"
 
-/*
- * The type mapper maps typename strings to objects that describe the types.
- */
-
 namespace rhea { namespace types {
+    /*
+    * The type mapper maps typename strings to objects that describe the types.
+    */
     struct TypeMapper
     {
         TypeMapper();

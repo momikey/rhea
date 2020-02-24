@@ -8,6 +8,7 @@
 
 #include "../../include/inference/engine.hpp"
 #include "../../include/ast.hpp"
+#include "../../include/state/module_tree.hpp"
 #include "../../include/util/compat.hpp"
 
 namespace data = boost::unit_test::data;
@@ -17,9 +18,16 @@ namespace {
     using namespace rhea::inference;
     using namespace rhea::ast;
     using namespace rhea::types;
+    using namespace rhea::state;
 
     struct InferenceFixture
     {
+        InferenceFixture()
+        {
+            engine.module_scopes["main"] = std::make_unique<ModuleScopeTree>("main");
+            engine.visitor.module_scope = engine.module_scopes["main"].get();
+        }
+
         TypeEngine engine;
     };
 
@@ -259,6 +267,9 @@ namespace {
         auto as_simple = util::get_if<SimpleType>(&inferred.type());
         BOOST_TEST((as_simple != nullptr));
         BOOST_TEST((as_simple->type == BasicType::Integer));
+
+        auto scope = engine.module_scopes["main"].get();
+        BOOST_TEST((scope->find_symbol("foo") != nullptr));
     }
 
     BOOST_AUTO_TEST_CASE (infer_constant_definition)
@@ -276,6 +287,53 @@ namespace {
 
         auto inferred = engine.inferred_types[node.get()]();
         auto as_simple = util::get_if<SimpleType>(&inferred.type());
+        BOOST_TEST((as_simple != nullptr));
+        BOOST_TEST((as_simple->type == BasicType::Integer));
+
+        auto scope = engine.module_scopes["main"].get();
+        BOOST_TEST((scope->find_symbol("foo") != nullptr));
+    }
+
+    BOOST_AUTO_TEST_CASE (infer_type_declaration)
+    {
+        BOOST_TEST_MESSAGE("Testing inference of type declaration");
+
+        auto l = std::make_unique<Identifier>("foo");
+        auto rname = std::make_unique<Identifier>("integer");
+        auto r = std::make_unique<Typename>(std::move(rname));
+
+        std::unique_ptr<ASTNode> node = make_statement<TypeDeclaration>(
+            std::move(l),
+            std::move(r)
+        );
+
+        node->visit(&engine.visitor);
+
+        auto inferred = engine.inferred_types[node.get()]();
+        auto as_simple = util::get_if<SimpleType>(&inferred.type());
+        BOOST_TEST((as_simple != nullptr));
+        BOOST_TEST((as_simple->type == BasicType::Integer));
+
+        auto scope = engine.module_scopes["main"].get();
+        BOOST_TEST((scope->find_symbol("foo") != nullptr));
+    }
+
+    BOOST_AUTO_TEST_CASE (infer_type_alias)
+    {
+        BOOST_TEST_MESSAGE("Testing inference of type alias");
+
+        auto l = std::make_unique<Identifier>("foo");
+        auto r = std::make_unique<Identifier>("integer");
+
+        std::unique_ptr<ASTNode> node = make_statement<Alias>(
+            std::move(l),
+            std::move(r)
+        );
+
+        node->visit(&engine.visitor);
+
+        auto new_type = engine.mapper.get_type_for("foo");
+        auto as_simple = util::get_if<SimpleType>(&new_type.type());
         BOOST_TEST((as_simple != nullptr));
         BOOST_TEST((as_simple->type == BasicType::Integer));
     }

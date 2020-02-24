@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ast.hpp"
+#include "state/module_tree.hpp"
 #include "types/types.hpp"
 #include "types/mapper.hpp"
 
@@ -32,14 +33,26 @@ namespace rhea { namespace inference {
         /*
          * The core of the inference engine is a map connecting AST node
          * pointers to the types that have been inferred.
-         * 
-         * However, this doesn't quite work.
-        */
+         */
         std::unordered_map<ast::ASTNode*, InferredType> inferred_types;
+
+        /*
+         * We also hold a type mapper, which connects string representations
+         * of types to compiler-internal objects describing them.
+         */
         TypeMapper mapper;
 
-        InferenceVisitor visitor;
+        /*
+         * Each module that we parse will have a "scope tree". We map those to
+         * the module names here, for easier organization.
+         */
+        std::unordered_map<std::string, std::unique_ptr<state::ModuleScopeTree>> module_scopes;
 
+        /*
+         * As this is an AST traversal, we use a visitor utilizing the
+         * double-dispatch pattern.
+         */
+        InferenceVisitor visitor;
         friend InferenceVisitor;
     };
 }}

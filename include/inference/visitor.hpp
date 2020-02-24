@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "ast.hpp"
+#include "state/module_tree.hpp"
 #include "visitor/visitor.hpp"
 #include "visitor/default.hpp"
 #include "util/compat.hpp"
@@ -28,8 +29,8 @@ namespace rhea { namespace inference {
 
         // Visitor state; the engine itself doesn't care about this
 
-        // A vector we'll use as a definition stack
-        std::vector<ASTNode*> definitions;
+        // A pointer to the scope tree for the current module
+        state::ModuleScopeTree* module_scope;
 
         // We'll eventually override pretty much all the node-specific methods.
         any visit(Boolean* n) override;

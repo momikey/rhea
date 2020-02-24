@@ -9,7 +9,7 @@ namespace rhea { namespace inference {
     using type_vector = std::vector<TypeInfo>;
 
     /*
-     * Note that there is no need for return values in any of these.
+     * Note that there is no need for a return value in any of these.
      * 
      * Also, the inference engine's type map requires us to store pointers to the base
      * AST node class. As this visitor is (or *should be*) the only way those pointers
@@ -271,7 +271,16 @@ namespace rhea { namespace inference {
 
     any InferenceVisitor::visit(Alias* n)
     {
-        // TODO
+        // Aliases only affect the symbol table, and they are not hoisted; an alias
+        // only applies to code in the current scope (and its children) following
+        // the point of declaration.
+        module_scope->add_symbol(n->alias->canonical_name(), n);
+
+        engine->mapper.add_type_definition(
+            n->alias->canonical_name(),
+            engine->mapper.get_type_for(n->original->canonical_name())
+        );
+        
         return {};
     }
 
@@ -443,6 +452,8 @@ namespace rhea { namespace inference {
         n->lhs->visit(this);
         n->rhs->visit(this);
 
+        module_scope->add_symbol(n->lhs->canonical_name(), n);
+
         engine->inferred_types[n] =
             InferredType {
                 [](TypeEngine* e, ASTNode* node)
@@ -462,7 +473,7 @@ namespace rhea { namespace inference {
         n->lhs->visit(this);
         n->rhs->visit(this);
 
-        // TODO: Add variable declaration to a symbol table?
+        module_scope->add_symbol(n->lhs->canonical_name(), n);
 
         engine->inferred_types[n] =
             InferredType {
@@ -489,7 +500,7 @@ namespace rhea { namespace inference {
         n->lhs->visit(this);
         n->rhs->visit(this);
 
-        // TODO: Add variable declaration to a symbol table?
+        module_scope->add_symbol(n->lhs->canonical_name(), n);
 
         engine->inferred_types[n] =
             InferredType {
