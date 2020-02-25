@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <utility>
 
 #include "../util/compat.hpp"
 
@@ -88,12 +89,16 @@ namespace rhea { namespace types {
     };
 
     // Function types need a map of strings to argument types, plus a return type.
+    // In actuality, however, we use a vector of string/type pairs instead of a map,
+    // because we also have to preserve the *order* of arguments.
     struct FunctionType
     {
         // We have to use pointers here because of the circular dependency. Using shared
         // instead of unique pointers lets us avoid a lot of messy move stuff that would
         // require some serious rewriting throughout the compiler.
-        std::map<std::string, std::shared_ptr<TypeInfo>> argument_types;
+
+        using argument_type_pair = std::pair<std::string, std::shared_ptr<TypeInfo>>;
+        std::vector<argument_type_pair> argument_types;
         std::shared_ptr<TypeInfo> return_type;
 
         template <typename T>
@@ -136,7 +141,8 @@ namespace rhea { namespace types {
     // A structure keeps a map of strings to field types.
     struct StructureType
     {
-        std::map<std::string, std::shared_ptr<TypeInfo>> fields;
+        using field_type_pair = std::pair<std::string, std::shared_ptr<TypeInfo>>;
+        std::vector<field_type_pair> fields;
 
         template <typename T>
         bool is_compatible(T& other) { return false; }

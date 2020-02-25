@@ -655,7 +655,7 @@ Postconditions can use all the same predicates as preconditions.
 
 ## Unchecked functions
 
-Sometimes, the strict type-checking of Rhea can get in the way. When that happens, you can use unchecked functions. These disable all run-time checking; in exchange, they can't have preconditions or postconditions.
+Sometimes, the strict type-checking of Rhea can get in the way. When that happens, you can use unchecked functions. These disable all run-time checking; in exchange, they can't have preconditions or postconditions. In addition, they cannot be overloaded based on the types of their arguments or their return values.
 
 ```
 	def my_unsafe_func! =
@@ -1155,6 +1155,76 @@ The `extern` keyword indicates that a function is foreign, i.e., not defined in 
 
 Foreign functions can only be linked and called inside unchecked Rhea functions. Their argument lists are not specified. {TBD: More on this, and see if we can find a way to check arguments.}
 
+## Name mangling
+
+Rhea defines the method by which the names of potentially overloaded functions (including generic functions) are converted into strings more suitable for use in a linker. The mangling format used is not the same as any C++ compiler, though it shares some similarities with the Itanium C++ ABI.
+
+First, any *unchecked* function will not have its name mangled. This is by design, as unchecked functions are often used for interoperability, and they are Rhea's gateway to FFI. Thus, these functions will be exported as linker symbols with names equal to those with which they were defined, minus the trailing `!`. As an example, the `raw_open!` function defined above will appear in object code with the linker symbol `raw_open`.
+
+In addition, the function named `main` is handled specially, despite not being declared as unchecked. As the entry point to a program, it will always be exported with the symbol `main`.
+
+All other functions are mangled, with their symbol names having the following common elements.
+
+1. The common Rhea prefix `_R`.
+2. The type of the function: `f` for "normal", `p` for predicate, `o` for operator.
+3. The name of the function, with a length prefixed for non-operator functions.
+4. The return type of this particular instance of the function, encoded as below, except that predicates are always boolean, so their return type is implied.
+5. Each argument type, in definition order, encoded as below, or 0 if there are no arguments.
+
+### Type mangling
+
+Simple types are encoded in one or two characters, as follows:
+
+| Encoding | Type     |
+|----------|----------|
+| v        | nothing  |
+| c        | byte     |
+| C        | ubyte    |
+| i        | integer  |
+| I        | uinteger |
+| l        | long     |
+| L        | ulong    |
+| Dd       | double   |
+| Df       | float    |
+| b        | boolean  |
+| Sy       | symbol   |
+| s        | string   |
+| a        | any      |
+
+Arrays are encoded as `A`, the length of the array, an underscore, and the contained type.
+
+Examples:
+* `A4_i`: an array of 4 integers (Rhea `integer[4]`)
+* `A16_C`: an array of 16 unsigned bytes (Rhea `ubyte[16]`)
+
+Lists are encoded as `Sl` and the contained type.
+
+Examples:
+* A list of integers: `Sli`
+* A list of strings: `Sls`
+* A list of lists of symbols: `SlSlSy`
+
+Dictionaries are encoded as `Sd` and the value type, as keys must always be integral or symbols.
+
+Tuples are encoded as `T`, the length of the tuple, an underscore, and the type of each element. Example: `{1, "abc", @foo}` is encoded as `T3_isSy`. (Note that functions taking the wildcard will create a new overload for each different set of argument types, and those will have different mangled names.)
+
+Enums are encoded as `E`, the length of the name, and then the name itself. Example: `E2En` for an enum declared with the name "En".
+
+Structures are encoded starting with `Ss`, followed by the length-prefixed name of the structure. Example: `Ss6Person` for the `Person` structure used throughout this reference.
+
+References and pointers are encoded with `r` or `p`, followed by the referenced type.
+
+Examples:
+* `ri`: a reference to an integer
+* `ps`: a pointer to a string
+* `rA3_Ss6Person`: a reference to an array of 3 `Person` objects
+
+Optionals are encoded as `Op` followed by the type. Variants are encoded in the same way as tuples, but starting with `V` instead of `T`. Thus, the example of an integer, string, and symbol above, if used as a variant instead, becomes `V3_isSy`.
+
+Type *aliases* do not affect name mangling; they are converted into their underlying types.
+
+{TBD: Any other aspects of this}
+
 # Standard library functions
 
 The modules `std:basic` and `std:exception` are automatically imported into all programs, allowing their definitions to be used without qualification at any time.
@@ -1258,21 +1328,3 @@ Questions to answer:
 * How do we do parsing/AST/etc. for this?
 * Do we want hygienic macros, or something different?
 * Should we use this feature to rewrite parts of the Rhea base? (Probably not.)
-
-## Name mangling
-
-* Because we allow overloading, we must mangle the names of symbols to distinguish them.
-* Making this a standard part of the language will allow for better compatibility with alternate implementations, as well as access to and from other languages.
-
-Possible implementation:
-
-* Function type (`b` for "basic", `u` for unchecked, `o` for operator, `p` for predicate)
-* Name, which doesn't need any special handling
-* Argument types (basic types could be represented by a single character, `b` for boolean, `i` for integer, etc.)
-* Underscores between each part
-* `main` is handled specially, since it can't be overloaded.
-
-Questions to answer:
-
-* How do we do it?
-* How should structure types, etc., be encoded?

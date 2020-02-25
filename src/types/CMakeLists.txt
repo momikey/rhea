@@ -1,6 +1,7 @@
 set(TYPES_SOURCES
     mapper.cpp
     types.cpp
+    name_mangle.cpp
 )
 
 add_library(rhea_types STATIC ${TYPES_SOURCES})
