@@ -343,22 +343,29 @@ namespace rhea { namespace inference {
 
     any InferenceVisitor::visit(For* n)
     {
+        // For loops introduce a loop variable, so we have to account for that.
+        // As it's stored as a string rather than a node pointer, we'll use this
+        // node's pointer as the index into the map. Also, this implicitly creates
+        // a new scope, as the loop variable cannot be referenced outside the loop.
+        module_scope->begin_scope("$for");
+
+        module_scope->add_symbol(n->index, n);
+
         n->range->visit(this);
         n->body->visit(this);
 
-        // For loops introduce a loop variable, so we have to account for that.
-        // As it's stored as a string rather than a node pointer, we'll use this
-        // node's pointer as the index into the map.
         engine->inferred_types[n] =
             InferredType {
                 [](TypeEngine* e, ASTNode* node)
                 {
                     auto derived = static_cast<For*>(node);
 
-                    return e->inferred_types[derived->body.get()]();
+                    return e->inferred_types[derived->range.get()]();
                 },
                 engine, n
             };
+
+        module_scope->end_scope();
 
         return {};
     }

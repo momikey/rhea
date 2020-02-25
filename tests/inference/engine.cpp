@@ -250,6 +250,34 @@ namespace {
         BOOST_TEST((as_simple->type == BasicType::Integer));
     }
 
+    BOOST_AUTO_TEST_CASE (infer_for_loop)
+    {
+        BOOST_TEST_MESSAGE("Testing inference of for loop");
+
+        auto o = make_expression<Integer>(42);
+        std::vector<std::unique_ptr<Expression>> ov;
+        ov.push_back(std::move(o));
+        auto a = make_expression<Array>(ov);
+        std::vector<std::unique_ptr<Statement>> empty_body;
+        auto body = make_statement<Block>(empty_body);
+
+        std::unique_ptr<ASTNode> node = make_statement<For>(
+            "i",
+            std::move(a),
+            std::move(body)
+        );
+
+        node->visit(&engine.visitor);
+
+        auto scope_tree = engine.module_scopes["main"].get();
+        auto scope = scope_tree->root->children[0].get();
+        BOOST_TEST((scope != nullptr));
+        
+        auto symbol = scope->symbol_table.find("i");
+        BOOST_TEST((symbol != scope->symbol_table.end()));
+        BOOST_TEST((symbol->second == node.get()));
+    }
+
     BOOST_AUTO_TEST_CASE (infer_variable_definition)
     {
         BOOST_TEST_MESSAGE("Testing inference of variable definition");
