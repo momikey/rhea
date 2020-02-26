@@ -95,7 +95,8 @@ namespace rhea { namespace types {
     {
         // We have to use pointers here because of the circular dependency. Using shared
         // instead of unique pointers lets us avoid a lot of messy move stuff that would
-        // require some serious rewriting throughout the compiler.
+        // require some serious rewriting throughout the compiler. (I know it's a little
+        // slower, and it's poor form, but we all have to make sacrifices.)
 
         using argument_type_pair = std::pair<std::string, std::shared_ptr<TypeInfo>>;
         std::vector<argument_type_pair> argument_types;

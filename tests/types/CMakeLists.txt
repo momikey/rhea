@@ -2,6 +2,7 @@ set(TESTS_TYPES_SOURCES
     test_setup.cpp
     to_string.cpp
     mapper.cpp
+    name_mangle.cpp
 )
 
 add_library(tests_types OBJECT ${TESTS_TYPES_SOURCES})

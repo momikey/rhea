@@ -3,7 +3,7 @@
 namespace rhea { namespace types {
     using rhea::ast::unimplemented_type;
 
-    std::string mangle_function_name(std::string name, FunctionType& function_type,
+    std::string mangle_function_name(std::string name, FunctionType function_type,
      FunctionClass function_class)
     {
         // Unchecked functions are unmangled functions
@@ -38,7 +38,15 @@ namespace rhea { namespace types {
             mangled += fmt::format("{0}{1}", name.length(), name);
         }
 
-        mangled += internal::mangle_argument_name(function_type.return_type);
+        if (function_type.return_type != nullptr)
+        {
+            mangled += internal::mangle_argument_name(function_type.return_type);
+        }
+        else
+        {
+            // A function without a return type implictly returns nothing.
+            mangled += "v";
+        }
 
         if (function_type.argument_types.empty())
         {
@@ -48,7 +56,10 @@ namespace rhea { namespace types {
         {
             for (auto&& t : function_type.argument_types)
             {
-                mangled += internal::mangle_argument_name(t);
+                auto fn = [&] (auto const& e) { return internal::mangle_argument_name(e); };
+                auto result = util::visit(fn, t.second->type());
+
+                mangled += result;
             }
         }
 
