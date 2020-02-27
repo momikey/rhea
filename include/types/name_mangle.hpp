@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 
 #include "../ast/error.hpp"
+#include "../ast/nodes/function.hpp"
 #include "../util/compat.hpp"
 
 #include "types.hpp"
@@ -15,20 +16,20 @@
 namespace rhea { namespace types {
     using namespace std::string_literals;
 
+    // We need to give this a different name, because the type info object is
+    // more important.
+    using FunctionClass = ast::FunctionType;
+
     /*
      * As Rhea supports functions overloaded on the basis of their argument and
      * return types, it must have some form of name-mangling to allow the linker
      * to keep track of which overload is being called.
      */
 
-    // The different classes of function that may be mangled. (Generics aren't
-    // listed, because they're converted into regular functions beforehand.)
-    enum class FunctionClass { Function, Predicate, Operator, Unchecked };
-
     // Given the unmangled name of a function and a type info object describing it,
     // produce a mangled name.
     std::string mangle_function_name(std::string name, FunctionType function_type,
-        FunctionClass function_class = FunctionClass::Function);
+        FunctionClass function_class = FunctionClass::Basic);
 
     namespace internal {
         template <typename T>

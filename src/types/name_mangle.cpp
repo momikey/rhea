@@ -1,7 +1,8 @@
 #include "types/name_mangle.hpp"
 
 namespace rhea { namespace types {
-    using rhea::ast::unimplemented_type;
+    using ast::unimplemented_type;
+    using FunctionClass = ast::FunctionType;
 
     std::string mangle_function_name(std::string name, FunctionType function_type,
      FunctionClass function_class)
@@ -16,7 +17,7 @@ namespace rhea { namespace types {
 
         switch (function_class)
         {
-            case FunctionClass::Function:
+            case FunctionClass::Basic:
                 mangled += "f";
                 break;
             case FunctionClass::Predicate:
