@@ -326,10 +326,15 @@ namespace rhea { namespace inference {
 
     any InferenceVisitor::visit(Block* n)
     {
+        // Blocks always create a new scope
+        module_scope->begin_scope("$block");
+
         for (auto&& ch : n->children)
         {
             ch->visit(this);
         }
+
+        module_scope->end_scope();
 
         return {};
     }
@@ -527,6 +532,99 @@ namespace rhea { namespace inference {
                 engine, n
             };
             
+        return {};
+    }
+
+    any InferenceVisitor::visit(Def* n)
+    {
+        // We need a way to handle overloaded functions in the same scope.
+        // As a quick and dirty method, we alter their symbols using what
+        // is basically an "unprintable" identifier, which contains the
+        // full type of the function.
+        //
+        // Note that we can't just use the mangled name here, because it
+        // may rely on types that haven't been defined yet.
+        module_scope->add_symbol(n->function_type_string(), n);
+
+        module_scope->begin_scope(n->name);
+
+        if (n->return_type != nullptr) n->return_type->visit(this);
+        if (n->arguments_list != nullptr) n->arguments_list->visit(this);
+
+        for (auto&& con : n->conditions)
+        {
+            con->visit(this);
+        }
+        n->body->visit(this);
+
+        /*
+         * Laziness comes back to bite us here, unfortunately. Since we can't
+         * necessarily know all the needed types to make an inference record
+         * for the function right now, we have to call it unknown, then determine
+         * it later on, once we've gone over the full program or module.
+         */
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<Def*>(node);
+
+                    types::FunctionType ft;
+
+                    if (derived->return_type != nullptr)
+                    {
+                        ft.return_type = std::make_shared<TypeInfo>(
+                            e->inferred_types[derived->return_type.get()]()
+                        );
+                    }
+                    else
+                    {
+                        ft.return_type = std::make_shared<TypeInfo>(NothingType());
+                    }
+
+                    for (auto&& a : derived->arguments_list->arguments)
+                    {
+                        ft.argument_types.push_back(std::make_pair(
+                            a->name,
+                            std::make_shared<TypeInfo>(e->inferred_types[a.get()]())
+                        ));
+                    }
+
+                    return ft;
+                },
+                engine, n
+            };
+
+        module_scope->end_scope();
+        return {};
+    }
+
+    any InferenceVisitor::visit(Arguments* n)
+    {
+        for (auto&& a : n->arguments)
+        {
+            a->visit(this);
+        }
+
+        return {};
+    }
+
+    any InferenceVisitor::visit(TypePair* n)
+    {
+        // Use this node as the reference, and we add it to the local symbol table.
+        module_scope->add_symbol(n->name, n);
+
+        engine->inferred_types[n] =
+            InferredType {
+                [](TypeEngine* e, ASTNode* node)
+                {
+                    auto derived = static_cast<TypePair*>(node);
+
+                    return e->mapper.get_type_for(derived->value->canonical_name());
+                },
+                engine, n
+            };
+
         return {};
     }
 

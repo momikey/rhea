@@ -7,6 +7,7 @@
 
 #include "ast.hpp"
 #include "state/module_tree.hpp"
+#include "state/module_node.hpp"
 #include "types/types.hpp"
 #include "types/mapper.hpp"
 
@@ -47,6 +48,12 @@ namespace rhea { namespace inference {
          * the module names here, for easier organization.
          */
         std::unordered_map<std::string, std::unique_ptr<state::ModuleScopeTree>> module_scopes;
+
+        /*
+         * We hold a map of function call nodes and their scopes so that we can
+         * do overload resolution later in the compilation.
+         */
+        std::unordered_map<ast::ASTNode*, state::ModuleScopeNode*> call_nodes;
 
         /*
          * As this is an AST traversal, we use a visitor utilizing the

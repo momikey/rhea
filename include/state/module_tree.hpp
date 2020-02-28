@@ -30,7 +30,8 @@ namespace rhea { namespace state {
         ast::ASTNode* find_symbol(std::string sym);
 
         // Add a symbol to the current scope. Throws an exception if trying to add
-        // to a null pointer. (This can happen with unbalanced begin/end calls.)
+        // to a null pointer. (This can happen with unbalanced begin/end calls,
+        // which are an error, but it's better to play it safe.)
         void add_symbol(std::string sym, ast::ASTNode* node);
 
         // The fully-qualified name of this module, or an empty string if it

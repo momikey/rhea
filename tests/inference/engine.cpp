@@ -366,5 +366,31 @@ namespace {
         BOOST_TEST((as_simple->type == BasicType::Integer));
     }
 
+    BOOST_AUTO_TEST_CASE (infer_function_type)
+    {
+        BOOST_TEST_MESSAGE("Testing inference of simple function definition");
+
+        std::vector<std::unique_ptr<Statement>> empty_body;
+        auto body = make_statement<Block>(empty_body);
+        std::vector<std::unique_ptr<Condition>> empty_cond;
+
+        auto node = make_statement<Def>(
+            rhea::ast::FunctionType::Basic,
+            "foo",
+            nullptr,
+            nullptr,
+            empty_cond,
+            std::move(body)
+        );
+
+        BOOST_TEST((node != nullptr));
+
+        node->visit(&engine.visitor);
+
+        auto scope = engine.module_scopes["main"]->root.get();
+        BOOST_TEST((scope != nullptr));
+        BOOST_TEST((scope->find_symbol("foo <> -> nothing") != nullptr));
+    }
+
     BOOST_AUTO_TEST_SUITE_END()
 }

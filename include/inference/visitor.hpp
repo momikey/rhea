@@ -2,6 +2,8 @@
 #define RHEA_INFERENCE_VISITOR_HPP
 
 #include <vector>
+#include <memory>
+#include <utility>
 
 #include "ast.hpp"
 #include "state/module_tree.hpp"
@@ -75,6 +77,10 @@ namespace rhea { namespace inference {
         any visit(TypeDeclaration* n) override;
         any visit(Variable* n) override;
         any visit(Constant* n) override;
+
+        any visit(Def* n) override;
+        any visit(Arguments* n) override;
+        any visit(TypePair* n) override;
     };
 }}
 

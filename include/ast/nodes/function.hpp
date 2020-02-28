@@ -111,6 +111,7 @@ namespace rhea { namespace ast {
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;
+        std::string function_type_string();
     };
 
     // AST for generic function definitions. This is a separate node type because

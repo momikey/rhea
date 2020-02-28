@@ -117,4 +117,41 @@ namespace rhea { namespace ast {
             body->to_string()
         );
     }
+
+    std::string Def::function_type_string()
+    {
+        std::string type_suffix;
+        switch (type)
+        {
+            case FunctionType::Predicate:
+                type_suffix = "?";
+                break;
+            case FunctionType::Operator:
+                type_suffix = "$";
+                break;
+            case FunctionType::Unchecked:
+                type_suffix = "!";
+                break;
+            default:
+                break;
+        }
+
+        std::string args;
+        if (arguments_list != nullptr)
+        {
+            for (auto&& a : arguments_list->arguments)
+            {
+                args += a->value->canonical_name();
+                args += ",";
+            }
+            args.pop_back();            
+        }
+
+        return fmt::format("{0}{1} <{2}> -> {3}",
+            name,
+            type_suffix,
+            args,
+            return_type != nullptr ? return_type->canonical_name() : "nothing"
+        );
+    }
 }}
