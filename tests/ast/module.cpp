@@ -30,6 +30,22 @@ namespace {
         BOOST_TEST((node->to_string() == "(Program)"));
     }
 
+    BOOST_AUTO_TEST_CASE (module_skeleton_ast)
+    {
+        auto n = ast::make_identifier<ast::Identifier>("mymodule");
+        auto modname = std::make_unique<ast::ModuleName>(std::move(n));
+        auto moddef = ast::make_statement<ast::ModuleDef>(std::move(modname));
+
+        ast::child_vector<ast::Statement> stmts;
+        stmts.emplace_back(std::move(moddef));
+
+        auto node = std::make_unique<ast::Module>(stmts);
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+
+        BOOST_TEST((node->to_string() == "(Module,(ModuleDef,(ModuleName,mymodule)))"));
+    }
+
     BOOST_AUTO_TEST_CASE (use_statement_ast)
     {
         std::unique_ptr<ast::AnyIdentifier> m = ast::make_identifier<ast::Identifier>("foo");

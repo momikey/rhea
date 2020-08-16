@@ -19,18 +19,22 @@ namespace rhea { namespace ast {
         public:
         Program(child_vector<Statement>& ss);
 
-        std::string to_string() override;
-
         child_vector<Statement> children;
         
         util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
     };
 
     // TODO module stuff
     class Module : public ASTNode
     {
+        public:
+        Module(child_vector<Statement>& ss);
+
+        child_vector<Statement> children;
 
         util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
     };
 
     // Helper for module names, which aren't exactly the same as either
