@@ -291,18 +291,18 @@ concept_definition
 
 # Modules and Programs
 
-module_statement
+--module_statement
     module_name
-use_statement
+--use_statement
     module_name
 import_list
     identifier +
-import_statement
+--import_statement
     import_list
     module_name
-export_statement
+--export_statement
     import_list
-module_name             ; may be redundant
+--module_name
     <any_identifier>
 module_definition
     module_statement

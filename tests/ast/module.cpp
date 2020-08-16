@@ -32,13 +32,81 @@ namespace {
 
     BOOST_AUTO_TEST_CASE (use_statement_ast)
     {
-        auto m = ast::make_identifier<ast::Identifier>("foo");
+        std::unique_ptr<ast::AnyIdentifier> m = ast::make_identifier<ast::Identifier>("foo");
+        auto name = std::make_unique<ast::ModuleName>(std::move(m));
 
-        auto node = std::make_unique<ast::Use>(std::move(m));
+        auto node = std::make_unique<ast::Use>(std::move(name));
 
         BOOST_TEST_MESSAGE("Testing AST Node" << node->to_string());
 
-        BOOST_TEST((node->to_string()) == "(Use,(Identifier,foo))");
+        BOOST_TEST((node->to_string()) == "(Use,(ModuleName,foo))");
+    }
+    
+    BOOST_AUTO_TEST_CASE (use_statement_fqn_ast)
+    {
+        std::vector<std::string> names { "foo", "bar", "baz" };
+        auto m = ast::make_identifier<ast::FullyQualified>(names);
+        auto name = std::make_unique<ast::ModuleName>(std::move(m));
+
+        auto node = std::make_unique<ast::Use>(std::move(name));
+
+        BOOST_TEST_MESSAGE("Testing AST Node" << node->to_string());
+
+        BOOST_TEST((node->to_string()) == "(Use,(ModuleName,foo:bar:baz))");
+    }
+
+    BOOST_AUTO_TEST_CASE (module_statement_ast)
+    {
+        std::unique_ptr<ast::AnyIdentifier> m = ast::make_identifier<ast::Identifier>("foo");
+        auto name = std::make_unique<ast::ModuleName>(std::move(m));
+
+        auto node = std::make_unique<ast::ModuleDef>(std::move(name));
+
+        BOOST_TEST_MESSAGE("Testing AST Node" << node->to_string());
+
+        BOOST_TEST((node->to_string()) == "(ModuleDef,(ModuleName,foo))");
+    }
+    
+    BOOST_AUTO_TEST_CASE (module_statement_fqn_ast)
+    {
+        std::vector<std::string> names { "foo", "bar", "baz" };
+        auto m = ast::make_identifier<ast::FullyQualified>(names);
+        auto name = std::make_unique<ast::ModuleName>(std::move(m));
+
+        auto node = std::make_unique<ast::ModuleDef>(std::move(name));
+
+        BOOST_TEST_MESSAGE("Testing AST Node" << node->to_string());
+
+        BOOST_TEST((node->to_string()) == "(ModuleDef,(ModuleName,foo:bar:baz))");
+    }
+    
+    BOOST_AUTO_TEST_CASE (import_statement_ast)
+    {
+        std::unique_ptr<ast::AnyIdentifier> m = ast::make_identifier<ast::Identifier>("mymodule");
+        auto name = std::make_unique<ast::ModuleName>(std::move(m));
+
+        ast::child_vector<ast::Identifier> ids;
+        ids.emplace_back(std::make_unique<ast::Identifier>("Foo"));
+        ids.emplace_back(std::make_unique<ast::Identifier>("Bar"));
+
+        auto node = std::make_unique<ast::Import>(ids, std::move(name));
+
+        BOOST_TEST_MESSAGE("Testing AST Node" << node->to_string());
+
+        BOOST_TEST((node->to_string()) == "(Import,(ModuleName,mymodule),(Identifier,Foo),(Identifier,Bar))");
+    }
+    
+    BOOST_AUTO_TEST_CASE (export_statement_ast)
+    {
+        ast::child_vector<ast::Identifier> ids;
+        ids.emplace_back(std::make_unique<ast::Identifier>("Foo"));
+        ids.emplace_back(std::make_unique<ast::Identifier>("Bar"));
+
+        auto node = std::make_unique<ast::Export>(ids);
+
+        BOOST_TEST_MESSAGE("Testing AST Node" << node->to_string());
+
+        BOOST_TEST((node->to_string()) == "(Export,(Identifier,Foo),(Identifier,Bar))");
     }
 
     BOOST_AUTO_TEST_SUITE_END ()

@@ -245,6 +245,18 @@ namespace rhea { namespace ast {
     any Module::visit(Visitor* v)
     { return v->visit(this); }
 
+    any ModuleName::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any ModuleDef::visit(Visitor* v)
+    { return v->visit(this); }
+
     any Use::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Import::visit(Visitor* v)
+    { return v->visit(this); }
+
+    any Export::visit(Visitor* v)
     { return v->visit(this); }
 }}
