@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 
 #include "node_base.hpp"
+#include "identifiers.hpp"
 
 /*
  * AST nodes for top-level structures (modules and programs), as well as the
@@ -30,6 +31,17 @@ namespace rhea { namespace ast {
     {
 
         util::any visit(visitor::Visitor* v) override;
+    };
+
+    class Use : public Statement
+    {
+        public:
+        Use(std::unique_ptr<AnyIdentifier> m) : module(std::move(m)) {}
+
+        const std::unique_ptr<AnyIdentifier> module;
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override
+            { return fmt::format("(Use,{0})", module->to_string()); }
     };
 }}
 

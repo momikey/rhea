@@ -30,5 +30,16 @@ namespace {
         BOOST_TEST((node->to_string() == "(Program)"));
     }
 
+    BOOST_AUTO_TEST_CASE (use_statement_ast)
+    {
+        auto m = ast::make_identifier<ast::Identifier>("foo");
+
+        auto node = std::make_unique<ast::Use>(std::move(m));
+
+        BOOST_TEST_MESSAGE("Testing AST Node" << node->to_string());
+
+        BOOST_TEST((node->to_string()) == "(Use,(Identifier,foo))");
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

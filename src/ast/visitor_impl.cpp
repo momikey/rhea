@@ -244,4 +244,7 @@ namespace rhea { namespace ast {
     
     any Module::visit(Visitor* v)
     { return v->visit(this); }
+
+    any Use::visit(Visitor* v)
+    { return v->visit(this); }
 }}

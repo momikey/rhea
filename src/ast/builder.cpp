@@ -952,6 +952,12 @@ namespace rhea { namespace ast {
                 stmt = make_statement<Extern>(node->children.front()->string());
             }
 
+            // Use declaration: `use foo;`
+            else if (node->is<gr::use_statement>())
+            {
+                throw unimplemented_type(node->name());
+            }
+
             else
             {
                 throw unimplemented_type(node->name());
