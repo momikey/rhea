@@ -52,6 +52,21 @@ namespace {
         BOOST_TEST((node->to_string() == "(BareExpression,(FloatingPoint,1.23,3))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_fully_qualified_expression)
+    {
+        std::string sample { "foo:bar:baz;" };
+
+        BOOST_TEST_MESSAGE("Parsing fully-qualified identifier expression " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(FullyQualified,foo,bar,baz))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_binop_expression)
     {
         std::string sample { "42 + 24;" };

@@ -42,6 +42,20 @@ namespace rhea { namespace ast {
                 ident = std::make_unique<Identifier>(node->string());
             }
 
+            // Fully-qualified identifiers, i.e., members of a module which is
+            // fully specified. (Ex: `foo:bar:baz`.)
+            else if (node->is<gr::fully_qualified>())
+            {
+                std::vector<std::string> parts;
+                std::for_each(node->children.begin(), node->children.end(),
+                    [&parts] (const auto& elem) {
+                        parts.emplace_back(elem->string());
+                    }
+                );
+
+                ident = std::make_unique<FullyQualified>(parts);
+            }
+
             // TODO: Handle more complex type names
             else
             {
@@ -468,9 +482,10 @@ namespace rhea { namespace ast {
             }
 
             // Simple identifiers
-            else if (node->is<gr::identifier>())
+            else if (node->is<gr::identifier>() || node->is<gr::fully_qualified>())
             {
-                expr = std::make_unique<Identifier>(node->string());
+                // expr = std::make_unique<Identifier>(node->string());
+                expr = create_identifier_node(node);
             }
 
             // Symbols
