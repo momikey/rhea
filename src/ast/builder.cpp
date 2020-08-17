@@ -56,7 +56,42 @@ namespace rhea { namespace ast {
                 ident = std::make_unique<FullyQualified>(parts);
             }
 
-            // TODO: Handle more complex type names
+            // Relative identifers. These are, as the name suggests, relative
+            // to the currently executing module. (Ex. `:foo:bar`.)
+            else if (node->is<gr::relative_identifier>())
+            {
+                auto&& child = node->children.at(0);
+
+                // Relative identifier parse nodes always contain either
+                // a bare identifier or a fully-qualified one, so we can just
+                // call this same method on the only child of this node.
+                auto result = create_identifier_node(child.get());
+
+                // We do have to make sure the type is correct, though.
+                // This requires a bit of casting and releasing. Basically,
+                // we grab the raw pointer out of the base-type unique_ptr
+                // and stuff it into one of the proper derived type. If we
+                // needed to do this a lot, I'd probably make a template or
+                // something to encapsulate it.
+                if (child->is<gr::identifier>())
+                {
+                    auto d = static_cast<Identifier*>(result.release());
+                    auto ptr = std::unique_ptr<Identifier>(d);
+                    ident = std::make_unique<RelativeIdentifier>(std::move(ptr));
+                }
+                else if (child->is<gr::fully_qualified>())
+                {
+                    auto d = static_cast<FullyQualified*>(result.release());
+                    auto ptr = std::unique_ptr<FullyQualified>(d);
+                    ident = std::make_unique<RelativeIdentifier>(std::move(ptr));
+                }
+                else
+                {
+                    throw unimplemented_type(child->name());
+                }
+            }
+
+            // TODO: Handle any other unforeseen problems.
             else
             {
                 throw unimplemented_type(node->name());
@@ -481,10 +516,11 @@ namespace rhea { namespace ast {
                 expr = make_expression<String>(node->children.front()->string());
             }
 
-            // Simple identifiers
-            else if (node->is<gr::identifier>() || node->is<gr::fully_qualified>())
+            // Identifiers
+            else if (node->is<gr::identifier>() ||
+                node->is<gr::fully_qualified>() ||
+                node->is<gr::relative_identifier>())
             {
-                // expr = std::make_unique<Identifier>(node->string());
                 expr = create_identifier_node(node);
             }
 

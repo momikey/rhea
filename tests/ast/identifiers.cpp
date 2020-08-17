@@ -60,6 +60,8 @@ namespace {
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node.to_string());
 
+        BOOST_TEST(node.canonical_name() == sample);
+
         BOOST_TEST(node.children.size() == ids.size());
         for (auto i = 0u; i < node.children.size(); ++i)
         {
@@ -89,9 +91,10 @@ namespace {
 
             BOOST_TEST_MESSAGE("Testing AST Node " << parent->to_string());
 
-            auto ptr = dynamic_cast<rhea::ast::FullyQualified*>(parent->identifier.get()) != nullptr;
-
-            BOOST_TEST(ptr);
+            // Note that we test for "size - 1" because the split algorithm gives us
+            // an empty first string.
+            BOOST_TEST((parent->children.size() == ids.size() - 1));
+            BOOST_TEST((parent->canonical_name() == sample));
         }
         else
         {
@@ -100,10 +103,8 @@ namespace {
         
             BOOST_TEST_MESSAGE("Testing AST Node " << parent->to_string());
 
-            auto ptr = dynamic_cast<rhea::ast::Identifier*>(parent->identifier.get());
-
-            BOOST_TEST((ptr != nullptr));
-            BOOST_TEST((ptr->name == sample.substr(1)));
+            BOOST_TEST((parent->children.size() == 1));
+            BOOST_TEST((parent->canonical_name() == sample));
         }
 
     }

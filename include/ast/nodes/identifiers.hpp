@@ -82,24 +82,23 @@ namespace rhea { namespace ast {
     class RelativeIdentifier : public AnyIdentifier
     {
         public:
-        RelativeIdentifier(std::unique_ptr<Identifier> id): identifier(std::move(id)) {}
-        RelativeIdentifier(std::unique_ptr<FullyQualified> id): identifier(std::move(id)) {}
+        RelativeIdentifier(std::unique_ptr<Identifier> id, std::string mn);
+        RelativeIdentifier(std::unique_ptr<FullyQualified> id, std::string mn);
 
-        RelativeIdentifier(std::unique_ptr<Identifier> id, std::string mn)
-            : identifier(std::move(id)), module_name(mn) {}
-        RelativeIdentifier(std::unique_ptr<FullyQualified> id, std::string mn)
-            : identifier(std::move(id)), module_name(mn) {}
+        RelativeIdentifier(std::unique_ptr<Identifier> id)
+            : RelativeIdentifier(std::move(id), "") {}
+        RelativeIdentifier(std::unique_ptr<FullyQualified> id)
+            : RelativeIdentifier(std::move(id), "") {}
 
-        const std::unique_ptr<AnyIdentifier> identifier;
         std::string module_name;
+        child_vector<Identifier> children;
 
         std::string canonical_name() const override;
 
         util::any visit(visitor::Visitor* v) override;
         types::TypeInfo expression_type() override
             { return m_expression_type; }
-        std::string to_string() override
-            { return fmt::format("(RelativeIdentifier,{0})", identifier->to_string()); }
+        std::string to_string() override;
             
         // Variables (and other uses of identifiers) do not have known types at compile time,
         // so we must have some way of identifying them.
