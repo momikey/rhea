@@ -125,6 +125,15 @@ namespace rhea { namespace ast {
             return tname;
         }
 
+        // Builder helper for module names, used for `use`, `import`, `export`,
+        // and `module` declarations. It makes sense to encapsulate.
+        std::unique_ptr<ModuleName> create_module_name(parser_node* node)
+        {
+            auto name = create_identifier_node(node->children.at(0).get());
+
+            return std::make_unique<ModuleName>(std::move(name));
+        }
+
         // Builder helper for name-type pairs, which are common throughout the AST.
         std::unique_ptr<TypePair> create_typepair_node(parser_node* node)
         {
@@ -1003,10 +1012,50 @@ namespace rhea { namespace ast {
                 stmt = make_statement<Extern>(node->children.front()->string());
             }
 
+            // Module declaration: `module foo;`
+            else if (node->is<gr::module_statement>())
+            {
+                // Delegate to the module name builder.
+                auto mname = create_module_name(node->children.front().get());
+
+                stmt = make_statement<ModuleDef>(std::move(mname));
+            }
+
             // Use declaration: `use foo;`
             else if (node->is<gr::use_statement>())
             {
-                throw unimplemented_type(node->name());
+                // Delegate to the module name builder.
+                auto mname = create_module_name(node->children.front().get());
+
+                stmt = make_statement<Use>(std::move(mname));
+            }
+
+            // Import declaration: `import { foo } from bar;`
+            else if (node->is<gr::import_statement>())
+            {
+                auto mname = create_module_name(node->children.at(1).get());
+
+                child_vector<Identifier> import_list;
+                auto& ch = node->children.at(0)->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { import_list.emplace_back(std::make_unique<Identifier>(el->string())); }
+                );
+
+                stmt = make_statement<Import>(import_list, std::move(mname));
+            }
+
+            // Export declaration: `export { foo, bar };`
+            else if (node->is<gr::export_statement>())
+            {
+                child_vector<Identifier> export_list;
+                auto& ch = node->children.front()->children;
+                std::for_each(ch.begin(), ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { export_list.emplace_back(std::make_unique<Identifier>(el->string())); }
+                );
+
+                stmt = make_statement<Export>(export_list);
             }
 
             else

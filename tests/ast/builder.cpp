@@ -603,6 +603,134 @@ namespace {
             "(Def,0,f,null,(Arguments,(TypePair,t,(Typename,(Identifier,T),null,null))),(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_use_statement)
+    {
+        std::string sample { "use foo;" };
+
+        BOOST_TEST_MESSAGE("Parsing simple use declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Use,(ModuleName,foo))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_use_statement_relative)
+    {
+        std::string sample { "use :relative_id;" };
+
+        BOOST_TEST_MESSAGE("Parsing relative use declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Use,(ModuleName,:relative_id))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_use_statement_fully_qualified)
+    {
+        std::string sample { "use foo:bar:baz;" };
+
+        BOOST_TEST_MESSAGE("Parsing fully-qualified use declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Use,(ModuleName,foo:bar:baz))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_module_declaration)
+    {
+        std::string sample { "module my_module;" };
+
+        BOOST_TEST_MESSAGE("Parsing simple module declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(ModuleDef,(ModuleName,my_module))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_module_declaration_fully_qualified)
+    {
+        std::string sample { "module org:example:my_module;" };
+
+        BOOST_TEST_MESSAGE("Parsing fully-qualified module declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(ModuleDef,(ModuleName,org:example:my_module))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_import_declaration)
+    {
+        std::string sample { "import { foo, bar } from my_module;" };
+
+        BOOST_TEST_MESSAGE("Parsing import declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Import,(ModuleName,my_module),(Identifier,foo),(Identifier,bar))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_import_declaration_fully_qualified)
+    {
+        std::string sample { "import { foo, bar } from org:example:my_module;" };
+
+        BOOST_TEST_MESSAGE("Parsing import declaration with fully-qualified module " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Import,(ModuleName,org:example:my_module),(Identifier,foo),(Identifier,bar))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_export_declaration)
+    {
+        std::string sample { "export { foo, bar };" };
+
+        BOOST_TEST_MESSAGE("Parsing export declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Export,(Identifier,foo),(Identifier,bar))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_simple_program_definition)
     {
         std::string sample { "def main = { return true; }" };
