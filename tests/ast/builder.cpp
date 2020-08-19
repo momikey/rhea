@@ -556,6 +556,8 @@ namespace {
     BOOST_AUTO_TEST_CASE (builder_typenames)
     {
         std::string simple { "var x as y;" };
+        std::string fq_type { "var x as foo:bar:baz;" };
+        std::string relative_type { "var x as :foo:bar;" };
 
         BOOST_TEST_MESSAGE("Parsing simple typename declaration " << simple);
         string_input<> in_simple(simple, "test");
@@ -567,6 +569,27 @@ namespace {
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,y),null,null))"));
 
+        BOOST_TEST_MESSAGE("Parsing fully-qualified typename declaration " << fq_type);
+        string_input<> in_fq(fq_type, "test");
+
+        tree = tree_builder<gr::statement>(in_fq);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(FullyQualified,foo,bar,baz),null,null))"));
+
+        BOOST_TEST_MESSAGE("Parsing relative typename declaration " << relative_type);
+        string_input<> in_relative(relative_type, "test");
+
+        tree = tree_builder<gr::statement>(in_relative);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        // BOOST_TEST_MESSAGE((node->position));
+        // BOOST_TEST_MESSAGE((node->to_string()));
+        // BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(RelativeIdentifier,foo,bar),null,null))"));
         // Add more complex typename expression tests here
     }
 

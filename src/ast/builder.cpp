@@ -107,8 +107,13 @@ namespace rhea { namespace ast {
         {
             std::unique_ptr<Typename> tname;
 
-            // Simple identifiers or builtin types as typenames
-            if (node->is<gr::identifier>() || node->is<gr::builtin_types>())
+            // "Simple" types are builtins or identifiers.
+            // Note that the AST builder doesn't do any kind of type-checking.
+            if (node->is<gr::identifier>() ||
+                node->is<gr::builtin_types>() ||
+                node->is<gr::fully_qualified>() ||
+                node->is<gr::relative_identifier>()
+            )
             {
                 tname = std::make_unique<Typename>(std::move(create_identifier_node(node)));
             }
