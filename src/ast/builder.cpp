@@ -731,6 +731,15 @@ namespace rhea { namespace ast {
                 );
             }
 
+            // Cast operation: `foo as bar`
+            else if (node->is<gr::kw_as>())
+            {
+                expr = make_expression<Cast>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    std::move(create_typename_node(node->children.at(1).get()))
+                );
+            }
+
             // Function call expressions
             else if (node->is<gr::function_call_expr>())
             {
