@@ -219,8 +219,19 @@ namespace rhea { namespace grammar {
         postfix_op
     > {};
 
+    struct cast_op : sor <
+        seq <
+            unary_prefix_op,
+            separator,
+            kw_as,
+            separator,
+            type_name
+        >,
+        unary_prefix_op
+    > {};
+
     struct exponential_binop : right_associative <
-        unary_prefix_op,
+        cast_op,
         exponent_operator
     > {};
 
@@ -268,26 +279,15 @@ namespace rhea { namespace grammar {
         >
     > {};
 
-    struct cast_op : sor <
-        seq <
-            boolean_binop,
-            separator,
-            kw_as,
-            separator,
-            type_name
-        >,
-        boolean_binop
-    > {};
-
     struct type_check_op : sor <
         seq <
-            cast_op,
+            boolean_binop,
             separator,
             kw_is,
             separator,
             type_name
         >,
-        cast_op
+        boolean_binop
     > {};
 
     struct ternary_op : sor <
