@@ -68,8 +68,8 @@ namespace {
 
         auto result = node->visit(&v);
 
-        BOOST_TEST_MESSAGE("Visiting integer AST node " << node->to_string());
-        BOOST_TEST((any_cast<std::string>(result) == "(FloatingPoint,1.0e-06,3)"));
+        BOOST_TEST_MESSAGE("Visiting floating-point AST node " << node->to_string());
+        BOOST_TEST((any_cast<std::string>(result) == "(FloatingPoint,1e-06,3)"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()

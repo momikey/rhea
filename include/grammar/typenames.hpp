@@ -65,7 +65,9 @@ namespace rhea { namespace grammar {
         any_identifier,
         complex_type_lookahead,
         pad <opt <generic_type>, ignored>,
-        pad <opt <array_type>, ignored>
+        pad <opt <
+            list < array_type, separator >
+        >, ignored>
     > {};
 
     struct pointer_or_reference_name : seq <
