@@ -98,6 +98,9 @@ namespace rhea { namespace ast {
     any GenericTypename::visit(Visitor* v)
     { return v->visit(this); }
 
+    any ArrayTypename::visit(Visitor* v)
+    { return v->visit(this); }
+
     any Typename::visit(Visitor* v)
     { return v->visit(this); }
 

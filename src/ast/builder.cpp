@@ -118,10 +118,53 @@ namespace rhea { namespace ast {
                 tname = std::make_unique<Typename>(std::move(create_identifier_node(node)));
             }
 
+            // "Complex" typenames can be generic and/or array types.
+            else if (node->is<gr::complex_type_name>())
+            {
+                // The "base" type is easy: just treat it like a simple type.
+                auto base_type = create_identifier_node(node->children.at(0).get());
+
+                // The generic part will always come next if it's present.
+                std::unique_ptr<GenericTypename> generic_part = nullptr;
+                if (node->children.at(1)->is<gr::generic_type>())
+                {
+                    child_vector<Typename> gparts;
+
+                    auto& ch = node->children.at(1)->children;
+                    std::for_each(ch.begin(), ch.end(), 
+                        [&](std::unique_ptr<parser_node>& el)
+                        { gparts.emplace_back(std::move(create_typename_node(el.get()))); }
+                    );
+
+                    generic_part = std::make_unique<GenericTypename>(gparts);
+                }
+
+                // Anything else should be array specs.
+                std::unique_ptr<ArrayTypename> array_part = nullptr;
+                child_vector<Expression> aparts;
+                auto start_index = generic_part == nullptr ? 1 : 2;
+                std::for_each(node->children.begin()+start_index, node->children.end(),
+                    [&](std::unique_ptr<parser_node>& el)
+                    {
+                        assert(el->is<gr::array_type>());
+                        auto& c = el->children.front();
+                        aparts.emplace_back(std::move(create_expression_node(c.get())));
+                    }
+                );
+                if (!aparts.empty())
+                {
+                    array_part = std::make_unique<ArrayTypename>(aparts);
+                }
+
+                tname = std::make_unique<Typename>(
+                    std::move(base_type),
+                    std::move(generic_part),
+                    std::move(array_part)
+                );
+            }
 
             else
             {
-                // TODO: Handle complex typenames
                 throw unimplemented_type(node->name());
             }
 

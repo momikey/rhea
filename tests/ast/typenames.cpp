@@ -58,13 +58,16 @@ namespace {
     {
         auto name = ast::make_identifier<ast::Identifier>("Foo");
         auto array = ast::make_expression<ast::Integer>(42);
+        ast::child_vector<ast::Expression> ts;
+        ts.emplace_back(std::move(array));
+        auto array_typename = std::make_unique<ast::ArrayTypename>(ts);
 
-        auto node = std::make_unique<ast::Typename>(std::move(name), std::move(array));
+        auto node = std::make_unique<ast::Typename>(std::move(name), std::move(array_typename));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
         BOOST_TEST((node->name->to_string() == "(Identifier,Foo)"));
         BOOST_TEST((node->generic_part == nullptr));
-        BOOST_TEST((node->array_part->to_string() == "(Integral,42,0)"));
+        BOOST_TEST((node->array_part->to_string() == "(ArrayTypename,(Integral,42,0))"));
     }
 
     BOOST_AUTO_TEST_CASE (optional_typename)

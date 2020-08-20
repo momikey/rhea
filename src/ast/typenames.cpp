@@ -26,6 +26,27 @@ namespace rhea { namespace ast {
         return fmt::format("(GenericTypename{0})", s);
     }
 
+    // Definitions for array types
+    ArrayTypename::ArrayTypename(child_vector<Expression>& c)
+    {
+        std::move(c.begin(), c.end(), std::back_inserter(children));
+    }
+
+    std::string ArrayTypename::to_string()
+    {
+        // Same logic as elsewhere.
+        std::string s;
+        s.reserve(children.size()*16);    // profile this to find a nice default
+
+        for (auto&& id : children)
+        {
+            s += ',';
+            s += id->to_string();
+        }
+
+        return fmt::format("(ArrayTypename{0})", s);
+    }
+
     // Definition for variants
     Variant::Variant(child_vector<Typename>& ts)
     {
@@ -97,13 +118,16 @@ namespace rhea { namespace ast {
 
         if (array_part != nullptr)
         {
-            result += '[';
+            for (auto&& ch : array_part->children)
+            {
+                result += '[';
 
-            // TODO: The array part is an arbitrary expression, but it should evaluate
-            // to *something* integral. Working out exactly what is nontrivial, though.
+                // TODO: The array part is an arbitrary expression, but it should evaluate
+                // to *something* integral. Working out exactly what is nontrivial, though.
+                result += ch->to_string();
 
-            auto& ab = result.back();
-            ab = ']';
+                result += ']';
+            }
         }
 
         return result;

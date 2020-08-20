@@ -558,6 +558,10 @@ namespace {
         std::string simple { "var x as y;" };
         std::string fq_type { "var x as foo:bar:baz;" };
         std::string relative_type { "var x as :foo:bar;" };
+        std::string generic_type { "var x as list <string>;" };
+        std::string array_type { "var x as byte[16];" };
+        std::string array_generic_type { "var x as list <string> [10];" };
+        std::string multid_array_type { "var x as byte [256][16];" };
 
         BOOST_TEST_MESSAGE("Parsing simple typename declaration " << simple);
         string_input<> in_simple(simple, "test");
@@ -577,7 +581,6 @@ namespace {
         node = ast::internal::create_statement_node(tree->children.front().get());
 
         BOOST_TEST_MESSAGE((node->position));
-        BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(FullyQualified,foo,bar,baz),null,null))"));
 
         BOOST_TEST_MESSAGE("Parsing relative typename declaration " << relative_type);
@@ -587,10 +590,53 @@ namespace {
 
         node = ast::internal::create_statement_node(tree->children.front().get());
 
-        // BOOST_TEST_MESSAGE((node->position));
-        // BOOST_TEST_MESSAGE((node->to_string()));
-        // BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(RelativeIdentifier,foo,bar),null,null))"));
-        // Add more complex typename expression tests here
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(RelativeIdentifier,foo,bar),null,null))"));
+
+        BOOST_TEST_MESSAGE("Parsing generic typename declaration " << generic_type);
+        string_input<> in_generic(generic_type, "test");
+
+        tree = tree_builder<gr::statement>(in_generic);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,list),(GenericTypename,(Typename,(Identifier,string),null,null)),null))"));
+
+        BOOST_TEST_MESSAGE("Parsing array typename declaration " << array_type);
+        string_input<> in_array(array_type, "test");
+
+        tree = tree_builder<gr::statement>(in_array);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,byte),null,(ArrayTypename,(Integral,16,0))))"));
+
+        BOOST_TEST_MESSAGE("Parsing array and generic typename declaration " << array_generic_type);
+        string_input<> in_array_generic(array_generic_type, "test");
+
+        tree = tree_builder<gr::statement>(in_array_generic);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,list),(GenericTypename,(Typename,(Identifier,string),null,null)),(ArrayTypename,(Integral,10,0))))"));
+
+        BOOST_TEST_MESSAGE("Parsing multidimensional array typename declaration " << multid_array_type);
+        string_input<> in_mdarray(multid_array_type, "test");
+
+        tree = tree_builder<gr::statement>(in_mdarray);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,byte),null,(ArrayTypename,(Integral,256,0),(Integral,16,0))))"));
+
     }
 
     BOOST_AUTO_TEST_CASE (builder_simple_basic_function_def)

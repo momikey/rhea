@@ -29,6 +29,19 @@ namespace rhea { namespace ast {
         child_vector<Typename> children;
     };
 
+    // The array part of a type name can contain multiple arrays,
+    // It's not a type name in and of itself, despite the name.
+    class ArrayTypename : public ASTNode
+    {
+        public:
+        ArrayTypename(child_vector<Expression>& a);
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
+
+        child_vector<Expression> children;
+    };
+
     // Base class for type names
     class Typename : public ASTNode
     {
@@ -39,9 +52,9 @@ namespace rhea { namespace ast {
         // More complex types will use one of these
         Typename(std::unique_ptr<AnyIdentifier> n, std::unique_ptr<GenericTypename> g)
             : name(std::move(n)), generic_part(std::move(g)), array_part(nullptr) {}
-        Typename(std::unique_ptr<AnyIdentifier> n, expression_ptr a)
+        Typename(std::unique_ptr<AnyIdentifier> n, std::unique_ptr<ArrayTypename> a)
             : name(std::move(n)), generic_part(nullptr), array_part(std::move(a)) {}
-        Typename(std::unique_ptr<AnyIdentifier> n, std::unique_ptr<GenericTypename> g, expression_ptr a)
+        Typename(std::unique_ptr<AnyIdentifier> n, std::unique_ptr<GenericTypename> g, std::unique_ptr<ArrayTypename> a)
             : name(std::move(n)), generic_part(std::move(g)), array_part(std::move(a)) {}
 
         Typename() = default;
@@ -51,7 +64,7 @@ namespace rhea { namespace ast {
         // These are optional; if not present (as for a simple type),
         // they will be null.
         const std::unique_ptr<GenericTypename> generic_part;
-        const expression_ptr array_part;
+        const std::unique_ptr<ArrayTypename> array_part;
 
         virtual std::string canonical_name() const;
 
