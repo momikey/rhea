@@ -210,6 +210,68 @@ namespace rhea { namespace ast {
             );
         }
 
+        // Templated builder helper to properly downcast dictionary key expressions.
+        template <typename T>
+        DictionaryKey dictionary_key_cast(std::unique_ptr<Expression> expr)
+        {
+            auto d = static_cast<T*>(expr.release());
+            return std::unique_ptr<T>(d);
+        }
+
+        // Builder helper for dictionary keys
+        DictionaryKey create_dictionary_key(parser_node* node)
+        {
+            auto expr = create_expression_node(node);
+
+            // create_expression_node gives us a unique_ptr to an Expression node,
+            // as its name suggests. But that means we have to inspect its type and
+            // cast to the proper key node.
+            auto expr_type = expr->expression_type().type();
+
+            types::SimpleType* simple_type = util::get_if<types::SimpleType>(&expr_type);
+            if (simple_type == nullptr)
+            {
+                // Dictionary keys can only be symbol, integer, or string literals.
+                // These are all considered "simple" types, any other type must be
+                // an error.
+                throw syntax_error("Invalid dictionary key type");
+            }
+            else
+            {
+                // We have a simple type, but it may be the wrong one.
+                switch (simple_type->type)
+                {
+                    case types::BasicType::Integer:
+                        return dictionary_key_cast<Integer>(std::move(expr));
+                    case types::BasicType::Byte:
+                        return dictionary_key_cast<Byte>(std::move(expr));
+                    case types::BasicType::Long:
+                        return dictionary_key_cast<Long>(std::move(expr));
+                    case types::BasicType::UnsignedInteger:
+                        return dictionary_key_cast<UnsignedInteger>(std::move(expr));
+                    case types::BasicType::UnsignedByte:
+                        return dictionary_key_cast<UnsignedByte>(std::move(expr));
+                    case types::BasicType::UnsignedLong:
+                        return dictionary_key_cast<UnsignedLong>(std::move(expr));
+                    case types::BasicType::String:
+                        return dictionary_key_cast<String>(std::move(expr));
+                    case types::BasicType::Symbol:
+                        return dictionary_key_cast<Symbol>(std::move(expr));                        
+                    default:
+                        throw syntax_error("Invalid dictionary key type");
+                }
+            }
+        }
+
+        // Builder helper for dictionary entries
+        std::unique_ptr<DictionaryEntry> create_dictionary_entry(parser_node* node)
+        {
+            return std::make_unique<DictionaryEntry>(
+                create_dictionary_key(node->children.at(0).get()),
+                create_expression_node(node->children.at(1).get())
+            );
+        }
+
         // Builder helper for named arguments
         std::unique_ptr<NamedArgument> create_named_argument(parser_node* node)
         {

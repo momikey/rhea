@@ -7,6 +7,8 @@
 #include "../nodes.hpp"
 #include "../error.hpp"
 #include "../parse_tree_node.hpp"
+#include "../../types/types.hpp"
+#include "../../util/compat.hpp"
 
 /*
  * Internal detail for the AST builder.
