@@ -811,6 +811,18 @@ namespace rhea { namespace ast {
 
                 expr = make_expression<SymbolList>(syms);
             }
+            // Dictionary expressions: `{ @foo: "bar" }`
+            else if (node->is<gr::dictionary_expression>())
+            {
+                std::vector<std::unique_ptr<DictionaryEntry>> entries;
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(),
+                    [&](std::unique_ptr<parser_node>& el)
+                    { entries.emplace_back(std::move(create_dictionary_entry(el.get()))); }
+                );
+
+                expr = make_expression<Dictionary>(entries);
+            }
 
             // Member access expressions: `x.y`
             else if (node->is<gr::member_expr>())

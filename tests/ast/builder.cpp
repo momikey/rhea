@@ -190,6 +190,7 @@ namespace {
         std::string list_expr { "(1,2,3);" };
         std::string tuple_expr { "({1,2,3});" };
         std::string symlist_expr { "@{a,b,c};" };
+        std::string dictionary_expr { "{@a: 1, @b: 2};" };
 
         BOOST_TEST_MESSAGE("Parsing array expression " << array_expr);
         string_input<> in1(array_expr, "test");
@@ -230,6 +231,16 @@ namespace {
 
         BOOST_TEST_MESSAGE((node->position));
         BOOST_TEST((node->to_string() == "(BareExpression,(SymbolList,(Symbol,a),(Symbol,b),(Symbol,c)))"));
+
+        BOOST_TEST_MESSAGE("Parsing dictionary expression " << dictionary_expr);
+        string_input<> in5(dictionary_expr, "test");
+
+        tree = tree_builder<gr::bare_expression>(in5);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(Dictionary,(DictionaryEntry,(Symbol,a),(Integral,1,0)),(DictionaryEntry,(Symbol,b),(Integral,2,0))))"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_member_expression)
