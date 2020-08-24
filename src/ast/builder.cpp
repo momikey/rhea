@@ -1007,6 +1007,22 @@ namespace rhea { namespace ast {
                 );
             }
 
+            // Structure declaration: `type Foo = { bar: string };`
+            else if (node->is<gr::structure_declaration>())
+            {
+                child_vector<TypePair> fields;
+                auto& ch = node->children;
+                std::for_each(ch.begin()+1, ch.end(), 
+                    [&](std::unique_ptr<parser_node>& el)
+                    { fields.emplace_back(std::move(create_typepair_node(el.get()))); }
+                );
+
+                stmt = make_statement<Structure>(
+                    std::move(std::make_unique<Identifier>(node->children.at(0)->string())),
+                    fields
+                );                
+            }
+
             // Do statement: `do that;`
             // TODO: Should we do the bare identifier -> function call conversion here?
             else if (node->is<gr::do_statement>())

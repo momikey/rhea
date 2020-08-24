@@ -416,6 +416,21 @@ namespace {
         BOOST_TEST((node->to_string() == "(Enum,(Identifier,En),(SymbolList,(Symbol,a),(Symbol,b),(Symbol,c)))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_structure_declaration)
+    {
+        std::string sample { "type Person = { name: string, age: integer };" };
+        
+        BOOST_TEST_MESSAGE("Parsing structure declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(Structure,(Identifier,Person),(TypePair,name,(Typename,(Identifier,string),null,null)),(TypePair,age,(Typename,(Identifier,integer),null,null)))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_do_statement)
     {
         std::string sample { "do foo;" };

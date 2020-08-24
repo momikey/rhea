@@ -100,7 +100,7 @@ namespace rhea { namespace ast {
     };
 
     // Structure declaration AST. This uses the TypePair node, defined
-    // above, to map fields to their desired types.
+    // in the "typenames" header, to map fields to their desired types.
     class Structure : public Statement
     {
         public:
