@@ -208,7 +208,6 @@ namespace rhea { namespace ast {
             type_match,
             tagged_union,
             concept_generic_type,
-            assignment_lhs,
             assignment_rhs,
             augment_operators,
             variable_declaration,
@@ -268,6 +267,7 @@ namespace rhea { namespace ast {
         unary_rearrange::on <
             unary_prefix_op,
             pointer_or_reference_name,
+            assignment_lhs,
             either_type_name
         >,
 
