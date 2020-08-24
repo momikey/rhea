@@ -303,6 +303,21 @@ namespace {
         BOOST_TEST((node->to_string() == "(BareExpression,(Cast,(Identifier,x),(Typename,(Identifier,long),null,null)))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_typecheck_expression)
+    {
+        std::string sample { "x is long;" };
+
+        BOOST_TEST_MESSAGE("Parsing type-check operation " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::bare_expression>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(BareExpression,(TypeCheck,(Identifier,x),(Typename,(Identifier,long),null,null)))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_function_call_expressions)
     {
         std::string empty_args { "f();" };

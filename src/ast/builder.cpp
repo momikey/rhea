@@ -862,6 +862,15 @@ namespace rhea { namespace ast {
                 );
             }
 
+            // Type check operation: `foo is integer`
+            else if (node->is<gr::kw_is>())
+            {
+                expr = make_expression<TypeCheck>(
+                    std::move(create_expression_node(node->children.at(0).get())),
+                    std::move(create_typename_node(node->children.at(1).get()))
+                );
+            }
+
             // Function call expressions
             else if (node->is<gr::function_call_expr>())
             {

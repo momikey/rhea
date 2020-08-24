@@ -518,7 +518,7 @@ References, strictly speaking, are not themselves a type. Rather, they refer to 
 	var r1 = ref n1;				# refernce to that integer
 
 	print(n1 == r1);				# = true (implicit dereferencing)
-	print(n1 is r1);				# = false (different types)
+	print(n1 is integer);			# = false (different types)
 
 	var r2 as ref string;			# a variable declared as a reference
 	r2 = "Hi";						# assignment
