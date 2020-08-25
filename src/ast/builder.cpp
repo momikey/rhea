@@ -456,8 +456,22 @@ namespace rhea { namespace ast {
                 {
                     if (c->children.front()->is<gr::wildcard_argument>())
                     {
-                        // We'll get to this later.
-                        throw unimplemented_type(node->name());
+                        // We can do this a few different ways. One option is to
+                        // make the Arguments AST node take a variant, and we might
+                        // do that later on. For now, we'll encode an "impossible" value
+                        // as the typename and leave the other phases of the compiler
+                        // to worry about it.
+                        auto wildcard = make_identifier<Identifier>("$$wildcard$$");
+                        auto tname = std::make_unique<Typename>(std::move(wildcard));
+                        std::vector<std::unique_ptr<TypePair>> args;
+
+                        auto& wc_arg_node = c->children.front();
+                        args.emplace_back(std::make_unique<TypePair>(
+                            wc_arg_node->children.at(0)->string(),
+                            std::move(tname)
+                        ));
+
+                        arguments_list = std::make_unique<Arguments>(args);
                     }
                     else
                     {

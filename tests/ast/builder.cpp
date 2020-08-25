@@ -762,6 +762,23 @@ namespace {
             "(Def,0,f,null,(Arguments,(TypePair,t,(Typename,(Identifier,T),null,null))),(Conditions,(Condition,t,(PredicateCall,(Identifier,p),(Integral,42,0)))),(Block,(Return,(Boolean,true))))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_basic_function_def_with_wildcard_arg)
+    {
+        std::string sample { "def f { t: * } = { return true; }" };
+
+        BOOST_TEST_MESSAGE("Parsing function definition with wildcard argument " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() ==
+            "(Def,0,f,null,(Arguments,(TypePair,t,(Typename,(Identifier,$$wildcard$$),null,null))),(Conditions),(Block,(Return,(Boolean,true))))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_use_statement)
     {
         std::string sample { "use foo;" };
