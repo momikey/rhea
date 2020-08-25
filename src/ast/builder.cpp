@@ -386,6 +386,39 @@ namespace rhea { namespace ast {
             return result;
         }
 
+        // Builder helper for function pre/postcondition AST nodes.
+        std::unique_ptr<Condition> create_condition_node(parser_node* node)
+        {
+            // Condition parse nodes have at least two children: the name of the "target"
+            // and the name of the predicate. An optional third child contains a predicate
+            // argument list.
+
+            // The first child must always be a bare identifier.
+            assert(node->children.at(0)->is<gr::identifier>());
+            std::string target = node->children.at(0)->string();
+            child_vector<Expression> predicate_arguments;
+
+            // If we have an arguments list, process it as normal.
+            if (node->children.size() > 2)
+            {
+                auto& c = node->children.at(2)->children;
+                std::for_each(c.begin(), c.end(),
+                    [&](std::unique_ptr<parser_node>& el)
+                    { predicate_arguments.emplace_back(std::move(create_expression_node(el.get()))); }
+                );
+            }
+
+            auto call_expr = make_expression<PredicateCall>(
+                std::move(create_expression_node(node->children.at(1).get())),
+                predicate_arguments
+            );
+
+            return std::make_unique<Condition>(
+                target,
+                std::move(call_expr)
+            );
+        }
+
         // Builder helper for function definitions.
         // Note that this takes the type so we don't have to scan through them again.
         statement_ptr create_function_definition(parser_node* node, FunctionType type)
@@ -450,8 +483,21 @@ namespace rhea { namespace ast {
                 // Conditions are in a pointer vector, with the usual logic.
                 else if (c->is<gr::fn_with_block>())
                 {
-                    // We'll do it later.
-                    throw unimplemented_type(node->name());
+                    auto& ch = c->children;
+                    std::for_each(ch.begin(), ch.end(),
+                        [&](std::unique_ptr<parser_node>& el)
+                        {
+                            if (el->is<gr::fn_condition_predicate_call>())
+                            {
+                                conditions.emplace_back(std::move(create_condition_node(el.get())));
+                            }
+                            else
+                            {
+                                // We may have to deal with other types later on.
+                                throw unimplemented_type(el->name());
+                            }
+                        }
+                    );
                 }
                 // Anything else should be considered the function body.
                 else

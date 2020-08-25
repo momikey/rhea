@@ -78,7 +78,7 @@ namespace rhea { namespace ast {
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
-            { return fmt::format("(Condition,{0},{1}", target, predicate->to_string()); }
+            { return fmt::format("(Condition,{0},{1})", target, predicate->to_string()); }
     };
 
     // Functions can be of different types. This enum allows us
