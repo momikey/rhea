@@ -205,11 +205,11 @@ namespace rhea { namespace grammar {
             sor <
                 coerce_operator,
                 dereference_operator,
+                bitnot_operator,
                 seq < 
                     sor <unary_plus_operator, unary_minus_operator>,
                     not_at <digit>
                 >,
-                seq <kw_not, separator>,
                 seq <kw_ref, separator>,
                 seq <kw_ptr, separator>
             >,
@@ -271,7 +271,11 @@ namespace rhea { namespace grammar {
     > {};
 
     struct boolean_not_op : sor <
-        seq < bitnot_operator, boolean_not_op >,
+        seq <
+            kw_not,
+            separator,
+            boolean_not_op
+        >,
         bitwise_binop
     > {};
 

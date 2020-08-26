@@ -266,6 +266,7 @@ namespace rhea { namespace ast {
 
         unary_rearrange::on <
             unary_prefix_op,
+            boolean_not_op,
             pointer_or_reference_name,
             assignment_lhs,
             either_type_name
