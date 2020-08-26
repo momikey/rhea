@@ -530,7 +530,6 @@ namespace rhea { namespace ast {
                 }
             }
 
-            // TODO: Handle generic definitions as a separate type (GenericDef)
             if (generic_type == nullptr)
             {
                 // Concrete definition
@@ -1103,7 +1102,6 @@ namespace rhea { namespace ast {
             }
 
             // Do statement: `do that;`
-            // TODO: Should we do the bare identifier -> function call conversion here?
             else if (node->is<gr::do_statement>())
             {
                 stmt = make_statement<Do>(
@@ -1331,7 +1329,7 @@ namespace rhea { namespace ast {
     {
         namespace gr = rhea::grammar;
 
-        // PRGTL's parse tree builder always creates a root node that does nothing.
+        // PEGTL's parse tree builder always creates a root node that does nothing.
         // Since our grammar guarantees that we only ever have a single root, we
         // don't really need that, and we can just build our AST from the PEGTL root's
         // only child.

@@ -11,8 +11,7 @@
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
-
-    // TODO: Add other types of assignment LHS, such as structure fields
+    
     struct assignment_lhs : unary_prefix_op
     {};
 

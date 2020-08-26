@@ -25,7 +25,6 @@ namespace rhea { namespace ast {
         std::string to_string() override;
     };
 
-    // TODO module stuff
     class Module : public ASTNode
     {
         public:
