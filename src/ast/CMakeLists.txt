@@ -11,6 +11,7 @@ set(AST_SOURCES
     module.cpp
     builder.cpp
     visitor_impl.cpp
+    concept.cpp
 )
 
 add_library(rhea_ast STATIC ${AST_SOURCES})

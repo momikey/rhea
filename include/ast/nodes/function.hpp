@@ -8,6 +8,7 @@
 #include "node_base.hpp"
 #include "identifiers.hpp"
 #include "typenames.hpp"
+#include "concept.hpp"
 
 /*
  * AST nodes for function definitions, calls, and arguments.
@@ -113,6 +114,12 @@ namespace rhea { namespace ast {
         std::string to_string() override;
         std::string function_type_string();
     };
+
+    // Convenience alias for a choice between a type or concept match node.
+    using GenericMatch = util::variant<
+        std::unique_ptr<TypePair>,
+        std::unique_ptr<ConceptMatch>
+    >;
 
     // AST for generic function definitions. This is a separate node type because
     // a generic function definition doesn't actually contribute to codegen unless

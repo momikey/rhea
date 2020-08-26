@@ -262,4 +262,7 @@ namespace rhea { namespace ast {
 
     any Export::visit(Visitor* v)
     { return v->visit(this); }
+
+    any ConceptMatch::visit(Visitor* v)
+    { return v->visit(this); }
 }}
