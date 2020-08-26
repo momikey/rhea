@@ -30,8 +30,15 @@ namespace {
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
         BOOST_TEST((node->to_string() == "(ConceptMatch,foo,(Typename,(Identifier,string),null,null))"));
-
     }
-   
+
+    BOOST_AUTO_TEST_CASE (member_check)
+    {
+        auto node = std::make_unique<ast::MemberCheck>("foo", "bar");
+
+        BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
+        BOOST_TEST((node->to_string() == "(MemberCheck,foo,bar)"));
+    }
+
     BOOST_AUTO_TEST_SUITE_END ()
 }

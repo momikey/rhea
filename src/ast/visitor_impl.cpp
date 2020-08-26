@@ -265,4 +265,7 @@ namespace rhea { namespace ast {
 
     any ConceptMatch::visit(Visitor* v)
     { return v->visit(this); }
+
+    any MemberCheck::visit(Visitor* v)
+    { return v->visit(this); }
 }}

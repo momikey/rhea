@@ -1,6 +1,7 @@
 # Parser
 
 * Make generic matching able to accept multiple generic types.
+* Implement ".=" concept member check operator.
 
 # AST
 

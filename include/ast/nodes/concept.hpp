@@ -32,6 +32,22 @@ namespace rhea { namespace ast {
         std::string to_string() override
             { return fmt::format("(ConceptMatch,{0},{1})", name, concept_type->to_string()); }
     };
+
+    // A member check is just an operation to see if a given type is
+    // a structure containing a field with the given name.
+    class MemberCheck : public ASTNode
+    {
+        public:
+        MemberCheck(std::string t, std::string m)
+            : type(t), member(m) {}
+
+        std::string type;
+        std::string member;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override
+            { return fmt::format("(MemberCheck,{0},{1})", type, member); }
+    };
 }}
 
 

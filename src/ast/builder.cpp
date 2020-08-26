@@ -191,6 +191,16 @@ namespace rhea { namespace ast {
             );
         }
 
+        // Builder helper for concept matches. This is mostly the same as for type pairs,
+        // but with a different node type.
+        std::unique_ptr<ConceptMatch> create_concept_match_node(parser_node* node)
+        {
+            return std::make_unique<ConceptMatch>(
+                node->children.at(0)->string(),
+                std::move(create_typename_node(node->children.at(1).get()))
+            );
+        }
+
         // Builder helper for binary operators
         expression_ptr create_binop_node(parser_node* node, BinaryOperators op)
         {
