@@ -9,6 +9,8 @@
 #include "identifiers.hpp"
 #include "typenames.hpp"
 
+#include "util/serialize_array.hpp"
+
 /*
  * AST nodes for "simple" statements: assignment, variable declaration,
  * bare expressions, the `do` statemment, and the statement block.

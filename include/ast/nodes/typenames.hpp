@@ -9,6 +9,8 @@
 #include "identifiers.hpp"
 #include "literals.hpp"
 
+#include "util/serialize_array.hpp"
+
 /*
  * AST nodes for type name.
  */

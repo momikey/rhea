@@ -12,16 +12,6 @@ namespace rhea { namespace ast {
 
     std::string Block::to_string()
     {
-        // Same logic as in FullyQualified (identifiers.cpp)
-        std::string s;
-        s.reserve(children.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : children)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Block{0})", s);
+        return fmt::format("(Block{0})", util::serialize_array(children));
     }
 }}

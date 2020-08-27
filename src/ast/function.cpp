@@ -22,20 +22,9 @@ namespace rhea { namespace ast {
 
     std::string Call::to_string()
     {
-        // This is mostly the same logic, except that we have to worry
-        // about visiting the variant.
-
-        std::string s;
-        s.reserve(arguments.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : arguments)
-        {
-            s += ',';
-            s += util::visit([](auto const& v) {
-                 return v->to_string(); }, id);
-        }
-
-        return fmt::format("(Call,{0}{1})", target->to_string(), s);
+        return fmt::format("(Call,{0}{1})",
+            target->to_string(),
+            util::serialize_array(arguments));
     }
 
     Arguments::Arguments(child_vector<TypePair>& args)
@@ -45,18 +34,7 @@ namespace rhea { namespace ast {
 
     std::string Arguments::to_string()
     {
-        // TODO: We'll need to add the visitor logic when we switch to variants.
-        // See above for how to do that.
-        std::string s;
-        s.reserve(arguments.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : arguments)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Arguments{0})", s);  
+        return fmt::format("(Arguments{0})", util::serialize_array(arguments));  
     }
 
     Def::Def(FunctionType t, std::string n, std::unique_ptr<Typename> rt,
@@ -69,18 +47,7 @@ namespace rhea { namespace ast {
 
     std::string Def::to_string()
     {
-        // Only the conditions really need this part. Everything else is
-        // handled by child nodes.
-        std::string s;
-        s.reserve(conditions.size()*32);    // profile this to find a nice default
-
-        for (auto&& c : conditions)
-        {
-            s += ',';
-            s += c->to_string();
-        }
-
-        auto cstr = fmt::format("(Conditions{0})", s);
+        auto cstr = fmt::format("(Conditions{0})", util::serialize_array(conditions));
 
         return fmt::format("(Def,{0},{1},{2},{3},{4},{5})",
             static_cast<int>(type),
@@ -94,18 +61,7 @@ namespace rhea { namespace ast {
 
     std::string GenericDef::to_string()
     {
-        // Only the conditions really need this part. Everything else is
-        // handled by child nodes.
-        std::string s;
-        s.reserve(conditions.size()*32);    // profile this to find a nice default
-
-        for (auto&& c : conditions)
-        {
-            s += ',';
-            s += c->to_string();
-        }
-
-        auto cstr = fmt::format("(Conditions{0})", s);
+        auto cstr = fmt::format("(Conditions{0})", util::serialize_array(conditions));
 
         return fmt::format("(Def,{0},{1},{2},{3},{4},{5},{6})",
             static_cast<int>(type),

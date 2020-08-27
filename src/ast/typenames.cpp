@@ -13,17 +13,7 @@ namespace rhea { namespace ast {
 
     std::string GenericTypename::to_string()
     {
-        // Same logic as in FullyQualified (identifiers.cpp)
-        std::string s;
-        s.reserve(children.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : children)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(GenericTypename{0})", s);
+        return fmt::format("(GenericTypename{0})", util::serialize_array(children));
     }
 
     // Definitions for array types
@@ -34,17 +24,7 @@ namespace rhea { namespace ast {
 
     std::string ArrayTypename::to_string()
     {
-        // Same logic as elsewhere.
-        std::string s;
-        s.reserve(children.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : children)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(ArrayTypename{0})", s);
+        return fmt::format("(ArrayTypename{0})", util::serialize_array(children));
     }
 
     // Definition for variants
@@ -55,17 +35,7 @@ namespace rhea { namespace ast {
 
     std::string Variant::to_string()
     {
-        // Same logic as in FullyQualified (identifiers.cpp)
-        std::string s;
-        s.reserve(children.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : children)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Variant{0})", s);        
+        return fmt::format("(Variant{0})", util::serialize_array(children));        
     }
 
     // Definition for symbol lists
@@ -80,20 +50,7 @@ namespace rhea { namespace ast {
 
     std::string SymbolList::to_string()
     {
-        // Same logic as other "vector to string" nodes
-        std::string s;
-
-        // Profile this to find a nice default, but it'll be lower than others,
-        // because enum symbol names are generally shorter
-        s.reserve(symbols.size()*8);
-
-        for (auto&& id : symbols)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(SymbolList{0})", s); 
+        return fmt::format("(SymbolList{0})", util::serialize_array(symbols)); 
     }
 
     // Canonical name representations. These are intended for internal use, and

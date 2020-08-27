@@ -9,6 +9,8 @@
 
 #include "node_base.hpp"
 
+#include "util/serialize_array.hpp"
+
 /*
  * AST node classes for identifier types.
  */

@@ -24,8 +24,10 @@ namespace rhea { namespace ast {
     // Serialize a FullyQualified node
     std::string FullyQualified::to_string()
     {
-        // The child identifiers always follow the node's name.
-        // We can use this to simplify the logic.
+        // In this and the similar method for relative identifiers below,
+        // we can't use the generic `util::serialize_array()` function.
+        // That's because we aren't serializing the child *nodes*, merely
+        // their *names*.
         std::string s;
         s.reserve(children.size()*16);    // profile this to find a nice default
 
@@ -91,8 +93,8 @@ namespace rhea { namespace ast {
     // caller deal with it.
     std::string RelativeIdentifier::canonical_name() const
     {
-        // Basically the same code as above, but with a colon.
-        // TODO: We really need to break this logic out into a helper function.
+        // Do we need a helper for the colon-separated version? It's only used in
+        // identifiers, so maybe not.
         std::string s;
         s.reserve(children.size()*16);
 

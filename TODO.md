@@ -18,7 +18,6 @@
 * Delegating constructors for Function AST node.
 * Statement AST class mentions doing a declaration pass. Will the type inference pass work for this, too?
 * Expression type for member and subscript operations.
-* Make a generic "serialize an array of child nodes" function, so we don't have to repeat it everywhere.
 * Expression type for unary operator nodes.
 
 # Type engine

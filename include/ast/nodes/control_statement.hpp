@@ -10,6 +10,8 @@
 #include "simple_statement.hpp"
 #include "typenames.hpp"
 
+#include "util/serialize_array.hpp"
+
 /*
  * AST nodes for control flow statements. In Rhea, this includes the
  * `if`, `unless`, `while`, `for`, `with`, and `match` statements,

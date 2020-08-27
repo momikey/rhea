@@ -15,17 +15,9 @@ namespace rhea { namespace ast {
 
     std::string Try::to_string()
     {
-        // Loop for the catch blocks, while other parts can just call their versions.
-        std::string s;
-        s.reserve(catches.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : catches)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Try,{0}{1},{2})", body->to_string(), s, 
+        return fmt::format("(Try,{0}{1},{2})",
+            body->to_string(),
+            util::serialize_array(catches),
             finally_block == nullptr ? "null" : finally_block->to_string());
     }
 }}

@@ -10,6 +10,8 @@
 #include "typenames.hpp"
 #include "concept.hpp"
 
+#include "util/serialize_array.hpp"
+
 /*
  * AST nodes for function definitions, calls, and arguments.
  */

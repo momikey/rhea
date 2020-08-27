@@ -9,6 +9,8 @@
 #include "node_base.hpp"
 #include "identifiers.hpp"
 
+#include "util/serialize_array.hpp"
+
 /*
  * AST nodes for top-level structures (modules and programs), as well as the
  * various module-related constructs, such as import and export statements.

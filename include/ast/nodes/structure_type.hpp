@@ -9,7 +9,9 @@
 #include "identifiers.hpp"
 #include "literals.hpp"
 #include "typenames.hpp"
-#include "../../util/compat.hpp"
+
+#include "util/compat.hpp"
+#include "util/serialize_array.hpp"
 
 /*
  * AST nodes for types representing data structures. In Rhea,

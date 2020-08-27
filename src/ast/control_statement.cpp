@@ -14,18 +14,9 @@ namespace rhea { namespace ast {
 
     std::string With::to_string()
     {
-        // Mostly the same as in e.g., FullyQualified, but we also
-        // have to account for the body in the final string.
-        std::string s;
-        s.reserve(predicates.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : predicates)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(With{0},{1})", s, body->to_string());
+        return fmt::format("(With{0},{1})",
+            util::serialize_array(predicates),
+            body->to_string());
     }
 
     PredicateCall::PredicateCall(expression_ptr t, child_vector<Expression>& as)
@@ -38,17 +29,9 @@ namespace rhea { namespace ast {
 
     std::string PredicateCall::to_string()
     {
-        // The usual vector printing, but also accounting for the identifier.
-        std::string s;
-        s.reserve(arguments.size()*16);    // profile this to find a nice default
-
-        for (auto&& id : arguments)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(PredicateCall,{0}{1})", target->to_string(), s);
+        return fmt::format("(PredicateCall,{0}{1})",
+            target->to_string(),
+            util::serialize_array(arguments));
     }
 
     Match::Match(expression_ptr e, child_vector<Case>& cs)
@@ -70,6 +53,8 @@ namespace rhea { namespace ast {
             s += id->to_string();
         }
 
-        return fmt::format("(Match,{0}{1})", expression->to_string(), s);
+        return fmt::format("(Match,{0}{1})",
+            expression->to_string(),
+            util::serialize_array(cases));
     }
 }}

@@ -64,6 +64,7 @@ namespace {
         auto node = ast::internal::create_statement_node(tree->children.front().get());
 
         BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() == "(BareExpression,(FullyQualified,foo,bar,baz))"));
     }
 
@@ -79,6 +80,7 @@ namespace {
         auto node = ast::internal::create_statement_node(tree->children.front().get());
 
         BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() == "(BareExpression,(RelativeIdentifier,foo,bar))"));
     }
 
@@ -622,6 +624,7 @@ namespace {
         node = ast::internal::create_statement_node(tree->children.front().get());
 
         BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(FullyQualified,foo,bar,baz),null,null))"));
 
         BOOST_TEST_MESSAGE("Parsing relative typename declaration " << relative_type);
@@ -632,6 +635,7 @@ namespace {
         node = ast::internal::create_statement_node(tree->children.front().get());
 
         BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(RelativeIdentifier,foo,bar),null,null))"));
 
         BOOST_TEST_MESSAGE("Parsing generic typename declaration " << generic_type);

@@ -12,17 +12,7 @@ namespace rhea { namespace ast {
 
     std::string Program::to_string()
     {
-        // Same logic as in FullyQualified (identifiers.cpp)
-        std::string s;
-        s.reserve(children.size()*32);    // profile this to find a nice default
-
-        for (auto&& id : children)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Program{0})", s);
+        return fmt::format("(Program{0})", util::serialize_array(children, 32));
     }
 
     Module::Module(child_vector<Statement>& ss)
@@ -33,17 +23,7 @@ namespace rhea { namespace ast {
 
     std::string Module::to_string()
     {
-        // Same logic as elsewhere
-        std::string s;
-        s.reserve(children.size()*32);    // profile this to find a nice default
-
-        for (auto&& id : children)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Module{0})", s);
+        return fmt::format("(Module{0})", util::serialize_array(children, 32));
     }
 
     Import::Import(child_vector<Identifier>& ids, std::unique_ptr<ModuleName> m)
@@ -55,17 +35,9 @@ namespace rhea { namespace ast {
 
     std::string Import::to_string()
     {
-        // The usual vector printing logic.
-        std::string s;
-        s.reserve(imports.size()*32);    // profile this to find a nice default
-
-        for (auto&& id : imports)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Import,{0}{1})", module->to_string(), s);
+        return fmt::format("(Import,{0}{1})",
+            module->to_string(),
+            util::serialize_array(imports, 32));
     }
 
     Export::Export(child_vector<Identifier>& ids)
@@ -76,16 +48,6 @@ namespace rhea { namespace ast {
 
     std::string Export::to_string()
     {
-        // Same logic as in FullyQualified (identifiers.cpp)
-        std::string s;
-        s.reserve(exports.size()*32);    // profile this to find a nice default
-
-        for (auto&& id : exports)
-        {
-            s += ',';
-            s += id->to_string();
-        }
-
-        return fmt::format("(Export{0})", s);
+        return fmt::format("(Export{0})", util::serialize_array(exports, 32));
     }
 }}
