@@ -20,7 +20,10 @@ namespace rhea { namespace grammar {
     // A generic type in a concept check.
     struct concept_generic_type : seq <
         one <'<'>,
-        pad <identifier, ignored>,
+        pad <
+            list <identifier, one <','>, ignored>,
+            ignored
+        >,
         one <'>'>
     > {};
 

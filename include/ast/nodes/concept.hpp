@@ -9,6 +9,8 @@
 #include "identifiers.hpp"
 #include "typenames.hpp"
 
+#include "util/serialize_array.hpp"
+
 /*
  * AST Nodes for concepts and related syntax.
  */
@@ -47,6 +49,23 @@ namespace rhea { namespace ast {
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override
             { return fmt::format("(MemberCheck,{0},{1})", type, member); }
+    };
+
+    // A function check is a compile-time operation to see if, given a type T,
+    // there exists a valid function F taking that type as an argument.
+    class FunctionCheck : public ASTNode
+    {
+        public:
+        FunctionCheck(std::string t, std::unique_ptr<AnyIdentifier> fn,
+            child_vector<Typename>& fas, std::unique_ptr<Typename> rtn);
+
+        std::string type_name;
+        std::unique_ptr<AnyIdentifier> function_name;
+        child_vector<Typename> function_arguments;
+        std::unique_ptr<Typename> return_type_name;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
     };
 }}
 

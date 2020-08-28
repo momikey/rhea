@@ -30,7 +30,8 @@ namespace {
 
     std::string concept_function_samples[] = {
         "MyType => foo <MyType> -> boolean",
-        "Ty => to$ <Ty> -> string"
+        "Ty => to$ <Ty> -> string",
+        "Ty => f <Ty, SomeOtherType> -> string"
     };
 
     std::string concept_member_samples[] = {

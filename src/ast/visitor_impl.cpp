@@ -268,4 +268,7 @@ namespace rhea { namespace ast {
 
     any MemberCheck::visit(Visitor* v)
     { return v->visit(this); }
+
+    any FunctionCheck::visit(Visitor* v)
+    { return v->visit(this); }
 }}
