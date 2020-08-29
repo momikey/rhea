@@ -59,17 +59,30 @@ namespace rhea { namespace ast {
         );
     }
 
+    GenericDef::GenericDef(
+        FunctionType t,
+        std::string n,
+        std::vector<GenericMatch>& gt,
+        std::unique_ptr<Typename> rt,
+        std::unique_ptr<Arguments> al,
+        child_vector<Condition>& cs,
+        statement_ptr b
+    ) : Def(t, n, std::move(rt), std::move(al), cs, std::move(b))
+    {
+        // The only thing a GenericDef has to do differently is account for
+        // the generic typenames. These are variants, so...fun.
+        std::move(gt.begin(), gt.end(), std::back_inserter(generic_types));
+    }
+
     std::string GenericDef::to_string()
     {
-        auto cstr = fmt::format("(Conditions{0})", util::serialize_array(conditions));
-
-        return fmt::format("(Def,{0},{1},{2},{3},{4},{5},{6})",
+        return fmt::format("(Def,{0},{1},(GenericTypes{2}),{3},{4},(Conditions{5}),{6})",
             static_cast<int>(type),
             name,
-            generic_type != nullptr ? generic_type->to_string() : "null",
+            util::serialize_array(generic_types),
             return_type != nullptr ? return_type->to_string() : "null",
             arguments_list != nullptr ? arguments_list->to_string() : "null",
-            cstr,
+            util::serialize_array(conditions),
             body->to_string()
         );
     }

@@ -429,9 +429,26 @@ namespace rhea { namespace grammar {
         one < '>' >
     > {};
 
-    struct generic_concept : generic_part <concept_match> {};
-    struct generic_specialization : generic_part <type_match> {};
-    struct generic_function_type : sor <generic_concept, generic_specialization> {};
+    // struct generic_concept : generic_part <concept_match> {};
+    // struct generic_specialization : generic_part <type_match> {};
+    struct generic_concept : concept_match {};
+    struct generic_specialization : type_match {};
+    // struct generic_function_type : sor <generic_concept, generic_specialization> {};
+
+    struct generic_function_type : seq <
+        one < '<' >,
+        separator,
+        list <
+            sor <
+                concept_match,
+                type_match
+            >,
+            one < ',' >,
+            ignored
+        >,
+        separator,
+        one < '>' >
+    > {};
 
     // Separate rules for different functions.
 

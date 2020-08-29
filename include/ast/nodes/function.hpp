@@ -129,19 +129,17 @@ namespace rhea { namespace ast {
     class GenericDef : public Def
     {
         public:
-        GenericDef(FunctionType t, std::string n, std::unique_ptr<TypePair> gt,
-            std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al, child_vector<Condition>& cs,
-            statement_ptr b) : Def(
-                t,
-                n,
-                std::move(rt),
-                std::move(al),
-                cs,
-                std::move(b)),
-            generic_type(std::move(gt)) {}
+        GenericDef(
+            FunctionType t,
+            std::string n,
+            std::vector<GenericMatch>& gt,
+            std::unique_ptr<Typename> rt,
+            std::unique_ptr<Arguments> al,
+            child_vector<Condition>& cs,
+            statement_ptr b
+        );
 
-        // TODO: Change this to variant of type pair and concept match.
-        const std::unique_ptr<TypePair> generic_type;
+        std::vector<GenericMatch> generic_types;
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;

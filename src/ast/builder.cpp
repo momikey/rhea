@@ -434,9 +434,9 @@ namespace rhea { namespace ast {
         statement_ptr create_function_definition(parser_node* node, FunctionType type)
         {
             std::string name { "" };
-            std::unique_ptr<TypePair> generic_type = nullptr;
             std::unique_ptr<Typename> return_type = nullptr;
             std::unique_ptr<Arguments> arguments_list = nullptr;
+            std::vector<GenericMatch> generic_type;
             child_vector<Condition> conditions;
             statement_ptr body = nullptr;
 
@@ -453,8 +453,26 @@ namespace rhea { namespace ast {
                 // Gneeric types are handled specially.
                 else if (c->is<gr::generic_function_type>())
                 {
-                    // We're not ready for this just yet.
-                    throw unimplemented_type(node->name());
+                    // Run through the generic children.
+                    // Another for-switch, but I promise it's for a good purpose.
+                    for (auto& gtype : c->children)
+                    {
+                        if (gtype->is<gr::type_match>())
+                        {
+                            GenericMatch g { std::move(create_typepair_node(gtype.get())) };
+                            generic_type.emplace_back(std::move(g));
+                        }
+                        else if (gtype->is<gr::concept_match>())
+                        {
+                            GenericMatch g { std::move(create_concept_match_node(gtype.get())) };
+                            generic_type.emplace_back(std::move(g));
+                        }
+                        else
+                        {
+                            // Anything we haven't accounted for yet.
+                            throw unimplemented_type(node->name());
+                        }
+                    }
                 }
                 // Return types are simple typenames.
                 else if (c->is<gr::return_type>())
@@ -530,7 +548,7 @@ namespace rhea { namespace ast {
                 }
             }
 
-            if (generic_type == nullptr)
+            if (generic_type.empty())
             {
                 // Concrete definition
                 return make_statement<Def>(
@@ -548,7 +566,7 @@ namespace rhea { namespace ast {
                 return make_statement<GenericDef>(
                     type,
                     name,
-                    std::move(generic_type),
+                    generic_type,
                     std::move(return_type),
                     std::move(arguments_list),
                     conditions,

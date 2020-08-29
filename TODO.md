@@ -1,18 +1,12 @@
 # Parser
 
 * Detect reserved words used as identifiers, so we can error out early.
-* Make generic matching able to accept multiple generic types.
-* Implement ".=" concept member check operator.
 
 * Maybe implement a (marked unsafe) reinterpreting cast for pointers <-> integers?
 * Implement better error checking and recovery. (Long-term)
 
 # AST
 
-* Support for multiple generics in type-related AST nodes.
-* Multiple generics in function defs.
-* Function check operator.
-* Change generic defs to accept type check or concept match, using the GenericMatch variant.
 * Builders for concept stuff.
 
 * Delegating constructors for Function AST node.
