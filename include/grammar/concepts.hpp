@@ -21,7 +21,7 @@ namespace rhea { namespace grammar {
     struct concept_generic_type : seq <
         one <'<'>,
         pad <
-            list <identifier, one <','>, ignored>,
+            list <any_identifier, one <','>, ignored>,
             ignored
         >,
         one <'>'>

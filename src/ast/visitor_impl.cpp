@@ -271,4 +271,7 @@ namespace rhea { namespace ast {
 
     any FunctionCheck::visit(Visitor* v)
     { return v->visit(this); }
+
+    any Concept::visit(Visitor* v)
+    { return v->visit(this); }
 }}

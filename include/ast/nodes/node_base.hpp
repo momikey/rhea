@@ -87,6 +87,16 @@ namespace rhea { namespace ast {
     template <typename Stmt, typename... Args>
     inline statement_ptr make_statement(Args&&... args)
         { return std::make_unique<Stmt>(std::forward<Args>(args)...); }
+
+    // Functions can be of different types. This enum allows us
+    // to choose which type.
+    enum class FunctionType
+    {
+        Basic,      // i.e., not special
+        Predicate,  // implied boolean return type
+        Operator,   // operators are always called implicitly
+        Unchecked   // can't take conditions
+    };
 }}
 
 #endif /* RHEA_AST_NODE_BASE_HPP */

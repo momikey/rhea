@@ -9,6 +9,7 @@
 #include "identifiers.hpp"
 #include "typenames.hpp"
 
+#include "util/compat.hpp"
 #include "util/serialize_array.hpp"
 
 /*
@@ -56,13 +57,36 @@ namespace rhea { namespace ast {
     class FunctionCheck : public ASTNode
     {
         public:
-        FunctionCheck(std::string t, std::unique_ptr<AnyIdentifier> fn,
+        FunctionCheck(std::string t, std::unique_ptr<AnyIdentifier> fn, FunctionType ft,
             child_vector<Typename>& fas, std::unique_ptr<Typename> rtn);
 
         std::string type_name;
         std::unique_ptr<AnyIdentifier> function_name;
+        FunctionType function_type;
         child_vector<Typename> function_arguments;
         std::unique_ptr<Typename> return_type_name;
+
+        util::any visit(visitor::Visitor* v) override;
+        std::string to_string() override;
+    };
+
+    // Variant for any kind of concept match operation. (called "checks" here
+    // because we're already using the term "match" above)
+    using ConceptCheck = util::variant<
+        std::unique_ptr<FunctionCheck>,
+        std::unique_ptr<MemberCheck>
+    >;
+
+    // A concept is a named definition taking a type and a number of "match"
+    // operations for that type.
+    class Concept : public Statement
+    {
+        public:
+        Concept(std::string n, std::string t, std::vector<ConceptCheck>& b);
+
+        std::string name;
+        std::string type;
+        std::vector<ConceptCheck> body;
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override;

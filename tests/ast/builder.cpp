@@ -799,6 +799,35 @@ namespace {
             "(Def,0,f,null,(Arguments,(TypePair,t,(Typename,(Identifier,$$wildcard$$),null,null))),(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_concept_definition)
+    {
+        std::string sample { "concept C <T> = { T .= foo }" };
+
+        BOOST_TEST_MESSAGE("Parsing concept definition with member check " << sample);
+        string_input<> in1(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in1);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Concept,C,T,(MemberCheck,T,foo))"));
+
+        sample = "concept C <T> = { T => foo <T> -> string }";
+
+        BOOST_TEST_MESSAGE("Parsing concept definition with function check " << sample);
+        string_input<> in2(sample, "test");
+
+        tree = tree_builder<gr::statement>(in2);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Concept,C,T,(FunctionCheck,T,(Identifier,foo),0,(Typename,(Identifier,string),null,null),(Typename,(Identifier,T),null,null)))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_use_statement)
     {
         std::string sample { "use foo;" };

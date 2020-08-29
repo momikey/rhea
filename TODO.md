@@ -7,7 +7,7 @@
 
 # AST
 
-* Builders for concept stuff.
+* Builders for variants, optionals, type aliases, exception handling.
 
 * Delegating constructors for Function AST node.
 * Statement AST class mentions doing a declaration pass. Will the type inference pass work for this, too?

@@ -575,6 +575,106 @@ namespace rhea { namespace ast {
             }
         }
 
+        // Helper for concept function checks.
+        std::unique_ptr<FunctionCheck> create_function_check_node(parser_node* node)
+        {
+            auto type_name { node->children.at(0)->string() };
+            auto& ft_node = node->children.at(1);
+
+            auto& cfn_node = ft_node->children.at(0);
+            auto function_name = create_identifier_node(cfn_node->children.at(0).get());
+            FunctionType function_type { FunctionType::Basic };
+
+            if (cfn_node->children.size() > 1 && cfn_node->children.at(1)->is<gr::function_suffix>())
+            {
+                auto& suffix = cfn_node->children.at(1);
+
+                if (suffix->string() == "?")
+                {
+                    function_type = FunctionType::Predicate;
+                }
+                else if (suffix->string() == "!")
+                {
+                    function_type = FunctionType::Unchecked;
+                }
+                else if (suffix->string() == "$")
+                {
+                    function_type = FunctionType::Operator;
+                }
+                else
+                {
+                    throw syntax_error(fmt::format("Unknown function suffix {0}", suffix->string()));
+                }
+            }
+
+            // The return type is the third child of the concept function type node,
+            // but it's wrapped in a `return_type_spec` node. Can we get rid of that?
+            auto return_type_name = create_typename_node(
+                ft_node->children.at(2)->children.front().get()
+            );
+
+            child_vector<Typename> function_arguments;
+            if (ft_node->children.at(1)->is<gr::identifier>())
+            {
+                function_arguments.emplace_back(create_typename_node(ft_node->children.at(1).get()));
+            }
+            else
+            {
+                for (auto&& a : ft_node->children.at(1)->children)
+                {
+                    function_arguments.emplace_back(create_typename_node(a.get()));
+                }
+            }
+
+            return std::make_unique<FunctionCheck>(
+                type_name,
+                std::move(function_name),
+                function_type,
+                function_arguments,
+                std::move(return_type_name)
+            );
+        }
+
+        // Helper for concept member checks.
+        std::unique_ptr<MemberCheck> create_member_check_node(parser_node* node)
+        {
+            // These are easy, because it's all strings.
+            return std::make_unique<MemberCheck>(
+                node->children.at(0)->string(),
+                node->children.at(1)->string()
+            );
+        }
+
+        // Helper for concept definitions.
+        std::unique_ptr<Concept> create_concept_definition(parser_node* node)
+        {
+            // We get three main pieces of information: the concept name,
+            // the placeholder name for the type, and the body.
+            std::vector<ConceptCheck> body;
+
+            for (auto&& c :node->children.at(2)->children)
+            {
+                if (c->is<gr::concept_function_check>())
+                {
+                    body.emplace_back(std::move(create_function_check_node(c.get())));
+                }
+                else if (c->is<gr::concept_member_check>())
+                {
+                    body.emplace_back(std::move(create_member_check_node(c.get())));
+                }
+                else
+                {
+                    throw unimplemented_type(c->name());
+                }
+            }
+
+            return std::make_unique<Concept>(
+                node->children.at(0)->string(),
+                node->children.at(1)->string(),
+                body
+            );
+        }
+
         // Helper to map node types to the operator enum for compound assignments.
         AssignOperator assignment_operator_type(parser_node* node)
         {
@@ -1238,6 +1338,12 @@ namespace rhea { namespace ast {
             else if (node->is<gr::operator_function_def>())
             {
                 stmt = std::move(create_function_definition(node, FunctionType::Operator));
+            }
+
+            // Concept definitions: `concept C <T> = ...`
+            else if (node->is<gr::concept_definition>())
+            {
+                stmt = std::move(create_concept_definition(node));
             }
 
             // Return statement: `return false;`

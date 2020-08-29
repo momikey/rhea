@@ -52,10 +52,10 @@ namespace {
         ast::child_vector<ast::Typename> args;
         args.emplace_back(std::move(tn_node));
 
-        auto node = std::make_unique<ast::FunctionCheck>(tn, std::move(fn), args, std::move(rt_node));
+        auto node = std::make_unique<ast::FunctionCheck>(tn, std::move(fn), ast::FunctionType::Basic, args, std::move(rt_node));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
-        BOOST_TEST((node->to_string() == "(FunctionCheck,Ty,(Identifier,f),(Typename,(Identifier,string),null,null),(Typename,(Identifier,Ty),null,null))"));
+        BOOST_TEST((node->to_string() == "(FunctionCheck,Ty,(Identifier,f),0,(Typename,(Identifier,string),null,null),(Typename,(Identifier,Ty),null,null))"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()

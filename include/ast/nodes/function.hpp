@@ -84,16 +84,6 @@ namespace rhea { namespace ast {
             { return fmt::format("(Condition,{0},{1})", target, predicate->to_string()); }
     };
 
-    // Functions can be of different types. This enum allows us
-    // to choose which type.
-    enum class FunctionType
-    {
-        Basic,      // i.e., not special
-        Predicate,  // implied boolean return type
-        Operator,   // operators are always called implicitly
-        Unchecked   // can't take conditions
-    };
-
     // AST for function definitions.
     class Def : public Statement
     {
