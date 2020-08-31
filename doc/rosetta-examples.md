@@ -1,6 +1,6 @@
 # Examples
 
-These are example programs fulfilling the [Rosetta Code](http://rosettacode.org) programming tasks. They should use proper syntax, standard library functions, and any language features necessary.
+These are example programs to complete the [Rosetta Code](http://rosettacode.org) programming tasks. They should use proper syntax, standard library functions, and any language features necessary.
 
 ## Simple Tasks
 
@@ -72,7 +72,7 @@ Rhea arrays can't hold strings, so we use a list in this example. The `length` f
 	{
 		var fruit = ("apples", "oranges");
 
-		print(fruit.length());
+		print(fruit.length());	# or `print(length(fruit))`
 	}
 ```
 
@@ -250,6 +250,8 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 			on " ": { print("Nothing here"); }
 			default: { print("Goodbye cruel world!"); }
 		}
+		# Also match-when with arbitary predicate functions,
+		# and match-type to test for a value's type.
 	}
 ```
 
@@ -502,7 +504,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 	# * Print "FizzBuzz" for multiplies of 3 and 5
 
 	def main = {
-		for i in range(1, 100)
+		for i in range(1, 101)
 		{
 			# Simplest definition
 			if (i % 3 == 0)
@@ -670,12 +672,12 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 
 		while (true)
 		{
-			var n = rng.random_integer(20);
+			var n = rng.random_integer(19) + 1;
 			print(n);
 
-			if n == 10 { break; }
+			if (n == 10) break;
 
-			n = rng.random_integer(20);
+			n = rng.random_integer(19) + 1;
 			print(n);
 		}
 	}
@@ -750,7 +752,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 	# * increments the index to the old index plus the found prime,
 	# until 42 primes are shown.
 
-	def is_prime { n: ulong }
+	def is_prime { n: long }
 	with { n.greater_than(1)? } =
 	{
 		if (n % 2_l == 0_l) { return (n == 2_l); }
@@ -880,7 +882,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 	* All keywords are lowercase
 	* Variables start with a lowercase letter
 	* Constants start with a capital letter
-	* Built-in types are lowercase, while user-defined types usually begin with a capital
+	* Built-in types are lowercase, while user-defined types are usual CamelCase
 	* Predicates always end with `?` (this is required)
 	* Unchecked functions must end with `!`
 	* Operator overloads are named functions ending in `$`
@@ -941,7 +943,7 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 		if (problem)
 		{
 			# Any nonzero exit code is considered an error
-			std:program:exit(1);
+			exit(1);
 		}
 	}
 ```
@@ -1006,3 +1008,94 @@ Rhea has fixed-size arrays for numeric, symbolic, and reference types, and dynam
 
 	}
 ```
+
+### Simple windowed application
+
+{TBD: Until we decide what kind of windowing/GUI we want.}
+
+### Split a character string based on change of character
+
+```
+	# Helper function to split a string into runs of characters
+	def split { input: string } = {
+		var working as string;
+		var separate as list <string>;
+
+		# Temp variable to hold our previous character
+		with (last as string)
+		{
+			working = input[0];
+			last = input[0];
+
+			for i in range(1,string.length())
+			{
+				var current = input[i];
+
+				if (current == last)
+				{
+					# Still on the same character
+					working += current;
+				}
+				else
+				{
+					# Character has changed
+					separate.append(working);
+					working = current;
+				}
+
+				last = current;
+			}
+		}
+	}
+
+	def main = {
+		var split_string = split("gHHH5YY++///\\");
+
+		for el in slice(split_string, -1)
+		{
+			print(el + ", ");
+		}
+		print split_string[split_string.length()-1];
+	}
+```
+
+### String append
+
+```
+	# Create a string variable, append another string literal to it, and print.
+	def main = {
+		var s = "Foo";
+
+		# Rhea does define append and append/assign operators for strings
+		# (ref: `std:basic:add_assign$(string, string)`)
+		s += "Bar";
+
+		print(s);		# prints "FooBar"
+	}
+```
+
+### String comparison
+
+{TBD: Lots of work here, especially stdlib stuff. Save for later.}
+
+### String concatenation
+
+```
+	# Create a string variable, then another that has that string
+	# concatenated to another. Print both.
+	def main = {
+		var s1 = "Foo";
+
+		# (ref: `std:basic:add$(string, string)`)
+		var s2 = s1 + "Bar";
+
+		print(s1);			# prints "Foo"
+		print(s2);			# prints "FooBar"
+	}
+```
+
+### String interpolation
+
+{TBD: Decide on syntax/library support.}
+
+

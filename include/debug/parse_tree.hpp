@@ -4,36 +4,35 @@
 #include <string>
 #include <iostream>
 #include <type_traits>
+#include <memory>
 
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
-#include "../grammar/tokens.hpp"
-#include "../grammar/expression.hpp"
+#include "../grammar/module.hpp"
 #include "../grammar/statement.hpp"
 #include "../ast/selector.hpp"
+#include "../ast/nodes.hpp"
+#include "../ast/parse_tree_node.hpp"
 
 namespace rhea { namespace debug {
     namespace pt = tao::pegtl::parse_tree;
 
-    // TODO: Make selectors for all the right nodes
-    // (This will be in a separate AST namespace.)
-    template <typename Rule>
-    struct selector : std::true_type {};
-
     namespace internal {
         template <typename Node>
-        void print_node(std::ostream& os, const Node& n, int level)
+        std::ostream& print_node(std::ostream& os, const Node& n, int level)
         {
             std::string space(level, ' ' );
 
             if (n->has_content())
             {
-                os << level << space << n->name() << '\t' << n->string() << '\n';
+                os << level << ' ' << tao::pegtl::to_string(n->begin())
+                   << space << n->name() << '\t' << n->string() << '\n';
             }
             else if (!n->is_root())
             {
-                os << level << space << n->name() << '\n';
+                os << level << ' ' << tao::pegtl::to_string(n->begin())
+                   << space << n->name() << '\n';
             }
 
             if (!n->children.empty())
@@ -43,6 +42,8 @@ namespace rhea { namespace debug {
                     print_node(os, child, level+1);
                 }
             }
+
+            return os;
         }
     }
 
@@ -51,7 +52,7 @@ namespace rhea { namespace debug {
     {
         if (root)
         {
-            internal::print_node(os, root, 0);
+            internal::print_node(os, root, 0u);
         }
     }
 
@@ -60,11 +61,11 @@ namespace rhea { namespace debug {
         tao::pegtl::string_input<> in(input, "debug");
         auto root = pt::parse< 
             tao::pegtl::sor<
-                rhea::grammar::program_definition,
-                rhea::grammar::stmt_or_block
+                rhea::grammar::stmt_or_block,
+                rhea::grammar::program_definition
             >,
+            rhea::ast::parser_node,
             rhea::ast::tree_selector
-            // selector
         > (in);
 
         if (root)
@@ -75,6 +76,41 @@ namespace rhea { namespace debug {
         {
             std::cerr << "Parse error\n";
         }
+    }
+
+    auto input_from_string(std::string& input)
+    {
+        return std::make_unique<tao::pegtl::string_input<>>(input, "debug");
+    }
+
+    template <typename Node = tao::pegtl::parse_tree::node>
+    std::unique_ptr<Node> parse(tao::pegtl::string_input<>& in)
+    {
+        // tao::pegtl::string_input<> in(input, "debug");
+
+        try
+        {
+            auto root = pt::parse< 
+                tao::pegtl::sor<
+                    rhea::grammar::program_definition,
+                    rhea::grammar::stmt_or_block
+                >,
+                Node,
+                rhea::ast::tree_selector
+            > (in);
+
+            return std::move(root);
+        }
+        catch (tao::pegtl::parse_error& error)
+        {
+            const auto p = error.positions.front();
+            std::cerr
+                << error.what() << '\n'
+                << in.line_at(p) << '\n'
+                << std::string(p.byte_in_line, ' ') << "^\n";
+        }
+
+        return nullptr;
     }
 
 }}

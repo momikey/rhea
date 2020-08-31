@@ -11,8 +11,7 @@
 
 namespace rhea { namespace grammar {
     using namespace tao::pegtl;
-
-    // TODO: Add other types of assignment LHS, such as structure fields
+    
     struct assignment_lhs : unary_prefix_op
     {};
 
@@ -154,14 +153,32 @@ namespace rhea { namespace grammar {
         expression
     > {};
 
-    struct with_declaration :  if_must_else <
+    // Forward declaration for predicate arguments (definition is with function stuff below)
+    struct predicate_arguments_list;
+    // A call to a predicate function, with optional arguments
+
+    struct predicate_call : seq <
+        any_identifier,
+        separator,
+        opt <
+            member_expr
+            // one <'.'>,
+            // identifier,
+            // separator
+        >,
+        opt <predicate_arguments_list>,
+        separator,
+        one <'?'>
+    > {};
+
+    // "New" with-statement: defines loop or block invariants
+    struct with_declaration : if_must <
         one <'('>,
         seq <
-            list <declaration_as_type, one <','>, ignored>,
+            list <predicate_call, one <','>, ignored>,
             one <')'>
-        >,
-        declaration_as_type
-    > {};
+        >
+    >{};
 
     struct with_statement : seq <
         kw_with,
@@ -176,23 +193,6 @@ namespace rhea { namespace grammar {
         constant_expression,
         pad <one <':'>, ignored>,
         stmt_or_block
-    > {};
-
-    // A call to a predicate function, with optional arguments
-    struct predicate_call : seq <
-        any_identifier,
-        separator,
-        opt_must <
-            seq <
-                one <'('>,
-                opt <
-                    pad <expression_list, ignored>
-                >
-            >,
-            one <')'>
-        >,
-        separator,
-        one <'?'>
     > {};
 
     // A single case in a match-when statement
@@ -233,7 +233,7 @@ namespace rhea { namespace grammar {
     struct match_on_statement : seq <
         kw_match,
         separator,
-        any_identifier,
+        expression,
         separator,
         match_block <on_case>
     > {};
@@ -241,7 +241,7 @@ namespace rhea { namespace grammar {
     struct match_when_statement : seq <
         kw_match,
         separator,
-        any_identifier,
+        expression,
         separator,
         match_block <when_case>
     > {};
@@ -249,7 +249,7 @@ namespace rhea { namespace grammar {
     struct match_type_statement : seq <
         kw_match,
         separator,
-        any_identifier,
+        expression,
         separator,
         match_block <type_case>
     > {};
@@ -429,9 +429,26 @@ namespace rhea { namespace grammar {
         one < '>' >
     > {};
 
-    struct generic_concept : generic_part <concept_match> {};
-    struct generic_specialization : generic_part <type_match> {};
-    struct generic_function_type : sor <generic_concept, generic_specialization> {};
+    // struct generic_concept : generic_part <concept_match> {};
+    // struct generic_specialization : generic_part <type_match> {};
+    struct generic_concept : concept_match {};
+    struct generic_specialization : type_match {};
+    // struct generic_function_type : sor <generic_concept, generic_specialization> {};
+
+    struct generic_function_type : seq <
+        one < '<' >,
+        separator,
+        list <
+            sor <
+                concept_match,
+                type_match
+            >,
+            one < ',' >,
+            ignored
+        >,
+        separator,
+        one < '>' >
+    > {};
 
     // Separate rules for different functions.
 

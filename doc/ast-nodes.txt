@@ -2,62 +2,63 @@
 
 ## Terminals
 
-signed_integer
-floating_point_number
-hex_literal
-boolean_literal
-integer_literal_suffix
-float_literal_suffix
-character_string<'\''>
-character_string<'"'>
-identifier
-function_suffix
+**signed_integer
+**floating_point_number
+**hex_literal
+--boolean_literal
+**integer_literal_suffix
+**float_literal_suffix
+**character_string<'\''>
+**character_string<'"'>
+--identifier
+**function_suffix
+--nothing_literal
 
 ## Operands
 
-string_literal
+--string_literal
     character_string
-integer_literal
+--integer_literal
     signed_integer
     integer_literal_suffix ?
-float_literal
+--float_literal
     floating_point_number
-symbol_name
+--symbol_name
     identifier
-named_argument_list
-    named_argument_list +
-unnamed_argument_list
+--named_argument_list
+    named_argument +
+--unnamed_argument_list
     <expression> +
-empty_argument_list
-dictionary_entry
+--empty_argument_list
+--dictionary_entry
     integer_literal | string_literal | symbol_name
     <expression>
-dictionary_expression
+--dictionary_expression
     dictionary_entry +
-tuple_expression
+--tuple_expression
     <expression> +
-list_expression
+--list_expression
     <expression> +
-array_expression
+--array_expression
     <expression> +
-symbol_list_expression
+--symbol_list_expression
     identifier +
-relative_identifier
+--relative_identifier
     identifier | fully_qualified
 
 ## Operators
 
-function_call_expr
+--function_call_expr
     empty_argument_list | named_argument_list | unnamed_argument_list
     <expression>
     function_suffix ?
-subscript_expr
+--subscript_expr
     <expression>    ; subscript
     <expression>
-member_expr
+--member_expr
     identifier      ; member
     <expression>
-ternary_op
+--ternary_op
     <expression>    ; condition
     <expression>    ; then case
     <expression>    ; else case
@@ -65,194 +66,199 @@ ternary_op
 ### Unary Operators
 
 ; All have a single expression child
-coerce_operator
-bitnot_operator
-dereference_operator
-unary_plus_operator
-unary_minus_operator
-kw_not
-kw_ref
-kw_ptr
+--coerce_operator
+--bitnot_operator
+--dereference_operator
+--unary_plus_operator
+--unary_minus_operator
+--kw_not
+--kw_ref
+--kw_ptr
 
 ### Binary Operators
 
 ; All have LHS and RHS children, both expressions
-exponent_operator
-multiply_operator
-divide_operator
-modulus_operator
-add_operator
-subtract_operator
-left_shift_operator
-right_shift_operator
-equals_operator
-not_equal_operator
-greater_equal_operator
-less_equal_operator
-less_than_operator
-greater_than_operator
-bitand_operator
-bitor_operator
-bitxor_operator
-kw_and
-kw_or
-kw_is
-kw_as
+--exponent_operator
+--multiply_operator
+--divide_operator
+--modulus_operator
+--add_operator
+--subtract_operator
+--left_shift_operator
+--right_shift_operator
+--equals_operator
+--not_equal_operator
+--greater_equal_operator
+--less_equal_operator
+--less_than_operator
+--greater_than_operator
+--bitand_operator
+--bitor_operator
+--bitxor_operator
+--kw_and
+--kw_or
+--kw_is
+--kw_as
 
 ## Statements
 
-assignment
+--assignment
     <expression>    ; LHS
     <expression>    ; RHS
-compound_assignment
+--compound_assignment
     <expression>    ; LHS
     <operator>
     <expression>    ; RHS
-bare_expression
+--bare_expression
     <expression>
-declaration_as_type
-    <expression>
-    <type_name>
-constant_declaration
+--variable_declaration
     <expression>    ; LHS
     <expression>    ; RHS
-statement_block
+--declaration_as_type
+    <expression>
+    <type_name>
+--constant_declaration
+    <expression>    ; LHS
+    <expression>    ; RHS
+--statement_block
     <statement> *
-if_statement
+--if_statement
     <expression>        ; condition
     <stmt_or_block>     ; then case
     <stmt_or_block>     ; else case
-unless_statement
+--unless_statement
     <expression>        ; condition
     <stmt_or_block>
-while_statement
+--while_statement
     <expression>        ; condition
     <stmt_or_block>     ; loop body
-for_statement
+--for_statement
     identifier          ; index variable
     <expression>        ; iteration list
     <stmt_or_block>     ; loop body
-do_statement
+--do_statement
     <expression>        ; identifiers are function calls!
-with_statement
+--with_statement
     with_declaration +
     <stmt_or_block>
-with_declaration
+--with_declaration
     declaration_as_type
-on_case
+--on_case
     <constant_expression>   ; case
     <stmt_or_block>         ; body
-predicate_call
+--predicate_call
     <any_identifier>        ; name without "?"
     <expression> *          ; arguments
-when_case
+--when_case
     predicate_call          ; case
     <stmt_or_block>         ; body
-default_case
+--default_case
     <stmt_or_block>
-type_case
+--type_case
     type_assertion          ; redundant?
         <type_name>
-match_on_statement
+--match_on_statement
     <expression>
     on_case *
-match_when_statement
+--match_when_statement
     <expression>
     when_case *
-match_type_statement
+--match_type_statement
     <expression>
     type_case *
-enum_declaration
+--enum_declaration
     identifier              ; name
     symbol_list_expression  ; values
-structure_declaration
+--structure_declaration
     identifier              ; name
     type_pair +             ; fields
         identifier
         <type_name>
-type_alias
+--type_alias
     identifier          ; alias
     <any_identifier>    ; original
-try_statement
+--try_statement
     <stmt_or_block>     ; body
     catch_statement *   ; catch clauses
     finally_statement ? ; finally clause
-catch_statement
+--catch_statement
     type_pair
         identifier      ; exception name
         <type_name>     ; exception type
     <stmt_or_block>     ; catch body
-throw_statement
+--throw_statement
     <expression>
-finally_statement
+--finally_statement
     <stmt_or_block>
+--break_statement
+--continue_statement
 
 ## Function Defintions
 
-arguments_list
+--arguments_list
     (type_match | concept_match) +
 wildcard_argument
     identifier
-predicate_arguments_list
+--predicate_arguments_list
     <expression> +
-fn_condition_predicate_call
+--fn_condition_predicate_call
     identifier                  ; argument name
     identifier                  ; predicate name
     predicate_arguments_list ?
 fn_with_block
     fn_condition_predicate_call *
-return_statement
+--return_statement
     expression
-return_type
+--return_type
     <type_name>
 generic_function_type
     type_match | concept_match
-basic_function_def
+--basic_function_def
     identifier
     generic_function_type ?
     return_type ?
     arguments_list ?
     fn_with_block ?
     <stmt_or_block>             ; function body
-predicate_function_def
+--predicate_function_def
     identifier
     generic_function_type ?
     arguments_list ?
     fn_with_block ?
     <stmt_or_block>
-unchecked_function_def
+--unchecked_function_def
     identifier
     generic_function_type ?
     return_type ?
     arguments_list ?
     <stmt_or_block>
-operator_function_def
+--operator_function_def
     identifier
     generic_function_type ?
     return_type ?
     arguments_list ?
     fn_with_block ?
     <stmt_or_block>
-extern_declaration
+--extern_declaration
     identifier
 
 ## Types and Concepts
 
-generic_type
+--generic_type
     <type_name> *
-array_type
+--array_type
     <constant_expression>
 return_type_spec
     <type_name>
-complex_type_name
+--complex_type_name
     <any_identifier>
     generic_type ?
     array_type ?
-variant_type_list
+--variant_type_list
     <type_name> *
-optional_type
+--optional_type
     <type_name>
-type_pair
+--type_pair
     identifier      ; name
     <type_name>     ; type
 constructor_expression
@@ -285,35 +291,34 @@ concept_definition
 
 # Modules and Programs
 
-module_statement
+--module_statement
     module_name
-use_statement
+--use_statement
     module_name
 import_list
     identifier +
-import_statement
+--import_statement
     import_list
     module_name
-export_statement
+--export_statement
     import_list
-module_name             ; may be redundant
+--module_name
     <any_identifier>
-module_definition
+--module_definition
     module_statement
     <top_level_statement> +
-program_definition
+--program_definition
     <top_level_statement> +
 
 ## Containers
 
 (Rules that don't produce nodes are excluded.)
 
-fully_qualified
+--fully_qualified
     identifier +
 named_argument
     identifier              ; name
     <expression>            ; argument
-type_match
+--type_match
     identifier              ; name
     identifier              ; type
-

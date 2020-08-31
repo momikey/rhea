@@ -266,7 +266,39 @@ Rhea does not have a "do-while" or "until" loop.
 
 The `break` and `continue` statements can be used for finer flow control. {TBD: Example.}
 
-## With (block scoping statement)
+## With (invariant declaration)
+
+The `with` keyword defines a new scope with any number of *invariants*. These are predicates that will be evaluated at the beginning of the scope's execution. If the predicates do not hold, an error will be raised in debug mode, while an exception will be thrown in other modes.
+
+Preconditions can be combined with constructs such as `for` and `while` for natural syntax:
+
+```
+	# Sum of reciprocals (a contrived example, but useful)
+
+	var total = 0.0;
+
+	# Before each iteration of the loop, `x` will be checked.
+	for x in list_of_numbers with (x.nonzero?)
+	{
+		total += 1.0 / x;
+	}
+```
+
+Postconditions are a little different, in that they go inside the loop. Idiomatically, one possible syntax uses an empty statement block, as so:
+
+```
+	# Read through a list, acting on each value, but error on a null result.
+	for value in list_of_optionals
+	{
+		var result = do_something_with(value);
+		
+		with (result.not_nothing?) {}
+	}
+```
+
+Functions can also take a `with` block, but theirs works in a different manner, as you'll see below.
+
+### Old
 
 The `with` keyword introduces a new scope with any number of temporary variables. These are uninitialized (rather, default-initialized for their type), and are inaccessible outside the scope.
 
@@ -486,7 +518,7 @@ References, strictly speaking, are not themselves a type. Rather, they refer to 
 	var r1 = ref n1;				# refernce to that integer
 
 	print(n1 == r1);				# = true (implicit dereferencing)
-	print(n1 is r1);				# = false (different types)
+	print(n1 is integer);			# = false (different types)
 
 	var r2 as ref string;			# a variable declared as a reference
 	r2 = "Hi";						# assignment
@@ -623,7 +655,7 @@ Postconditions can use all the same predicates as preconditions.
 
 ## Unchecked functions
 
-Sometimes, the strict type-checking of Rhea can get in the way. When that happens, you can use unchecked functions. These disable all run-time checking; in exchange, they can't have preconditions or postconditions.
+Sometimes, the strict type-checking of Rhea can get in the way. When that happens, you can use unchecked functions. These disable all run-time checking; in exchange, they can't have preconditions or postconditions. In addition, they cannot be overloaded based on the types of their arguments or their return values.
 
 ```
 	def my_unsafe_func! =
@@ -1077,6 +1109,8 @@ A program may be invoked with command-line arguments. These are not directly pas
 	}
 ```
 
+This array can also be referenced as `std:basic:argv` unless the compiler is in strict mode.
+
 ## Returning error codes
 
 Similarly, although `main` itself isn't defined with a return value (and thus that value is implicitly `nothing`), the Rhea runtime will, at program exit, pass the value in `std:program:ret` to the operating system.
@@ -1100,6 +1134,8 @@ Similarly, although `main` itself isn't defined with a return value (and thus th
 	}
 ```
 
+A simpler alternative is to call the `std:basic:exit` function, passing the integer code as the single parameter.
+
 # Foreign function interface
 
 The `extern` keyword indicates that a function is foreign, i.e., not defined in Rhea source, but in a linked library.
@@ -1118,6 +1154,76 @@ The `extern` keyword indicates that a function is foreign, i.e., not defined in 
 ```
 
 Foreign functions can only be linked and called inside unchecked Rhea functions. Their argument lists are not specified. {TBD: More on this, and see if we can find a way to check arguments.}
+
+## Name mangling
+
+Rhea defines the method by which the names of potentially overloaded functions (including generic functions) are converted into strings more suitable for use in a linker. The mangling format used is not the same as any C++ compiler, though it shares some similarities with the Itanium C++ ABI.
+
+First, any *unchecked* function will not have its name mangled. This is by design, as unchecked functions are often used for interoperability, and they are Rhea's gateway to FFI. Thus, these functions will be exported as linker symbols with names equal to those with which they were defined, minus the trailing `!`. As an example, the `raw_open!` function defined above will appear in object code with the linker symbol `raw_open`.
+
+In addition, the function named `main` is handled specially, despite not being declared as unchecked. As the entry point to a program, it will always be exported with the symbol `main`.
+
+All other functions are mangled, with their symbol names having the following common elements.
+
+1. The common Rhea prefix `_R`.
+2. The type of the function: `f` for "normal", `p` for predicate, `o` for operator.
+3. The name of the function, with a length prefixed for non-operator functions.
+4. The return type of this particular instance of the function, encoded as below, except that predicates are always boolean, so their return type is implied.
+5. Each argument type, in definition order, encoded as below, or 0 if there are no arguments.
+
+### Type mangling
+
+Simple types are encoded in one or two characters, as follows:
+
+| Encoding | Type     |
+|----------|----------|
+| v        | nothing  |
+| c        | byte     |
+| C        | ubyte    |
+| i        | integer  |
+| I        | uinteger |
+| l        | long     |
+| L        | ulong    |
+| Dd       | double   |
+| Df       | float    |
+| b        | boolean  |
+| Sy       | symbol   |
+| s        | string   |
+| a        | any      |
+
+Arrays are encoded as `A`, the length of the array, an underscore, and the contained type.
+
+Examples:
+* `A4_i`: an array of 4 integers (Rhea `integer[4]`)
+* `A16_C`: an array of 16 unsigned bytes (Rhea `ubyte[16]`)
+
+Lists are encoded as `Sl` and the contained type.
+
+Examples:
+* A list of integers: `Sli`
+* A list of strings: `Sls`
+* A list of lists of symbols: `SlSlSy`
+
+Dictionaries are encoded as `Sd` and the value type, as keys must always be integral or symbols.
+
+Tuples are encoded as `T`, the length of the tuple, an underscore, and the type of each element. Example: `{1, "abc", @foo}` is encoded as `T3_isSy`. (Note that functions taking the wildcard will create a new overload for each different set of argument types, and those will have different mangled names.)
+
+Enums are encoded as `E`, the length of the name, and then the name itself. Example: `E2En` for an enum declared with the name "En".
+
+Structures are encoded starting with `Ss`, followed by the length-prefixed name of the structure. Example: `Ss6Person` for the `Person` structure used throughout this reference.
+
+References and pointers are encoded with `r` or `p`, followed by the referenced type.
+
+Examples:
+* `ri`: a reference to an integer
+* `ps`: a pointer to a string
+* `rA3_Ss6Person`: a reference to an array of 3 `Person` objects
+
+Optionals are encoded as `Op` followed by the type. Variants are encoded in the same way as tuples, but starting with `V` instead of `T`. Thus, the example of an integer, string, and symbol above, if used as a variant instead, becomes `V3_isSy`.
+
+Type *aliases* do not affect name mangling; they are converted into their underlying types.
+
+{TBD: Any other aspects of this}
 
 # Standard library functions
 
@@ -1151,3 +1257,74 @@ The modules `std:basic` and `std:exception` are automatically imported into all 
 
 {TBD: `math`}
 
+# Ideas for later
+
+{Everything in this section is TBD, subject to change, etc.}
+
+## Subtypes
+
+* Allow creating a structure type that inherits another structure's fields.
+* The subtype would identify as its own type, but also check as true when testing against its parent (as per LSP).
+
+Example with possible syntax:
+
+```
+	type Foo = {
+		i: integer,
+		s: string
+	};
+
+	type Bar = Foo +> { b: byte };
+
+	var x as Foo;
+	var y as Bar;
+
+	y is Foo;	# evaluates to true, because Bar IS-A Foo
+	x is Bar;	# evaluates to false, as the relation is one-way
+
+	x.i = 123;	# this is allowed; Bar inherits Foo's fields
+	y.b = -1;	# but it doesn't work the other way
+```
+
+Questions to answer:
+
+* How would this affect type-matching?
+* What about syntax?
+
+## Extensible variants
+
+* Allow a variant to derive from another, adding new types.
+
+Example with possible syntax:
+
+```
+	type foo = |integer, string|;
+	type bar = foo |> byte;
+
+	var x as bar;
+	x = 42_b;
+
+	# If using `foo` type, the third case could never happen,
+	# and the compiler would warn about that.
+	match x {
+		type integer: print("Int");
+		type string: print("String");
+		type byte: print("Byte");
+	}
+```
+
+Questions to answer:
+
+* All questions from above.
+* Do we want to allow this to "promote" an optional into a variant? (Probably not.)
+
+## Macros
+
+* Compile-time macros similar to Haxe and other languages.
+
+Questions to answer:
+
+* What should the syntax look like? (Possibly use surrounding backticks.)
+* How do we do parsing/AST/etc. for this?
+* Do we want hygienic macros, or something different?
+* Should we use this feature to rewrite parts of the Rhea base? (Probably not.)

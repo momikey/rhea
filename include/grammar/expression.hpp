@@ -133,6 +133,7 @@ namespace rhea { namespace grammar {
         list_expression,
         dictionary_expression,
         tuple_expression,
+        nothing_literal,
         parenthesized,
         numeric_literal,
         string_literal,
@@ -203,13 +204,12 @@ namespace rhea { namespace grammar {
         seq <
             sor <
                 coerce_operator,
-                bitnot_operator,
                 dereference_operator,
+                bitnot_operator,
                 seq < 
                     sor <unary_plus_operator, unary_minus_operator>,
                     not_at <digit>
                 >,
-                seq <kw_not, separator>,
                 seq <kw_ref, separator>,
                 seq <kw_ptr, separator>
             >,
@@ -218,8 +218,19 @@ namespace rhea { namespace grammar {
         postfix_op
     > {};
 
+    struct cast_op : sor <
+        seq <
+            unary_prefix_op,
+            separator,
+            kw_as,
+            separator,
+            type_name
+        >,
+        unary_prefix_op
+    > {};
+
     struct exponential_binop : right_associative <
-        unary_prefix_op,
+        cast_op,
         exponent_operator
     > {};
 
@@ -259,34 +270,32 @@ namespace rhea { namespace grammar {
         >
     > {};
 
+    struct boolean_not_op : sor <
+        seq <
+            kw_not,
+            separator,
+            boolean_not_op
+        >,
+        bitwise_binop
+    > {};
+
     struct boolean_binop : left_associative <
-        bitwise_binop,
+        boolean_not_op,
         sor <
             kw_and,
             kw_or
         >
     > {};
 
-    struct cast_op : sor <
-        seq <
-            boolean_binop,
-            separator,
-            kw_as,
-            separator,
-            type_name
-        >,
-        boolean_binop
-    > {};
-
     struct type_check_op : sor <
         seq <
-            cast_op,
+            boolean_binop,
             separator,
             kw_is,
             separator,
             type_name
         >,
-        cast_op
+        boolean_binop
     > {};
 
     struct ternary_op : sor <

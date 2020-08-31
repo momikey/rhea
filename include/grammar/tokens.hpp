@@ -101,6 +101,9 @@ namespace rhea { namespace grammar {
         one <'$'>
     > {};
 
+    // `nothing` can be a literal value or a type.
+    struct nothing_literal : kw_nothing {};
+
     // TODO: Detect reserved words and raise errors
     struct identifier : seq <
         identifier_first,

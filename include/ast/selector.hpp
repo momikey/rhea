@@ -44,11 +44,11 @@ namespace rhea { namespace ast {
             float_literal_suffix,
             character_string<'\''>,
             character_string<'"'>,
+            builtin_types,
             identifier,
+            function_name,
             function_suffix
             // and other rules that produce simple tokens
-
-            // These are here temporarily (note prefixing commas)
         >,
 
         /*
@@ -64,6 +64,7 @@ namespace rhea { namespace ast {
             integer_literal,
             float_literal,
             symbol_name,
+            nothing_literal,
             named_argument_list,
             unnamed_argument_list,
             empty_argument_list,
@@ -121,6 +122,8 @@ namespace rhea { namespace ast {
             while_statement,
             for_statement,
             do_statement,
+            kw_break,
+            kw_continue,
             with_statement,
             with_declaration,
             on_case,
@@ -205,19 +208,19 @@ namespace rhea { namespace ast {
             type_match,
             tagged_union,
             concept_generic_type,
-            assignment_lhs,
             assignment_rhs,
             augment_operators,
             variable_declaration,
             exception_spec,
             statement,
             stmt_or_block,
-            function_name,
             predicate_name,
             operator_name,
             unchecked_name,
             function_definition,
-            concept_check
+            simple_type_name,
+            concept_check,
+            top_level_statement
 
             // These are temorarily placed here for debugging
         >,
@@ -227,9 +230,8 @@ namespace rhea { namespace ast {
          * discarding any of its own content; if no children, then it removes
          * the node entirely. This might come in handy in a few cases.
          */
-        parse_tree::discard_empty::on <
-            else_block
-        >,
+        // parse_tree::discard_empty::on <
+        // >,
 
         /*
          * Any custom selectors we want to create. These can transform a node
@@ -264,12 +266,18 @@ namespace rhea { namespace ast {
 
         unary_rearrange::on <
             unary_prefix_op,
+            boolean_not_op,
             pointer_or_reference_name,
+            assignment_lhs,
             either_type_name
         >,
 
         postfix_rearrange::on <
             postfix_op
+        >,
+
+        else_rearrange::on <
+            else_block
         >
     > {};
 }}

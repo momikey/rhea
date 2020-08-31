@@ -31,13 +31,13 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 #message(STATUS "Conan libs: ${CONAN_LIBS}")
 
+#### LLVM linking
+llvm_map_components_to_libnames(llvm_libs core mcjit native passes target asmparser asmprinter)
+#message(STATUS "LLVM libs: ${llvm_libs}")
+
 add_subdirectory(src)
 
 add_subdirectory(tests)
-
-#### LLVM linking
-llvm_map_components_to_libnames(llvm_libs core mcjit native)
-#message(STATUS "LLVM libs: ${llvm_libs}")
 
 #### CPack stuff
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

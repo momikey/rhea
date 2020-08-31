@@ -12,6 +12,20 @@ namespace rhea { namespace grammar {
 
     struct type_name;
 
+    // The "simple" builtin types for Rhea, i.e., those represented
+    // by single identifiers.
+    struct builtin_types : sor <
+        kw_integer,
+        kw_byte,
+        kw_long,
+        kw_uinteger,
+        kw_ubyte,
+        kw_ulong,
+        kw_string,
+        kw_any,
+        kw_nothing        
+    > {};
+
     // Type specifiers
     struct generic_type : if_must <
         seq <
@@ -51,7 +65,9 @@ namespace rhea { namespace grammar {
         any_identifier,
         complex_type_lookahead,
         pad <opt <generic_type>, ignored>,
-        pad <opt <array_type>, ignored>
+        pad <opt <
+            list < array_type, separator >
+        >, ignored>
     > {};
 
     struct pointer_or_reference_name : seq <
@@ -60,7 +76,12 @@ namespace rhea { namespace grammar {
         type_name
     > {};
 
-    struct either_type_name : sor <complex_type_name, any_identifier> {};
+    struct simple_type_name : sor <
+        builtin_types,
+        any_identifier
+    > {};
+
+    struct either_type_name : sor <complex_type_name, simple_type_name> {};
 
     struct variant_type_list : list <type_name, one <','>, ignored> {};
 
