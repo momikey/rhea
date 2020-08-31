@@ -163,6 +163,29 @@ namespace rhea { namespace ast {
                 );
             }
 
+            // Variants and optionals get some special handling.
+            else if (node->is<gr::optional_type>())
+            {
+                // Optional isn't too hard, just a wrapper around a type.
+                tname = std::make_unique<Optional>(
+                    create_typename_node(node->children.front().get())
+                );
+            }
+            else if (node->is<gr::variant_type_list>())
+            {
+                child_vector<Typename> vtypes;
+
+                auto& ch = node->children;
+                std::for_each(ch.begin(), ch.end(),
+                    [&](std::unique_ptr<parser_node>& el)
+                    {
+                        vtypes.emplace_back(std::move(create_typename_node(el.get())));
+                    }
+                );
+
+                tname = std::make_unique<Variant>(vtypes);
+            }
+
             else
             {
                 throw unimplemented_type(node->name());
@@ -1184,6 +1207,15 @@ namespace rhea { namespace ast {
                     std::move(create_expression_node(node->children.at(0).get())),
                     assignment_operator_type(node->children.at(1).get()),
                     std::move(create_expression_node(node->children.at(2).get()))
+                );
+            }
+
+            // Type alias: `type T = |A,B,C|;`
+            else if (node->is<gr::type_alias>())
+            {
+                stmt = make_statement<Alias>(
+                    std::move(std::make_unique<Identifier>(node->children.at(0)->string())),
+                    std::move(create_typename_node(node->children.at(1).get()))
                 );
             }
 

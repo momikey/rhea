@@ -351,7 +351,8 @@ namespace {
         BOOST_TEST_MESSAGE("Testing inference of type alias");
 
         auto l = std::make_unique<Identifier>("foo");
-        auto r = std::make_unique<Identifier>("integer");
+        auto rid = std::make_unique<Identifier>("integer");
+        auto r = std::make_unique<Typename>(std::move(rid));
 
         std::unique_ptr<ASTNode> node = make_statement<Alias>(
             std::move(l),

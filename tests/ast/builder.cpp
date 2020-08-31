@@ -433,6 +433,21 @@ namespace {
         BOOST_TEST((node->to_string() == "(Enum,(Identifier,En),(SymbolList,(Symbol,a),(Symbol,b),(Symbol,c)))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_type_alias_declaration)
+    {
+        std::string sample { "type T = |A,B|;" };
+        
+        BOOST_TEST_MESSAGE("Parsing type alias declaration " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST((node->to_string() == "(Alias,(Identifier,T),(Variant,(Typename,(Identifier,A),null,null),(Typename,(Identifier,B),null,null)))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_structure_declaration)
     {
         std::string sample { "type Person = { name: string, age: integer };" };
@@ -605,6 +620,8 @@ namespace {
         std::string array_type { "var x as byte[16];" };
         std::string array_generic_type { "var x as list <string> [10];" };
         std::string multid_array_type { "var x as byte [256][16];" };
+        std::string variant_type { "var x as |integer, string|;" };
+        std::string optional_type { "var x as |integer|?;" };
 
         BOOST_TEST_MESSAGE("Parsing simple typename declaration " << simple);
         string_input<> in_simple(simple, "test");
@@ -682,6 +699,27 @@ namespace {
         BOOST_TEST_MESSAGE((node->to_string()));
         BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Typename,(Identifier,byte),null,(ArrayTypename,(Integral,256,0),(Integral,16,0))))"));
 
+        BOOST_TEST_MESSAGE("Parsing variant declaration " << variant_type);
+        string_input<> in_variant(variant_type, "test");
+
+        tree = tree_builder<gr::statement>(in_variant);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Variant,(Typename,(Identifier,integer),null,null),(Typename,(Identifier,string),null,null)))"));
+
+        BOOST_TEST_MESSAGE("Parsing optional declaration " << optional_type);
+        string_input<> in_optional(optional_type, "test");
+
+        tree = tree_builder<gr::statement>(in_optional);
+
+        node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(TypeDeclaration,(Identifier,x),(Optional,(Typename,(Identifier,integer),null,null)))"));
     }
 
     BOOST_AUTO_TEST_CASE (builder_simple_basic_function_def)

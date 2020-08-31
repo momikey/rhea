@@ -147,11 +147,11 @@ namespace rhea { namespace ast {
     class Alias : public Statement
     {
         public:
-        Alias(std::unique_ptr<Identifier> a, std::unique_ptr<AnyIdentifier> o)
+        Alias(std::unique_ptr<Identifier> a, std::unique_ptr<Typename> o)
             : alias(std::move(a)), original(std::move(o)) {}
 
         const std::unique_ptr<Identifier> alias;
-        const std::unique_ptr<AnyIdentifier> original;
+        const std::unique_ptr<Typename> original;
 
         util::any visit(visitor::Visitor* v) override;
         std::string to_string() override

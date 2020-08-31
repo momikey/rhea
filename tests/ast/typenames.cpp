@@ -133,11 +133,12 @@ namespace {
     {
         auto a = std::make_unique<ast::Identifier>("Foo");
         auto o = ast::make_identifier<ast::Identifier>("Bar");
+        auto ty = std::make_unique<ast::Typename>(std::move(o));
 
-        auto node = std::make_unique<ast::Alias>(std::move(a), std::move(o));
+        auto node = std::make_unique<ast::Alias>(std::move(a), std::move(ty));
 
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
-        BOOST_TEST((node->to_string() == "(Alias,(Identifier,Foo),(Identifier,Bar))"));
+        BOOST_TEST((node->to_string() == "(Alias,(Identifier,Foo),(Typename,(Identifier,Bar),null,null))"));
     }
 
     BOOST_AUTO_TEST_CASE (symbol_list_ast)
