@@ -7,9 +7,6 @@
 
 # AST
 
-* Builders for exception handling.
-
-* Delegating constructors for Function AST node.
 * Statement AST class mentions doing a declaration pass. Will the type inference pass work for this, too?
 * Expression type for member and subscript operations.
 * Expression type for unary operator nodes.

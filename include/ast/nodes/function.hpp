@@ -88,10 +88,20 @@ namespace rhea { namespace ast {
     class Def : public Statement
     {
         public:
-        // Full function definition
-        // TODO: Add simpler constructors that delegate to this one.
+        // Full function definition.
         Def(FunctionType t, std::string n, std::unique_ptr<Typename> rt,
             std::unique_ptr<Arguments> al, child_vector<Condition>& cs, statement_ptr b);
+
+        // The "basic" function type is the default.
+        Def(std::string n, std::unique_ptr<Typename> rt, std::unique_ptr<Arguments> al,
+            child_vector<Condition>& cs, statement_ptr b)
+            : Def(FunctionType::Basic, n, std::move(rt), std::move(al), cs, std::move(b)) {}
+
+        // A function without conditions is common.
+        Def(FunctionType t, std::string n, std::unique_ptr<Typename> rt,
+            std::unique_ptr<Arguments> al, statement_ptr b)
+            : type(t), name(n), return_type(std::move(rt)),
+            arguments_list(std::move(al)), body(std::move(b)) {}
 
         const FunctionType type;
         const std::string name;
