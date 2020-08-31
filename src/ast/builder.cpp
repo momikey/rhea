@@ -75,14 +75,12 @@ namespace rhea { namespace ast {
                 // something to encapsulate it.
                 if (child->is<gr::identifier>())
                 {
-                    auto d = static_cast<Identifier*>(result.release());
-                    auto ptr = std::unique_ptr<Identifier>(d);
+                    auto ptr = util::unique_ptr_downcast<AnyIdentifier, Identifier>(result);
                     ident = std::make_unique<RelativeIdentifier>(std::move(ptr));
                 }
                 else if (child->is<gr::fully_qualified>())
                 {
-                    auto d = static_cast<FullyQualified*>(result.release());
-                    auto ptr = std::unique_ptr<FullyQualified>(d);
+                    auto ptr = util::unique_ptr_downcast<AnyIdentifier, FullyQualified>(result);
                     ident = std::make_unique<RelativeIdentifier>(std::move(ptr));
                 }
                 else
@@ -245,10 +243,9 @@ namespace rhea { namespace ast {
 
         // Templated builder helper to properly downcast dictionary key expressions.
         template <typename T>
-        DictionaryKey dictionary_key_cast(std::unique_ptr<Expression> expr)
+        DictionaryKey dictionary_key_cast(std::unique_ptr<Expression>& expr)
         {
-            auto d = static_cast<T*>(expr.release());
-            return std::unique_ptr<T>(d);
+            return util::unique_ptr_downcast<Expression, T>(expr);
         }
 
         // Builder helper for dictionary keys
@@ -275,21 +272,21 @@ namespace rhea { namespace ast {
                 switch (simple_type->type)
                 {
                     case types::BasicType::Integer:
-                        return dictionary_key_cast<Integer>(std::move(expr));
+                        return dictionary_key_cast<Integer>(expr);
                     case types::BasicType::Byte:
-                        return dictionary_key_cast<Byte>(std::move(expr));
+                        return dictionary_key_cast<Byte>(expr);
                     case types::BasicType::Long:
-                        return dictionary_key_cast<Long>(std::move(expr));
+                        return dictionary_key_cast<Long>(expr);
                     case types::BasicType::UnsignedInteger:
-                        return dictionary_key_cast<UnsignedInteger>(std::move(expr));
+                        return dictionary_key_cast<UnsignedInteger>(expr);
                     case types::BasicType::UnsignedByte:
-                        return dictionary_key_cast<UnsignedByte>(std::move(expr));
+                        return dictionary_key_cast<UnsignedByte>(expr);
                     case types::BasicType::UnsignedLong:
-                        return dictionary_key_cast<UnsignedLong>(std::move(expr));
+                        return dictionary_key_cast<UnsignedLong>(expr);
                     case types::BasicType::String:
-                        return dictionary_key_cast<String>(std::move(expr));
+                        return dictionary_key_cast<String>(expr);
                     case types::BasicType::Symbol:
-                        return dictionary_key_cast<Symbol>(std::move(expr));                        
+                        return dictionary_key_cast<Symbol>(expr);                       
                     default:
                         throw syntax_error("Invalid dictionary key type");
                 }
@@ -1372,12 +1369,6 @@ namespace rhea { namespace ast {
                 stmt = std::move(create_function_definition(node, FunctionType::Operator));
             }
 
-            // Concept definitions: `concept C <T> = ...`
-            else if (node->is<gr::concept_definition>())
-            {
-                stmt = std::move(create_concept_definition(node));
-            }
-
             // Return statement: `return false;`
             else if (node->is<gr::return_statement>())
             {
@@ -1390,6 +1381,75 @@ namespace rhea { namespace ast {
             else if (node->is<gr::extern_declaration>())
             {
                 stmt = make_statement<Extern>(node->children.front()->string());
+            }
+
+            // Throw statement: `throw bad();`
+            else if (node->is<gr::throw_statement>())
+            {
+                stmt = make_statement<Throw>(
+                    std::move(create_expression_node(node->children.front().get()))
+                );
+            }
+
+            // Finally statement: `finally { do foo; }`
+            else if (node->is<gr::finally_statement>())
+            {
+                stmt = make_statement<Finally>(
+                    std::move(create_statement_node(node->children.front().get()))
+                );
+            }
+
+            // Catch statement: `catch { e: Error } { do bar; }`
+            else if (node->is<gr::catch_statement>())
+            {
+                stmt = make_statement<Catch>(
+                    std::move(create_typepair_node(node->children.at(0).get())),
+                    std::move(create_statement_node(node->children.at(1).get()))
+                );
+            }
+
+            // Try statement: `try { do x; }...`
+            else if (node->is<gr::try_statement>())
+            {
+                child_vector<Catch> catches;
+
+                auto& ch = node->children;
+                auto& last_child = node->children.back();
+                auto has_finally = last_child->is<gr::finally_statement>();
+
+                auto try_part = create_statement_node(ch.front().get());
+
+                std::for_each(ch.begin()+1, ch.end()-(has_finally ? 1 : 0),
+                    [&](std::unique_ptr<parser_node>& el)
+                    {
+                        auto ptr = create_statement_node(el.get());
+                        auto c = util::unique_ptr_downcast<Statement, Catch>(ptr);
+
+                        catches.emplace_back(std::move(c));
+                    }
+                );
+
+                if (has_finally)
+                {
+                    auto fst = create_statement_node(last_child.get());
+                    auto finally_part = util::unique_ptr_downcast<Statement, Finally>(fst);
+
+                    stmt = make_statement<Try>(
+                        std::move(try_part),
+                        catches,
+                        std::move(finally_part)
+                    );
+                }
+                else
+                {
+                    stmt = make_statement<Try>(std::move(try_part), catches);
+                }
+            }
+
+            // Concept definitions: `concept C <T> = ...`
+            else if (node->is<gr::concept_definition>())
+            {
+                stmt = std::move(create_concept_definition(node));
             }
 
             // Module declaration: `module foo;`

@@ -837,6 +837,69 @@ namespace {
             "(Def,0,f,null,(Arguments,(TypePair,t,(Typename,(Identifier,$$wildcard$$),null,null))),(Conditions),(Block,(Return,(Boolean,true))))"));
     }
 
+    BOOST_AUTO_TEST_CASE (builder_throw_statement)
+    {
+        std::string sample { "throw foo;" };
+
+        BOOST_TEST_MESSAGE("Parsing throw statement " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Throw,(Identifier,foo))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_try_statement)
+    {
+        std::string sample { "try { do x; };" };
+
+        BOOST_TEST_MESSAGE("Parsing try statement " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Try,(Block,(Do,(Identifier,x))),null)"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_try_statement_with_finally)
+    {
+        std::string sample { "try { do x; } finally { do y; };" };
+
+        BOOST_TEST_MESSAGE("Parsing try statement with finally " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Try,(Block,(Do,(Identifier,x))),(Finally,(Block,(Do,(Identifier,y)))))"));
+    }
+
+    BOOST_AUTO_TEST_CASE (builder_try_statement_with_catch)
+    {
+        std::string sample { "try { do x; } catch { e : E } { do y; };" };
+
+        BOOST_TEST_MESSAGE("Parsing try statement with catch " << sample);
+        string_input<> in(sample, "test");
+
+        auto tree = tree_builder<gr::statement>(in);
+
+        auto node = ast::internal::create_statement_node(tree->children.front().get());
+        BOOST_TEST_MESSAGE((node->position));
+        BOOST_TEST_MESSAGE((node->to_string()));
+        BOOST_TEST((node->to_string() == "(Try,(Block,(Do,(Identifier,x))),null,(Catch,(TypePair,e,(Typename,(Identifier,E),null,null)),(Block,(Do,(Identifier,y)))))"));
+    }
+
     BOOST_AUTO_TEST_CASE (builder_concept_definition)
     {
         std::string sample { "concept C <T> = { T .= foo }" };

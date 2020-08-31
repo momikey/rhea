@@ -15,9 +15,10 @@ namespace rhea { namespace ast {
 
     std::string Try::to_string()
     {
-        return fmt::format("(Try,{0}{1},{2})",
+        return fmt::format("(Try,{0},{1}{2})",
             body->to_string(),
-            util::serialize_array(catches),
-            finally_block == nullptr ? "null" : finally_block->to_string());
+            finally_block == nullptr ? "null" : finally_block->to_string(),
+            util::serialize_array(catches)
+        );
     }
 }}

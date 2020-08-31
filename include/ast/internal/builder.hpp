@@ -9,6 +9,7 @@
 #include "../parse_tree_node.hpp"
 #include "../../types/types.hpp"
 #include "../../util/compat.hpp"
+#include "../../util/downcast.hpp"
 
 /*
  * Internal detail for the AST builder.

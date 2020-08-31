@@ -88,7 +88,7 @@ namespace {
         BOOST_TEST_MESSAGE("Testing AST Node " << node->to_string());
 
         BOOST_TEST((node->to_string() ==
-            "(Try,(Throw,(Integral,420,0)),(Catch,(TypePair,e,(Typename,(Identifier,integer),null,null)),(Throw,(Integral,420,0))),(Finally,(Variable,(Identifier,foo),(Integral,42,0))))"));
+            "(Try,(Throw,(Integral,420,0)),(Finally,(Variable,(Identifier,foo),(Integral,42,0))),(Catch,(TypePair,e,(Typename,(Identifier,integer),null,null)),(Throw,(Integral,420,0))))"));
     }
 
     BOOST_AUTO_TEST_SUITE_END ()
